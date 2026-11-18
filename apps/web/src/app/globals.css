@@ -1,0 +1,16 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+body { @apply text-slate-900 antialiased; }
+.btn-gold { @apply inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-600 active:scale-[.97]; }
+.btn-navy { @apply inline-flex items-center justify-center gap-2 rounded-full bg-navy-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-navy-800 active:scale-[.97]; }
+.btn-outline { @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-white px-6 py-3 text-sm font-semibold text-white transition hover:bg-white hover:text-navy-900; }
+.section-pad { @apply px-4 py-14 sm:px-6 lg:px-8; }
+.card { @apply rounded-2xl border border-slate-100 bg-white shadow-[0_1px_2px_rgba(10,34,64,.04)]; }
+
+/* ── Printing ─────────────────────────────────────────────────────────────── */
+@media print {
+  /* Floating overlays (compare bar, exit-intent popup, mobile menus) must
+     never appear on printed output. */
+  .fixed { display: none !important; }
+  body { background: #fff !important; }
+}
+@page { margin: 12mm; }
