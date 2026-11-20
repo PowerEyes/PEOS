@@ -1,6 +1,7 @@
 "use server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 type R = { error?: string; ok?: string; id?: string };
 
@@ -8,7 +9,7 @@ export async function addExpense(input: unknown): Promise<R> {
   const s = z.object({ category: z.string().min(1), description: z.string().min(1), amount: z.number().positive(), expense_date: z.string(), payment_method: z.enum(["cash","upi","card","bank"]), reference: z.string().optional(), branch_id: z.string().uuid() }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };
   const { error } = await supabaseServer().from("expenses").insert(s.data);
-  if (error) return { error: error.message }; revalidatePath("/finance"); return { ok: "Expense saved" };
+  if (error) return { error: dbError(error.message) }; revalidatePath("/finance"); return { ok: "Expense saved" };
 }
 export async function addPurchaseInvoice(input: unknown): Promise<R> {
   const s = z.object({ supplier_name: z.string().min(1), supplier_gstin: z.string().optional(), invoice_no: z.string().min(1), invoice_date: z.string(), supply_type: z.enum(["intrastate","interstate"]), branch_id: z.string().uuid(),
@@ -26,7 +27,7 @@ export async function addPurchaseInvoice(input: unknown): Promise<R> {
     return { description: i.description, hsn: i.hsn, qty: i.qty, unit_price: i.unit_price, tax_pct: i.tax_pct, taxable_value: taxable, cgst_amt: cgst, sgst_amt: sgst, igst_amt: igst, line_total: taxable + taxAmt };
   });
   const { data, error } = await sb.from("purchase_invoices").insert({ ...d, subtotal: sub, tax_total: tax, grand_total: grand, cgst_total: cg, sgst_total: sg, igst_total: ig }).select("id").single();
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   await sb.from("purchase_items").insert(itemRows.map((r) => ({ ...r, purchase_id: data.id })));
   revalidatePath("/finance"); return { ok: "Purchase invoice saved", id: data.id };
 }
@@ -34,13 +35,13 @@ export async function saveDayClosing(input: unknown): Promise<R> {
   const s = z.object({ branch_id: z.string().uuid(), closing_date: z.string(), opening_cash: z.number().min(0), actual_cash: z.number().min(0), expected_cash: z.number(), cash_sales: z.number(), upi_sales: z.number(), card_sales: z.number(), bank_sales: z.number(), total_sales: z.number(), order_count: z.number().int(), notes: z.string().optional() }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };
   const v = s.data; const { error } = await supabaseServer().from("day_closings").upsert({ ...v, cash_difference: v.actual_cash - v.expected_cash }, { onConflict: "org_id,branch_id,closing_date" });
-  if (error) return { error: error.message }; revalidatePath("/finance"); return { ok: "Day closed" };
+  if (error) return { error: dbError(error.message) }; revalidatePath("/finance"); return { ok: "Day closed" };
 }
 export async function createCreditNote(input: unknown): Promise<R> {
   const s = z.object({ sale_id: z.string().uuid(), reason: z.string().min(1), refund_method: z.string().optional(), lines: z.array(z.object({ line_id: z.string().uuid(), qty: z.number().int().positive() })) }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };
   const { data, error } = await supabaseServer().rpc("create_credit_note", { p: s.data });
-  if (error) return { error: error.message }; revalidatePath("/finance"); revalidatePath("/sales"); return { ok: data.code, id: data.id };
+  if (error) return { error: dbError(error.message) }; revalidatePath("/finance"); revalidatePath("/sales"); return { ok: data.code, id: data.id };
 }
 export async function closePeriod(year: number, month: number): Promise<R> {
   if (!Number.isInteger(month) || month < 1 || month > 12) return { error: "Invalid period" };
@@ -53,5 +54,5 @@ export async function closePeriod(year: number, month: number): Promise<R> {
   const oc = sum(out ?? [], "cgst_total"), os = sum(out ?? [], "sgst_total"), oi = sum(out ?? [], "igst_total");
   const ic = sum(inp ?? [], "cgst_amt"), is2 = sum(inp ?? [], "sgst_amt"), ii = sum(inp ?? [], "igst_amt");
   const { error } = await sb.from("gst_periods").upsert({ period_year: year, period_month: month, status: "closed", output_cgst: oc, output_sgst: os, output_igst: oi, input_cgst: ic, input_sgst: is2, input_igst: ii, net_liability: Math.max(0, (oc+os+oi) - (ic+is2+ii)), closed_at: new Date().toISOString() }, { onConflict: "org_id,period_year,period_month" });
-  if (error) return { error: error.message }; revalidatePath("/finance"); return { ok: `${year}-${String(month).padStart(2,"0")} closed` };
+  if (error) return { error: dbError(error.message) }; revalidatePath("/finance"); return { ok: `${year}-${String(month).padStart(2,"0")} closed` };
 }

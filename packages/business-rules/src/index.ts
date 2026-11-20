@@ -5,3 +5,5 @@ export * from "./rx";
 export * from "./inventory";
 // GST helpers (HSN defaults, calcTax, CGST/SGST split, etc.)
 export * from "./gst";
+// Raw database error → message a person can act on (dbError)
+export * from "./errors";

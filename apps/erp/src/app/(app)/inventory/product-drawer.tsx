@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Drawer, useToast } from "@poweros/ui";
 import { Glasses, Printer, Star, Trash2, UploadCloud, Plus } from "lucide-react";
-import { DETAIL_FIELDS, KINDS, discountPct, inr, marginPct, type Kind } from "@poweros/business-rules";
+import { DETAIL_FIELDS, KINDS, dbError, discountPct, inr, marginPct, type Kind } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { imgUrl, shrink } from "@/lib/image";
 import { adjustStock, createBrand, saveProduct, setReorder } from "./actions";
@@ -41,7 +41,7 @@ export function ProductDrawer({ open, onClose, product, kind, brands, branches, 
   async function upload(files: FileList | null) {
     if (!files) return; const sb = supabaseBrowser(); const { data: p } = await sb.from("profiles").select("org_id").single(); const added: string[] = [];
     for (const file of Array.from(files).slice(0, 10 - f.images.length)) { const path = `${p?.org_id}/${crypto.randomUUID()}.jpg`;
-      const { error } = await sb.storage.from("product-images").upload(path, await shrink(file, 1400), { contentType: "image/jpeg" }); error ? toast(error.message, "err") : added.push(path); }
+      const { error } = await sb.storage.from("product-images").upload(path, await shrink(file, 1400), { contentType: "image/jpeg" }); error ? toast(dbError(error.message), "err") : added.push(path); }
     set({ images: [...f.images, ...added] }); }
   async function addBrand() { const r = await createBrand(newBrand); if (r.error) return toast(r.error, "err"); toast(`Brand ${r.ok} added`); setNewBrand(""); set({ brand_id: r.id }); router.refresh(); }
   async function apply(branch_id: string) { const a = adj[branch_id]; const r = await adjustStock({ product_id: product.id, branch_id, delta: Number(a?.d), reason: a?.r || "adjustment" });

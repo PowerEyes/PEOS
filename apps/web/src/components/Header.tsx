@@ -227,7 +227,12 @@ export function Header({ portal = false }: { portal?: boolean }) {
       {/* Desktop nav — the whole bar is absent when the `nav` section is hidden */}
       {NAVLINKS && (
       <nav className="hidden border-b border-slate-100 lg:flex" onMouseLeave={() => setMega(null)}>
-        <div className="flex items-center px-6 overflow-x-auto">
+        {/* The mega panel is absolutely positioned below the nav row, so the
+            wrapper must not clip it: `overflow-x-auto` would also force
+            overflow-y to `auto` (spec) and cut the panel off to the nav's own
+            height, turning it into a scrollable box instead of a dropdown.
+            Horizontal scrolling stays available while no panel is open. */}
+        <div className={`flex items-center px-6 ${mega ? "overflow-visible" : "overflow-x-auto"}`}>
           {NAVLINKS.map(l => (
             <div key={l.label} className="relative shrink-0" onMouseEnter={() => setMega(l.mega ? l.label : null)}>
               <Link href={l.href} className={`flex items-center gap-1 px-3.5 py-3.5 text-[13px] font-medium transition whitespace-nowrap ${mega===l.label?"text-navy-900":"text-slate-600 hover:text-navy-900"}`}>

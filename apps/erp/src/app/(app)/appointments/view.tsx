@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Drawer, Pill, useToast } from "@poweros/ui";
 import { CalendarDays, Plus, Search } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { dbError } from "@poweros/business-rules";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { revalidatePath } from "next/cache";
 
@@ -24,11 +25,11 @@ export function ApptsView({ appts, customers, branches }:any) {
   async function save(){
     if(!custId) return toast("Choose a customer","err"); setBusy(true);
     const { error } = await supabaseBrowser().from("appointments").insert({...f,customer_id:custId,duration_mins:Number(f.duration_mins)});
-    setBusy(false); if(error) return toast(error.message,"err"); toast("Appointment booked"); router.refresh(); setOpen(false); setCustId(""); setCq("");
+    setBusy(false); if(error) return toast(dbError(error.message),"err"); toast("Appointment booked"); router.refresh(); setOpen(false); setCustId(""); setCq("");
   }
   async function updStatus(id:string, status:string){
     const { error } = await supabaseBrowser().from("appointments").update({status,updated_at:new Date().toISOString()}).eq("id",id);
-    if(error) toast(error.message,"err"); else { toast("Updated"); router.refresh(); }
+    if(error) toast(dbError(error.message),"err"); else { toast("Updated"); router.refresh(); }
   }
   return(<div className="mx-auto max-w-4xl space-y-5">
     <div className="flex items-end justify-between"><div><h1 className="font-display text-3xl font-semibold">Appointments</h1><p className="text-slate-500">Eye tests and consultations — upcoming {appts.length}</p></div>

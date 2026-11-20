@@ -1,4 +1,5 @@
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { dbError } from "@poweros/business-rules";
 
 /**
  * The caller's organisation folder inside a storage bucket. Every image this
@@ -27,6 +28,6 @@ export async function putImage(blob: Blob, bucket = "site-images"): Promise<stri
   const org = await orgFolder();
   const path = `${org}/${crypto.randomUUID()}.jpg`;
   const { error } = await supabaseBrowser().storage.from(bucket).upload(path, blob, { contentType: "image/jpeg" });
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(dbError(error.message));
   return path;
 }

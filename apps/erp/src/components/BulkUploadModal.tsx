@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, Loader2, Trash2, UploadCloud, X } from "lucide-react";
 import { Modal, useToast } from "@poweros/ui";
+import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { shrink } from "@/lib/image";
 import { putImage } from "@/lib/upload";
@@ -76,7 +77,7 @@ export function BulkUploadModal({ open, section, startOrder, onClose, onCreated 
         setDone(i + 1);
       }
       const { error } = await supabaseBrowser().from("website_content").insert(rows);
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(dbError(error.message));
       committed = true;
       toast(`${rows.length} card${rows.length === 1 ? "" : "s"} added to ${section.replace("_", " ")}`);
       onCreated();

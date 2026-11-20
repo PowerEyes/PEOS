@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Drawer, useToast } from "@poweros/ui";
 import { Camera, FileCheck2, Glasses, Minus, Plus, ScanBarcode, Search, ShoppingBag, Trash2, X, UserRound } from "lucide-react";
-import { ctaFor, fmt, inr, stockState } from "@poweros/business-rules";
+import { ctaFor, dbError, fmt, inr, stockState } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { imgUrl, shrink } from "@/lib/image";
 import { CameraScanner } from "@/components/CameraScanner";
@@ -107,7 +107,7 @@ export function Pos({ products, customers, branches, packages, options, quoteDay
       const { data: p } = await sb.from("profiles").select("org_id").single();
       const path = `${p?.org_id}/${crypto.randomUUID()}.jpg`;
       const { error } = await sb.storage.from("prescriptions").upload(path, await shrink(f), { contentType: "image/jpeg" });
-      if (error) return toast(error.message, "err");
+      if (error) return toast(dbError(error.message), "err");
       const { error: e2 } = await sb.from("prescriptions").update({ image_path: path }).eq("id", rxId);
       if (e2) return toast(e2.message, "err");
       setRxList((list) => list.map((r) => (r.id === rxId ? { ...r, image_path: path } : r)));

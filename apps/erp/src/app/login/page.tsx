@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { dbError } from "@poweros/business-rules";
 import { Eye } from "lucide-react";
 export default function Login() {
   const [mode, setMode] = useState<"in" | "up">("in");
@@ -13,7 +14,7 @@ export default function Login() {
     const { error } = mode === "in" ? await sb.auth.signInWithPassword({ email, password })
       : await sb.auth.signUp({ email, password, options: { data: { full_name: String(f.get("name")), is_staff: true } } });
     setBusy(false);
-    if (error) return setErr(error.message);
+    if (error) return setErr(dbError(error.message));
     router.replace("/"); router.refresh();
   }
   return (

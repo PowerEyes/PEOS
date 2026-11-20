@@ -1,6 +1,7 @@
 
 "use server";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 import { z } from "zod";
 
@@ -40,10 +41,10 @@ export async function upsertCoupon(prev: any, fd: FormData) {
 
   if (id) {
     const { error } = await sb.from("coupons").update(payload).eq("id", id);
-    if (error) return { error: error.message };
+    if (error) return { error: dbError(error.message) };
   } else {
     const { error } = await sb.from("coupons").insert(payload);
-    if (error) return { error: error.message };
+    if (error) return { error: dbError(error.message) };
   }
   revalidatePath("/website/coupons");
   return { ok: true };

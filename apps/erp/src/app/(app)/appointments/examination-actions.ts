@@ -1,6 +1,7 @@
 
 "use server";
 import { revalidatePath } from "next/cache";
+import { dbError, fixAxis, rxRangeError, type RxValues } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 
 const ORG = "00000000-0000-0000-0000-000000000001";
@@ -56,11 +57,26 @@ export async function saveExamination(fd: FormData) {
     next_review_months:     getN("next_review_months") ?? 24,
   };
 
-  const { data: exam, error } = await sb.from("eye_examinations").insert(rec).select("id").single();
-  if (error) return { error: error.message };
+  // Axis is an `int` in both tables: 90.5 fails the cast and 185 fails the
+  // 0..180 check, and this form's inputs are free text. Round and bound before
+  // anything is written, and say which value is wrong rather than letting
+  // Postgres phrase it.
+  rec.od_axis = fixAxis(rec.od_axis);
+  rec.os_axis = fixAxis(rec.os_axis);
+  const rangeErr = rxRangeError({
+    od: { sph: rec.od_sph, cyl: rec.od_cyl, axis: rec.od_axis, add: rec.od_add, va_dist: rec.od_va ?? "", va_near: "" },
+    os: { sph: rec.os_sph, cyl: rec.os_cyl, axis: rec.os_axis, add: rec.os_add, va_dist: rec.os_va ?? "", va_near: "" },
+    pd_far: rec.pd_far, pd_near: rec.pd_near,
+  } satisfies RxValues);
+  if (rangeErr) return { error: rangeErr };
 
-  // Auto-create prescription if Rx values provided
+  // The prescription is written BEFORE the examination. It used to be written
+  // second with its error swallowed, so a rejected row left an examination
+  // behind while the confirmation screen claimed a prescription existed.
+  // Writing it first means a bad value aborts before anything is saved, and a
+  // retry cannot leave a duplicate examination.
   const hasRx = rec.od_sph !== null || rec.os_sph !== null;
+  let prescriptionId: string | null = null;
   if (hasRx) {
     const reviewMonths = rec.next_review_months ?? 24;
     const validTill = new Date(); validTill.setMonth(validTill.getMonth() + reviewMonths);
@@ -73,15 +89,19 @@ export async function saveExamination(fd: FormData) {
       rx_date: new Date().toISOString().slice(0,10),
       valid_till: validTill.toISOString().slice(0,10),
       examined_by: rec.examiner_name,
-      notes: rec.notes,
+      // prescriptions stores this as `remarks` — there is no `notes` column, so
+      // this failed on every examination and the error was discarded.
+      remarks: rec.notes,
     }).select("id").single();
-    if (!rxErr && rx) {
-      await sb.from("eye_examinations").update({ prescription_id: rx.id }).eq("id", exam.id);
-    }
-    // Update appointment status to completed
-    if (appointmentId) {
-      await sb.from("appointments").update({ status:"completed" }).eq("id", appointmentId);
-    }
+    if (rxErr) return { error: dbError(rxErr.message) };
+    prescriptionId = rx?.id ?? null;
+  }
+
+  const { data: exam, error } = await sb.from("eye_examinations").insert({ ...rec, prescription_id: prescriptionId }).select("id").single();
+  if (error) return { error: dbError(error.message) };
+
+  if (hasRx && appointmentId) {
+    await sb.from("appointments").update({ status:"completed" }).eq("id", appointmentId);
   }
 
   revalidatePath("/appointments");

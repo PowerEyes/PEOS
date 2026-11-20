@@ -1,6 +1,7 @@
 "use server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 const num = z.number().nullable(); const bool = z.boolean();
 const product = z.object({
@@ -14,7 +15,8 @@ const product = z.object({
   shelf_location: z.string().trim().max(120).nullable(), display_order: z.number().int().min(0).max(9999),
   opening: z.object({ branch_id: z.string().uuid(), qty: z.number().int().min(1) }).optional() });
 type R = { error?: string; ok?: string; id?: string };
-const fail = (m: string) => (m.includes("stock_qty_check") ? "Not enough stock for that change." : m.includes("duplicate") ? "That barcode is already used by another product." : m);
+const fail = (m: string) =>
+  /duplicate key/i.test(m) && /barcode/i.test(m) ? "That barcode is already used by another product." : dbError(m);
 
 export async function saveProduct(input: unknown): Promise<R> {
   const p = product.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
@@ -27,7 +29,8 @@ export async function saveProduct(input: unknown): Promise<R> {
   revalidatePath("/inventory"); return { ok: sku || "Saved", id: pid };
 }
 export async function adjustStock(i: { product_id: string; branch_id: string; delta: number; reason: string; note?: string }): Promise<R> {
-  if (!Number.isInteger(i.delta) || i.delta === 0) return { error: "Enter a quantity other than zero." };
+  if (!Number.isInteger(i.delta)) return { error: "Enter a whole number, e.g. 5 or -3." };
+  if (i.delta === 0) return { error: "Enter a quantity other than zero." };
   const { error } = await supabaseServer().from("stock_movements").insert(i); if (error) return { error: fail(error.message) };
   revalidatePath("/inventory"); return { ok: "Stock updated" };
 }
@@ -38,7 +41,7 @@ export async function setReorder(product_id: string, branch_id: string, level: n
 export async function createBrand(name: string): Promise<R> {
   const n = name.trim(); if (!n) return { error: "Enter a brand name" };
   const { data, error } = await supabaseServer().from("brands").insert({ name: n }).select("id").single();
-  if (error) return { error: error.message.includes("duplicate") ? "That brand already exists." : error.message };
+  if (error) return { error: dbError(error.message.includes("duplicate") ? "That brand already exists." : error.message) };
   revalidatePath("/inventory"); return { ok: n, id: data.id };
 }
 const dispRow = z.object({
@@ -64,7 +67,7 @@ export async function saveLensPackage(input: unknown): Promise<R> {
   const p = pkg.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
   const { id, ...row } = p.data; const sb = supabaseServer();
   const { error } = id ? await sb.from("lens_packages").update(row).eq("id", id) : await sb.from("lens_packages").insert(row);
-  if (error) return { error: error.message.includes("duplicate") ? "That package code is already used." : error.message };
+  if (error) return { error: error.message.includes("duplicate") ? "That package code is already used." : dbError(error.message) };
   revalidatePath("/inventory"); return { ok: row.name };
 }
 const opt = z.object({ id: z.string().uuid().optional(), grp: z.enum(["index", "addon"]), code: z.string().trim().min(2, "Enter a code"), name: z.string().trim().min(2, "Enter a name"),
@@ -74,6 +77,6 @@ export async function saveLensOption(input: unknown): Promise<R> {
   const p = opt.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
   const { id, ...row } = p.data; const sb = supabaseServer();
   const { error } = id ? await sb.from("lens_options").update(row).eq("id", id) : await sb.from("lens_options").insert(row);
-  if (error) return { error: error.message.includes("duplicate") ? "That code is already used." : error.message };
+  if (error) return { error: error.message.includes("duplicate") ? "That code is already used." : dbError(error.message) };
   revalidatePath("/inventory"); return { ok: row.name };
 }

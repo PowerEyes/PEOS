@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, Glasses } from "lucide-react";
+import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 export default function LoginPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function LoginPage() {
       ? await sb.auth.signInWithPassword({ email: f.email, password: f.password })
       : await sb.auth.signUp({ email: f.email, password: f.password, options: { data: { full_name: f.name, phone: f.phone } } });
     setBusy(false);
-    if (error) return setErr(error.message);
+    if (error) return setErr(dbError(error.message));
     if (mode === "up") {
       // Save WhatsApp opt-in to the (trigger-created) customer record.
       if (data?.user) {

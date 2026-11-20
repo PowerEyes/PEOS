@@ -1,6 +1,7 @@
 "use server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 const opt = z.string().trim().optional().transform((v) => (v ? v : null));
 const schema = z.object({
@@ -17,7 +18,7 @@ export async function createCustomer(_: FormState, fd: FormData): Promise<FormSt
   const parsed = schema.safeParse(Object.fromEntries(fd));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { data, error } = await supabaseServer().from("customers").insert(parsed.data).select("id, customer_code, vision_id").single();
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/customers");
   return { ok: `Customer ${data.customer_code} saved`, id: data.id, vision_id: data.vision_id };
 }
@@ -42,7 +43,7 @@ export async function updateCustomer(id: string, fd: FormData): Promise<FormStat
   const parsed = editSchema.safeParse(Object.fromEntries(fd));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { error } = await supabaseServer().from("customers").update(parsed.data).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/customers");
   return { ok: "Customer updated" };
 }

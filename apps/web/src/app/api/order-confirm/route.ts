@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import { dbError } from "@poweros/business-rules";
 export async function POST(req: Request) {
   const body = await req.json();
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, cartItems, delivery, branch, addr, total, payMethod } = body;
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
   }));
   const payment = razorpay_payment_id ? { amount: total, method: "razorpay", reference: razorpay_payment_id } : payMethod === "cash" ? { amount: 0, method: "cash" } : undefined;
   const { data: saleData, error } = await sb.rpc("place_sale", { p: { kind: "order", customer_id: customerId, branch_id: branchId, lines, notes: `Online order. ${delivery==="pickup"?`Pickup: ${branch}`:`Deliver to ${addr?.city}`}. Razorpay: ${razorpay_order_id}`, payment } });
-  if (error) { console.error("place_sale error:", error.message); return NextResponse.json({ error: error.message }, { status: 500 }); }
+  if (error) { console.error("place_sale error:", error.message); return NextResponse.json({ error: dbError(error.message) }, { status: 500 }); }
   // Record online payment
   if (razorpay_payment_id) {
     await sb.from("online_payments").insert({ org_id: "00000000-0000-0000-0000-000000000001", sale_id: saleData.id, customer_id: customerId, razorpay_order_id, razorpay_payment_id, razorpay_signature: razorpay_signature ?? null, amount: total, status: "paid" });

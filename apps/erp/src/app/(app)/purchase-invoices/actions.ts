@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 type R = { error?: string; ok?: string; id?: string };
 
@@ -40,7 +41,7 @@ export async function createSupplier(fd: FormData): Promise<R & { supplier?: any
     email: (fd.get("email") as string) || null,
     contact_person: (fd.get("contact_person") as string) || null,
   }).select().single();
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/purchase-invoices");
   return { ok: "Supplier added", supplier: data };
 }
@@ -81,10 +82,10 @@ export async function upsertInvoice(invoiceId: string | null, payload: {
   let id = invoiceId;
   if (invoiceId) {
     const { error } = await sb.from("purchase_invoices").update(row).eq("id", invoiceId).eq("org_id", profile.org_id);
-    if (error) return { error: error.message };
+    if (error) return { error: dbError(error.message) };
   } else {
     const { data, error } = await sb.from("purchase_invoices").insert({ ...row, created_by: user.id }).select("id").single();
-    if (error) return { error: error.message };
+    if (error) return { error: dbError(error.message) };
     id = data.id;
   }
   revalidatePath("/purchase-invoices");
@@ -107,7 +108,7 @@ export async function markPaid(id: string, payment: {
     payment_ref: payment.payment_ref || null,
     status: fullyPaid ? "paid" : "pending",
   }).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/purchase-invoices");
   return { ok: fullyPaid ? "Marked as fully paid" : "Partial payment recorded" };
 }
@@ -115,7 +116,7 @@ export async function markPaid(id: string, payment: {
 export async function claimITC(id: string, period: string): Promise<R> {
   const sb = supabaseServer();
   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/purchase-invoices");
   return { ok: `ITC claimed for ${period}` };
 }
@@ -127,7 +128,7 @@ export async function deleteInvoice(id: string): Promise<R> {
   const { data: inv } = await sb.from("purchase_invoices").select("status,paid_amount").eq("id", id).single();
   if (inv?.status === "paid" || Number(inv?.paid_amount) > 0) return { error: "Cannot delete a paid invoice. Cancel it instead." };
   const { error } = await sb.from("purchase_invoices").delete().eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/purchase-invoices");
   return { ok: "Invoice deleted" };
 }
@@ -139,7 +140,7 @@ export async function updateSupplier(id: string, fd: FormData): Promise<R & { su
     state: fd.get("state"), address: fd.get("address"), phone: fd.get("phone"),
     email: fd.get("email"), contact_person: fd.get("contact_person"),
   }).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/purchase-invoices");
   return { ok: "Supplier updated" };
 }

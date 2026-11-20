@@ -1,6 +1,7 @@
 "use server";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 type R = { error?: string; ok?: string; id?: string };
@@ -34,10 +35,10 @@ export async function saveRepair(input: unknown): Promise<R> {
   const { data, error } = id
     ? await sb.from("repairs").update({ ...row, branch_id: branch }).eq("id",id).select("id,code").single()
     : await sb.from("repairs").insert({ ...row, branch_id: branch }).select("id,code").single();
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/repairs"); return { ok: data.code, id: data.id };
 }
 export async function advanceRepair(id: string, to: string, note?: string): Promise<R> {
   const { error } = await supabaseServer().rpc("advance_repair",{ p_id: id, p_to: to, p_note: note ?? null });
-  if (error) return { error: error.message }; revalidatePath("/repairs"); return { ok: "Status updated" };
+  if (error) return { error: dbError(error.message) }; revalidatePath("/repairs"); return { ok: "Status updated" };
 }

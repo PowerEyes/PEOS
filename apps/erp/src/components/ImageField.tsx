@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { UploadCloud, Trash2, Loader2, AlertCircle } from "lucide-react";
 import { Modal, useToast } from "@poweros/ui";
+import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { parseAspect, shrink } from "@/lib/image";
 import { putImage } from "@/lib/upload";
@@ -107,7 +108,7 @@ export function ImageField({
     if (onAltChange) onAltChange("");
     if (old) {
       const { error } = await supabaseBrowser().storage.from(bucket).remove([old]);
-      if (error) toast(`Image cleared, but the file wasn't deleted: ${error.message}`, "err");
+      if (error) toast(`Image cleared, but the file wasn't deleted: ${dbError(error.message)}`, "err");
     }
   }
 

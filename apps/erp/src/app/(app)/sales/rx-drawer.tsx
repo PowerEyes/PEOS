@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Drawer, useToast } from "@poweros/ui";
-import { Building2, Camera, Pencil, UploadCloud } from "lucide-react";
-import { ADD_OPTIONS, CYL_OPTIONS, SPH_OPTIONS, emptyRx, fmt, validateRx, type RxValues } from "@poweros/business-rules";
+import { Drawer, RxInput, useToast } from "@poweros/ui";
+import { Building2, Camera, Copy, Pencil, UploadCloud } from "lucide-react";
+import { dbError, emptyRx, fmt, validateRx, type RxValues } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { shrink } from "@/lib/image";
 import { createPrescription } from "@/app/(app)/prescriptions/actions";
@@ -14,24 +14,28 @@ import { createPrescription } from "@/app/(app)/prescriptions/actions";
 
 // Module-scope (NOT declared inside the component — a new identity per render
 // would remount these inputs and steal focus on every keystroke).
-const Sel = ({ label, value, opts, onChange, signed }: any) => (
-  <label className="block"><span className="mb-1 block text-xs text-slate-500">{label}</span>
-    <select value={value ?? ""} onChange={(e) => onChange(e.target.value === "" ? null : +e.target.value)} className="field py-2.5">
-      <option value="">-</option>{opts.map((o: any) => <option key={o} value={o}>{signed ? fmt(o) : o}</option>)}
-    </select></label>);
+// SPH/CYL/AXIS/ADD use the shared RxInput from @poweros/ui: type-first entry
+// with ±0.25 steppers, sign flip, arrow-key stepping and live formatting.
 
 const EyeForm = ({ side, v, setEye }: { side: "od" | "os"; v: RxValues; setEye: (s: "od" | "os") => (k: keyof RxValues["od"], val: any) => void }) => {
   const e = v[side]; const set = setEye(side); const od = side === "od";
+  const axisWarn = e.cyl != null && e.axis == null;
+  const cylWarn = e.axis != null && e.cyl == null;
+  const any = e.sph != null || e.cyl != null || e.axis != null || e.add != null;
+  const line = any
+    ? `${od ? "OD" : "OS"}: ${fmt(e.sph) || "—"} / ${fmt(e.cyl) || "—"}${e.axis != null ? ` × ${e.axis}` : ""}${e.add != null ? `  ADD ${fmt(e.add)}` : ""}`
+    : "";
   return (
     <div className={`rounded-2xl border p-4 ${od ? "border-blue-200 bg-blue-50/40" : "border-orange-200 bg-orange-50/40"}`}>
       <p className={`mb-3 font-semibold ${od ? "text-blue-700" : "text-orange-600"}`}>{od ? "Right eye (OD)" : "Left eye (OS)"}</p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <Sel label="SPH" signed value={e.sph} opts={SPH_OPTIONS} onChange={(x: any) => set("sph", x)} />
-        <Sel label="CYL" signed value={e.cyl} opts={CYL_OPTIONS} onChange={(x: any) => set("cyl", x)} />
-        <label className="block"><span className="mb-1 block text-xs text-slate-500">AXIS</span>
-          <input type="number" min={0} max={180} value={e.axis ?? ""} onChange={(ev) => set("axis", ev.target.value === "" ? null : Math.min(180, Math.max(0, +ev.target.value)))} className="field py-2.5" /></label>
-        <Sel label="ADD" signed value={e.add} opts={ADD_OPTIONS} onChange={(x: any) => set("add", x)} />
+        <RxInput label="SPH" kind="sph" value={e.sph} onChange={(x) => set("sph", x)} />
+        <RxInput label="CYL" kind="cyl" value={e.cyl} onChange={(x) => set("cyl", x)} />
+        <RxInput label="AXIS" kind="axis" value={e.axis} warn={axisWarn} onChange={(x) => set("axis", x)} />
+        <RxInput label="ADD" kind="add" value={e.add} onChange={(x) => set("add", x)} />
       </div>
+      {line && <p className="mt-2 font-mono text-[11px] text-slate-500">{line}</p>}
+      {(axisWarn || cylWarn) && <p className="mt-1 text-[11px] text-amber-700">⚠ {axisWarn ? "Cylinder set — add the axis." : "Axis set but the cylinder is empty."}</p>}
     </div>);
 };
 
@@ -73,7 +77,7 @@ export function PosRxDrawer({ open, onClose, customerId, onCreated }:
       const { data: p } = await sb.from("profiles").select("org_id").single();
       const path = `${p?.org_id}/${crypto.randomUUID()}.jpg`;
       const { error } = await sb.storage.from("prescriptions").upload(path, blob, { contentType: "image/jpeg" });
-      if (error) { setBusy(false); return toast(error.message, "err"); }
+      if (error) { setBusy(false); return toast(dbError(error.message), "err"); }
       image_path = path;
     }
     const r = await createPrescription({
@@ -136,6 +140,12 @@ export function PosRxDrawer({ open, onClose, customerId, onCreated }:
             </div>
           </div>
 
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] text-slate-400">Type values or use ▲▼ / ↑↓ (±0.25, Shift = ±1.00).</span>
+            <button onClick={() => setV((p) => ({ ...p, os: { ...p.od } }))} className="btn btn-ghost !py-1.5 text-xs"><Copy size={13} />Copy right eye to left</button>
+          </div>
+          {v.od.sph != null && v.os.sph != null && Math.abs(v.od.sph - v.os.sph) > 3 && (
+            <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">⚠ The two eyes differ by more than 3.00 D. Please re-check.</p>)}
           <EyeForm side="od" v={v} setEye={setEye} />
           <EyeForm side="os" v={v} setEye={setEye} />
           <div className={`grid gap-3 ${method === "external" ? "grid-cols-1" : "grid-cols-2"}`}>

@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Drawer, Modal, Pill, useToast } from "@poweros/ui";
+import { Drawer, Modal, Pill, RxInput, useToast } from "@poweros/ui";
 import { Building2, Camera, FileText, Pencil, ScanLine, Search, Plus, Printer, Copy, Sparkles, UploadCloud } from "lucide-react";
-import { ADD_OPTIONS, CYL_OPTIONS, SPH_OPTIONS, VA_DIST, VA_NEAR, emptyRx, fmt, rxStatus, validateRx, type Eye, type RxValues } from "@poweros/business-rules";
+import { VA_DIST, VA_NEAR, emptyRx, fmt, rxStatus, validateRx, type Eye, type RxValues } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { createPrescription } from "./actions";
@@ -26,16 +26,24 @@ function Sel({ label, value, opts, onChange, hl, signed }: { label: string; valu
 }
 function EyeCard({ side, v, set, check }: { side: "od" | "os"; v: Eye; set: (k: keyof Eye, val: any) => void; check: Set<string> }) {
   const od = side === "od"; const hl = (k: string) => check.has(`${side}.${k}`);
+  const axisWarn = v.cyl != null && v.axis == null;
+  const cylWarn = v.axis != null && v.cyl == null;
+  const any = v.sph != null || v.cyl != null || v.axis != null || v.add != null;
+  const line = any
+    ? `${od ? "OD" : "OS"}: ${fmt(v.sph) || "—"} / ${fmt(v.cyl) || "—"}${v.axis != null ? ` × ${v.axis}` : ""}${v.add != null ? `  ADD ${fmt(v.add)}` : ""}`
+    : "";
   return (<div className={`rounded-2xl border p-4 ${od ? "border-blue-200 bg-blue-50/40" : "border-orange-200 bg-orange-50/40"}`}>
     <p className={`mb-3 font-semibold ${od ? "text-blue-700" : "text-orange-600"}`}>{od ? "Right eye (OD)" : "Left eye (OS)"}</p>
     <div className="grid grid-cols-3 gap-2">
-      <Sel label="SPH" signed value={v.sph} opts={SPH_OPTIONS} hl={hl("sph")} onChange={(x) => set("sph", x === "" ? null : +x)} />
-      <Sel label="CYL" signed value={v.cyl} opts={CYL_OPTIONS} hl={hl("cyl")} onChange={(x) => set("cyl", x === "" ? null : +x)} />
-      <label className="block"><span className="mb-1 block text-xs text-slate-500">AXIS</span>
-        <input type="number" min={0} max={180} value={v.axis ?? ""} onChange={(e) => set("axis", e.target.value === "" ? null : Math.min(180, Math.max(0, +e.target.value)))} className={`field py-2.5 ${hl("axis") ? "!border-gold-400 bg-amber-50 ring-2 ring-gold-400/40" : ""}`} /></label>
-      <Sel label="ADD" signed value={v.add} opts={ADD_OPTIONS} hl={hl("add")} onChange={(x) => set("add", x === "" ? null : +x)} />
+      <RxInput label="SPH" kind="sph" value={v.sph} highlight={hl("sph")} onChange={(x) => set("sph", x)} />
+      <RxInput label="CYL" kind="cyl" value={v.cyl} highlight={hl("cyl")} onChange={(x) => set("cyl", x)} />
+      <RxInput label="AXIS" kind="axis" value={v.axis} highlight={hl("axis")} warn={axisWarn} onChange={(x) => set("axis", x)} />
+      <RxInput label="ADD" kind="add" value={v.add} highlight={hl("add")} onChange={(x) => set("add", x)} />
       <Sel label="VA distance" value={v.va_dist} opts={VA_DIST} hl={hl("va_dist")} onChange={(x) => set("va_dist", x)} />
-      <Sel label="VA near" value={v.va_near} opts={VA_NEAR} hl={hl("va_near")} onChange={(x) => set("va_near", x)} /></div></div>);
+      <Sel label="VA near" value={v.va_near} opts={VA_NEAR} hl={hl("va_near")} onChange={(x) => set("va_near", x)} /></div>
+    {line && <p className="mt-2 font-mono text-[11px] text-slate-500">{line}</p>}
+    {(axisWarn || cylWarn) && <p className="mt-1 text-[11px] text-amber-700">⚠ {axisWarn ? "Cylinder set — add the axis." : "Axis set but the cylinder is empty."}</p>}
+  </div>);
 }
 
 function RxDrawer({ open, onClose, customers, presetId }: { open: boolean; onClose: () => void; customers: Cust[]; presetId: string | null }) {
@@ -114,7 +122,11 @@ function RxDrawer({ open, onClose, customers, presetId }: { open: boolean; onClo
               <p className="text-xs text-emerald-700">External prescriptions are stored with the practice name and the photo of the paper Rx.</p>
             </div>)}
           {check.size > 0 && <p className="flex items-center gap-2 rounded-xl bg-amber-50 p-3 text-sm text-amber-800"><ScanLine size={16} />Gold fields were read from the photo. Change any that are wrong, or leave them to confirm.</p>}
-          <div className="flex justify-end"><button onClick={() => setV((p) => ({ ...p, os: { ...p.od } }))} className="btn btn-ghost !py-1.5 text-xs"><Copy size={13} />Copy right eye to left</button></div>
+          {v.od.sph != null && v.os.sph != null && Math.abs(v.od.sph - v.os.sph) > 3 && (
+            <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">⚠ The two eyes differ by more than 3.00 D. Please re-check.</p>)}
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] text-slate-400">Type values or use ▲▼ / ↑↓ (±0.25, Shift = ±1.00).</span>
+            <button onClick={() => setV((p) => ({ ...p, os: { ...p.od } }))} className="btn btn-ghost !py-1.5 text-xs"><Copy size={13} />Copy right eye to left</button></div>
           <EyeCard side="od" v={v.od} set={setEye("od")} check={check} /><EyeCard side="os" v={v.os} set={setEye("os")} check={check} />
           <div className="grid grid-cols-2 gap-3">
             <label className="block"><span className="mb-1 block text-xs text-slate-500">PD far (mm)</span><input type="number" step=".5" value={v.pd_far ?? ""} onChange={(e) => setV({ ...v, pd_far: e.target.value ? +e.target.value : null })} className="field" /></label>

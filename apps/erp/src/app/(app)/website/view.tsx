@@ -5,6 +5,7 @@ import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { Drawer, Modal, Pill, useToast } from "@poweros/ui";
 import { Globe, Megaphone, Star, BarChart3, Plus, Eye, EyeOff, Pencil, Trash2, ExternalLink, GripVertical, ImagePlus, Maximize2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { dbError } from "@poweros/business-rules";
 import { siteImgUrl } from "@/lib/image";
 import { ImageField } from "@/components/ImageField";
 import { BulkUploadModal } from "@/components/BulkUploadModal";
@@ -193,7 +194,7 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
     // Optimistic — the prop refresh below converges (or reverts on error).
     setSecs(s => s.map(x => x.key === sec.key ? { ...x, enabled: next } : x));
     const { error } = await sb().from("website_sections").update({ enabled: next }).eq("id", sec.id);
-    if (error) toast(error.message, "err");
+    if (error) toast(dbError(error.message), "err");
     router.refresh();
   }
 
@@ -205,7 +206,7 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
       image_alt: nz(sf.image_alt), bg_color: nz(sf.bg_color), cta_label: nz(sf.cta_label),
       cta_link: nz(sf.cta_link), enabled: !!sf.enabled };
     const { error } = await sb().from("website_sections").update(row).eq("id", editSec.id);
-    setBusy(false); if (error) return toast(error.message, "err");
+    setBusy(false); if (error) return toast(dbError(error.message), "err");
     toast("Section updated"); router.refresh(); setEditSec(null);
   }
 
@@ -223,7 +224,7 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
       image_path: nz(f.image_path), image_alt: nz(f.image_alt),
       display_order: Number(f.display_order||1), valid_from: f.valid_from||null, valid_until: f.valid_until||null };
     const { error } = editItem ? await sb().from("website_content").update(row).eq("id", editItem.id) : await sb().from("website_content").insert(row);
-    setBusy(false); if (error) return toast(error.message,"err"); toast(editItem?"Updated":"Created"); router.refresh(); setEditItem(null); setAddOpen(false);
+    setBusy(false); if (error) return toast(dbError(error.message),"err"); toast(editItem?"Updated":"Created"); router.refresh(); setEditItem(null); setAddOpen(false);
   }
   async function toggleContent(item: any) {
     await sb().from("website_content").update({ is_active: !item.is_active }).eq("id", item.id); router.refresh();

@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 type R = { error?: string; ok?: string };
 
@@ -19,7 +20,7 @@ export async function approveStaff(id: string, role: string): Promise<R> {
   const { error } = await sb.from("profiles")
     .update({ is_approved: true, role_key: role, org_id: orgId, deactivated: false })
     .eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/staff");
   return { ok: `Staff approved as ${role}.` };
 }
@@ -34,7 +35,7 @@ export async function updateStaff(id: string, patch: {
   if (patch.deactivated === true)  patch.is_approved = false;
   if (patch.deactivated === false) patch.is_approved = true;
   const { error } = await sb.from("profiles").update(patch).eq("id", id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/staff");
   return { ok: "Updated successfully." };
 }

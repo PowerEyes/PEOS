@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Star, X, Check, Camera } from "lucide-react";
 import { useToast } from "@poweros/ui";
+import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 export function ReviewForm({ productId, productName, onClose }: {
@@ -45,7 +46,7 @@ export function ReviewForm({ productId, productName, onClose }: {
       status: "pending",
     });
     setBusy(false);
-    if (error) return setErr(error.message);
+    if (error) return setErr(dbError(error.message));
     setDone(true);
     toast("Review submitted for approval");
   }

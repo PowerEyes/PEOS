@@ -2,6 +2,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 export default function ProfilePage() {
@@ -25,7 +26,7 @@ export default function ProfilePage() {
     if(!user){setBusy(false);return;}
     const {error} = await sb.from("customers").update({full_name:f.name,phone:f.phone,email:f.email,dob:f.dob||null,gender:f.gender||null,address_line1:f.address||null,city:f.city,state:f.state,pincode:f.pincode}).eq("auth_user_id",user.id);
     setBusy(false);
-    if(error) setErr(error.message); else setOk("Profile updated successfully!");
+    if(error) setErr(dbError(error.message)); else setOk("Profile updated successfully!");
   }
 
   if(loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="text-slate-400">Loading…</div></div>;

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Star, Plus, Minus, Gift, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { dbError } from "@poweros/business-rules";
 
 const ORG = "00000000-0000-0000-0000-000000000001";
 const inr  = (n:any) => `₹${Number(n||0).toLocaleString("en-IN")}`;
@@ -70,7 +71,7 @@ export function LoyaltyPOSPanel({ customerId, billAmount, onRedeemChange }: Prop
       staff_note: manualNote || `Manual ${delta>0?"credit":"debit"} by staff`,
     });
     setAwardBusy(false);
-    if (error) { setAwardMsg("Error: " + error.message); return; }
+    if (error) { setAwardMsg("Error: " + dbError(error.message)); return; }
     setPoints(prev => prev + delta);
     setManualAward("");
     setAwardMsg(`${delta>0?"Added":"Deducted"} ${Math.abs(delta)} pts successfully.`);

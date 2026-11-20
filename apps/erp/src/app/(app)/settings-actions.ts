@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 import { normalizeMapEmbed } from "@/lib/branch-map";
 
@@ -20,7 +21,7 @@ async function adminCtx(): Promise<R & { sb?: any; orgId?: string }> {
 async function putKeys(sb: any, orgId: string, entries: Array<[string, any]>): Promise<string | null> {
   const rows = entries.map(([key, value]) => ({ org_id: orgId, key, value }));
   const { error } = await sb.from("org_settings").upsert(rows, { onConflict: "org_id,key" });
-  return error ? error.message : null;
+  return error ? dbError(error.message) : null;
 }
 
 export async function saveSettings(data: Partial<{
@@ -48,7 +49,7 @@ export async function saveOrgName(name: string): Promise<R> {
   const clean = (name ?? "").trim();
   if (!clean) return { error: "Organisation name cannot be empty." };
   const { error } = await a.sb.from("organizations").update({ name: clean }).eq("id", a.orgId);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/settings");
   return { ok: "Business name updated." };
 }
@@ -72,7 +73,7 @@ export async function saveBranch(data: {
     image_path: data.image_path?.trim() || null,
     map_embed: map.url || null,
   }).eq("id", data.id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/settings");
   return { ok: "Branch updated." };
 }
@@ -96,7 +97,7 @@ export async function addBranch(data: {
     image_path: data.image_path?.trim() || null,
     map_embed: map.url || null,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/settings");
   return { ok: "Branch added." };
 }
@@ -117,7 +118,7 @@ export async function saveLoyalty(data: {
   const { error } = existing
     ? await a.sb.from("loyalty_rules").update(row).eq("id", existing.id)
     : await a.sb.from("loyalty_rules").insert(row);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/settings");
   return { ok: "Loyalty rules saved." };
 }
@@ -160,7 +161,7 @@ export async function saveTemplate(data: {
     meta_template: data.metaTemplate?.trim() || null,
     updated_at: new Date().toISOString(),
   }).eq("id", data.id);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/settings");
   return { ok: "Template saved." };
 }

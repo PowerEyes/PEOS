@@ -1,6 +1,7 @@
 
 "use server";
 import { revalidatePath } from "next/cache";
+import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 const ORG = "00000000-0000-0000-0000-000000000001";
 
@@ -19,7 +20,7 @@ export async function updateCRMSettings(fd: FormData) {
     wa_provider:             fd.get("wa_provider")?.toString() ?? "meta",
     updated_at:              new Date(),
   }).eq("org_id", ORG);
-  if (error) return { error: error.message };
+  if (error) return { error: dbError(error.message) };
   revalidatePath("/crm");
   return { ok: true };
 }

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, ImagePlus, Wrench, X } from "lucide-react";
+import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { shrink } from "@/lib/image";
 
@@ -59,7 +60,7 @@ export function RegisterRepairForm({ customerId, orgId, branches }: { customerId
     for (const s of shots) {
       const path = `${orgId}/${customerId}/${crypto.randomUUID()}.jpg`;
       const { error } = await sb.storage.from("repair-images").upload(path, s.blob, { contentType: "image/jpeg" });
-      if (error) { setBusy(false); return setErr(`Photo upload failed: ${error.message}`); }
+      if (error) { setBusy(false); return setErr(`Photo upload failed: ${dbError(error.message)}`); }
       paths.push(path);
     }
 
@@ -85,7 +86,7 @@ export function RegisterRepairForm({ customerId, orgId, branches }: { customerId
     setBusy(false);
     if (error) return setErr(error.message.includes("row-level security")
       ? "Could not save — your session may have expired. Please log in again."
-      : error.message);
+      : dbError(error.message));
     setDone({ code: data.code ?? "", id: data.id });
     router.refresh();
   }

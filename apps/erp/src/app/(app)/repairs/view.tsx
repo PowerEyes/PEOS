@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Drawer, Modal, Pill, useToast } from "@poweros/ui";
 import { CameraOff, CheckCircle2, Flame, ImagePlus, Plus, Printer, Search, Trash2, Wrench, X } from "lucide-react";
-import { inr } from "@poweros/business-rules";
+import { dbError, inr } from "@poweros/business-rules";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { shrink } from "@/lib/image";
@@ -97,7 +97,7 @@ function RepairForm({ open,onClose,repair,customers,branches,initialCustomer }:a
       for(const s of shots){
         const path=`${folder}/${crypto.randomUUID()}.jpg`;
         const {error}=await sb.storage.from("repair-images").upload(path,s.blob,{contentType:"image/jpeg"});
-        if(error){ setBusy(false); return toast(error.message,"err"); }
+        if(error){ setBusy(false); return toast(dbError(error.message),"err"); }
         paths.push(path);
       }
     }
@@ -151,12 +151,12 @@ function Detail({ r,onClose }:{r:any|null;onClose:()=>void}) {
     for(const file of Array.from(files).slice(0,room)){
       try{ const path=`${folder}/${crypto.randomUUID()}.jpg`;
         const {error}=await sb.storage.from("repair-images").upload(path,await shrink(file,1400),{contentType:"image/jpeg"});
-        if(error){ toast(error.message,"err"); break; } added.push(path); }
+        if(error){ toast(dbError(error.message),"err"); break; } added.push(path); }
       catch{ toast("Could not read that image","err"); break; }
     }
     if(added.length){
       const {error}=await sb.from("repairs").update({after_images:[...cur,...added]}).eq("id",r.id);
-      if(error) toast(error.message,"err"); else { toast("After photo added"); router.refresh(); }
+      if(error) toast(dbError(error.message),"err"); else { toast("After photo added"); router.refresh(); }
     }
     setAfterBusy(false);
   }
