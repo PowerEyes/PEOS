@@ -23,6 +23,12 @@
 **/.turbo
 *.tsbuildinfo
 
-# Repo content that is not part of either app's build input
-docs
-supabase
+# Repo content that is not part of either app's build input.
+#
+# These MUST be anchored with a leading slash. A bare `supabase` pattern matches
+# any directory named `supabase` at any depth, which also strips
+# apps/*/src/lib/supabase/ (imported by both builds) and breaks
+# supabase/functions/_shared/templates, which crm/view.tsx imports relatively.
+/docs
+/supabase/.temp
+/supabase/migrations
