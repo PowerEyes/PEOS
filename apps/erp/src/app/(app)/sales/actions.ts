@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 type R = { error?: string; ok?: string; id?: string };
-const done = () => { revalidatePath("/sales"); revalidatePath("/inventory"); };
+const done = () => { revalidatePath("/sales"); revalidatePath("/inventory"); revalidatePath("/finance"); };
 export async function placeSale(payload: unknown): Promise<R> {
   const { rx_consent, ...p } = (payload ?? {}) as Record<string, any>;
   const { data, error } = await supabaseServer().rpc("place_sale", { p }); if (error) return { error: dbError(error.message) };

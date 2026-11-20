@@ -37,6 +37,31 @@ export async function saveDayClosing(input: unknown): Promise<R> {
   const v = s.data; const { error } = await supabaseServer().from("day_closings").upsert({ ...v, cash_difference: v.actual_cash - v.expected_cash }, { onConflict: "org_id,branch_id,closing_date" });
   if (error) return { error: dbError(error.message) }; revalidatePath("/finance"); return { ok: "Day closed" };
 }
+/** Cash movements recorded in the ledger for one branch on one day. Drives the
+ *  Day Closing split — previously UPI/card/bank were hard-coded to zero. */
+export async function getDayBook(branch_id: string, closing_date: string): Promise<{
+  error?: string; cash_in?: number; upi_in?: number; card_in?: number; bank_in?: number;
+  other_in?: number; cash_out?: number; total_in?: number; total_out?: number; order_count?: number;
+}> {
+  const s = z.object({ branch_id: z.string().uuid(), closing_date: z.string().min(10) }).safeParse({ branch_id, closing_date });
+  if (!s.success) return { error: "Choose a branch and a date." };
+  const { data, error } = await supabaseServer().from("cashbook")
+    .select("direction, method, amount, sale_id")
+    .eq("branch_id", s.data.branch_id).eq("occurred_on", s.data.closing_date);
+  if (error) return { error: dbError(error.message) };
+  const rows = data ?? [];
+  const amt = (dir: string, methods?: string[]) =>
+    rows.filter(r => r.direction === dir && (!methods || methods.includes(r.method)))
+        .reduce((a, r) => a + Number(r.amount ?? 0), 0);
+  const cash_in = amt("in", ["cash"]), upi_in = amt("in", ["upi"]);
+  const card_in = amt("in", ["card"]), bank_in = amt("in", ["bank", "razorpay"]);
+  const other_in = amt("in", ["other"]);
+  return {
+    cash_in, upi_in, card_in, bank_in, other_in,
+    cash_out: amt("out", ["cash"]), total_in: amt("in"), total_out: amt("out"),
+    order_count: new Set(rows.filter(r => r.sale_id).map(r => r.sale_id)).size,
+  };
+}
 export async function createCreditNote(input: unknown): Promise<R> {
   const s = z.object({ sale_id: z.string().uuid(), reason: z.string().min(1), refund_method: z.string().optional(), lines: z.array(z.object({ line_id: z.string().uuid(), qty: z.number().int().positive() })) }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };

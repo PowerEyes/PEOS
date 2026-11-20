@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Users, FileText, Calendar, ShoppingCart, Wrench,
   Package, DollarSign, Settings, Globe, LogOut, ChevronDown, ChevronRight,
   Hammer, UserCheck, ReceiptText, MessageCircle, Tag, TrendingUp, FileBarChart,
-  Stethoscope,
+  Stethoscope, Wallet,
 } from "lucide-react";
 
 type NavItem = {
@@ -29,6 +29,7 @@ const NAV: NavItem[] = [
     label:"Finance", icon:DollarSign,
     children:[
       { label:"Overview",       href:"/finance",           icon:DollarSign },
+      { label:"Cashbook",       href:"/finance?tab=Cashbook", icon:Wallet },
       { label:"Sales Report",   href:"/finance/reports",   icon:TrendingUp },
       { label:"GSTR-1 Export",  href:"/finance/gstr1",     icon:FileBarChart },
     ],
