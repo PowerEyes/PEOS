@@ -1,0 +1,96 @@
+- generic [ref=f32e2]:
+  - complementary [ref=f32e3]:
+    - generic [ref=f32e5]:
+      - generic [ref=f32e6]: 👁
+      - generic [ref=f32e7]:
+        - paragraph [ref=f32e8]: PowerOS
+        - paragraph [ref=f32e9]: Power Eyes Opticals
+    - navigation [ref=f32e10]:
+      - link "Dashboard" [ref=f32e11] [cursor=pointer]:
+        - /url: /
+      - link "Customers" [ref=f32e18] [cursor=pointer]:
+        - /url: /customers
+      - link "Prescriptions" [ref=f32e25] [cursor=pointer]:
+        - /url: /prescriptions
+      - link "Appointments" [ref=f32e30] [cursor=pointer]:
+        - /url: /appointments
+      - link "POS & Orders" [ref=f32e34] [cursor=pointer]:
+        - /url: /sales
+      - link "Workshop & Lab" [ref=f32e40] [cursor=pointer]:
+        - /url: /workshop
+      - link "Repairs" [ref=f32e44] [cursor=pointer]:
+        - /url: /repairs
+      - link "Inventory" [ref=f32e50] [cursor=pointer]:
+        - /url: /inventory
+      - link "Purchase Invoices" [ref=f32e56] [cursor=pointer]:
+        - /url: /purchase-invoices
+      - button "Finance" [ref=f32e61] [cursor=pointer]
+      - link "CRM Automation" [ref=f32e67] [cursor=pointer]:
+        - /url: /crm
+      - link "Staff" [ref=f32e71] [cursor=pointer]:
+        - /url: /staff
+      - button "Website" [ref=f32e78] [cursor=pointer]
+      - link "Settings" [ref=f32e85] [cursor=pointer]:
+        - /url: /settings
+    - button "Sign out" [ref=f32e92] [cursor=pointer]
+  - generic [ref=f32e96]:
+    - banner [ref=f32e97]:
+      - generic [ref=f32e98]: Power Eyes Opticals
+      - generic [ref=f32e101]:
+        - generic "2 branches" [ref=f32e102]:
+          - generic [ref=f32e103]: P
+          - generic [ref=f32e104]: Power Eyes Owner
+          - generic [ref=f32e105]: owner
+        - link "← Website" [ref=f32e106] [cursor=pointer]:
+          - /url: /
+    - main [ref=f32e107]:
+      - generic [ref=f32e108]:
+        - generic [ref=f32e109]:
+          - generic [ref=f32e110]:
+            - heading "Customers" [level=1] [ref=f32e111]
+            - paragraph [ref=f32e112]: 6 customers and their vision care journey
+          - button "Add customer" [ref=f32e113] [cursor=pointer]
+        - textbox "Search by name, phone, email or Vision ID…" [ref=f32e121]
+        - generic [ref=f32e122]:
+          - button "D Duplicate Mobile Probe 9000000001 VIS-0007 active" [ref=f32e123] [cursor=pointer]:
+            - generic [ref=f32e124]: D
+            - generic [ref=f32e125]:
+              - generic [ref=f32e126]: Duplicate Mobile Probe
+              - generic [ref=f32e127]: "9000000001"
+            - generic [ref=f32e128]: VIS-0007
+            - generic [ref=f32e129]: active
+          - button "E E2E Test Customer A01 9000000001 | e2e.a01@example.com VIS-0006 active" [ref=f32e130] [cursor=pointer]:
+            - generic [ref=f32e131]: E
+            - generic [ref=f32e132]:
+              - generic [ref=f32e133]: E2E Test Customer A01
+              - generic [ref=f32e134]: 9000000001 | e2e.a01@example.com
+            - generic [ref=f32e135]: VIS-0006
+            - generic [ref=f32e136]: active
+          - button "D Diwakar 9840185186 VIS-0005 active" [ref=f32e137] [cursor=pointer]:
+            - generic [ref=f32e138]: D
+            - generic [ref=f32e139]:
+              - generic [ref=f32e140]: Diwakar
+              - generic [ref=f32e141]: "9840185186"
+            - generic [ref=f32e142]: VIS-0005
+            - generic [ref=f32e143]: active
+          - button "N Nishanth 6383301802 VIS-0004 active" [ref=f32e144] [cursor=pointer]:
+            - generic [ref=f32e145]: "N"
+            - generic [ref=f32e146]:
+              - generic [ref=f32e147]: Nishanth
+              - generic [ref=f32e148]: "6383301802"
+            - generic [ref=f32e149]: VIS-0004
+            - generic [ref=f32e150]: active
+          - button "P Power Eyes Owner | powereyes.chennai@gmail.com VIS-0002 active" [ref=f32e151] [cursor=pointer]:
+            - generic [ref=f32e152]: P
+            - generic [ref=f32e153]:
+              - generic [ref=f32e154]: Power Eyes Owner
+              - generic [ref=f32e155]: "| powereyes.chennai@gmail.com"
+            - generic [ref=f32e156]: VIS-0002
+            - generic [ref=f32e157]: active
+          - button "o owner | owner@poweros.com VIS-0001 active" [ref=f32e158] [cursor=pointer]:
+            - generic [ref=f32e159]: o
+            - generic [ref=f32e160]:
+              - generic [ref=f32e161]: owner
+              - generic [ref=f32e162]: "| owner@poweros.com"
+            - generic [ref=f32e163]: VIS-0001
+            - generic [ref=f32e164]: active

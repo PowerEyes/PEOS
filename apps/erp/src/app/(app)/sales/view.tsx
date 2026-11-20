@@ -22,7 +22,7 @@ function Detail({ id, onClose, onConvert }: { id: string | null; onClose: () => 
   const [events, setEvents] = useState<any[]>([]); const [rxImg, setRxImg] = useState("");
   useEffect(() => { if (!id) { setD(null); setEvents([]); setRxImg(""); return; }
     const sb = supabaseBrowser();
-    sb.from("sales").select("*, customers(full_name, phone, whatsapp, vision_id), sale_lines(*), payments(*), branches(name)").eq("id", id).single().then(({ data }) => setD(data));
+    sb.from("sales").select("*, customers!sales_customer_id_fkey(full_name, phone, whatsapp, vision_id), sale_lines(*), payments(*), branches(name)").eq("id", id).single().then(({ data }) => setD(data));
     sb.from("sale_events").select("from_status, to_status, note, at").eq("sale_id", id).order("at", { ascending: true }).then(({ data }) => setEvents(data ?? []));
     setRxImg("");
   }, [id, tick]);

@@ -14,7 +14,7 @@ import { placeSale } from "./actions";
 type Line = { key: string; line_type: "product" | "accessory" | "lens" | "service"; product_id?: string; lens_package_id?: string; option_ids?: string[]; description: string; details?: string; qty: number; unit_price: number; discount_pct: number; tax_pct: number };
 const r2 = (n: number) => Math.round(n * 100) / 100; const lt = (l: Line) => r2(l.qty * l.unit_price * (1 - l.discount_pct / 100));
 const uid = () => Math.random().toString(36).slice(2);
-function useDesktop() { const [d, setD] = useState(true); useEffect(() => { const m = window.matchMedia("(min-width:1024px)"); const f = () => setD(m.matches); f(); m.addEventListener("change", f); return () => m.removeEventListener("change", f); }, []); return d; }
+function useDesktop() { const [d, setD] = useState(false); useEffect(() => { const m = window.matchMedia("(min-width:1024px)"); const f = () => setD(m.matches); f(); m.addEventListener("change", f); return () => m.removeEventListener("change", f); }, []); return d; }
 const FILTERS = [["", "All"], ["frame", "Frames"], ["sunglass", "Sunglasses"], ["contact_lens", "Contact lenses"], ["accessory", "Accessories"]];
 
 function LensPicker({ open, onClose, packages, options, rx, onPick }: any) {
@@ -94,17 +94,20 @@ export function Pos({ products, customers, branches, packages, options, quoteDay
     if (!gateOk) return toast("Prescription hard copy or recorded consent is required for this order", "err");
     if (paying > total) return toast("Payment is more than the total", "err");
     setBusy(true);
-    const r = await placeSale({ kind: mode, customer_id: custId, branch_id: branchId, supply_type: supplyType, recipient_gstin: recipientGstin || undefined, prescription_id: rxId || null, quotation_id: q0?.id, notes, valid_until: mode === "quotation" ? valid : undefined,
+    let r: any;
+    try { r = await placeSale({ kind: mode, customer_id: custId, branch_id: branchId, supply_type: supplyType, recipient_gstin: recipientGstin || undefined, prescription_id: rxId || null, quotation_id: q0?.id, notes, valid_until: mode === "quotation" ? valid : undefined,
       rx_consent: gateActive && rxConsent && !rxHasImage,
-      lines: lines.map(({ key, ...x }) => x), payment: mode === "order" && paying > 0 ? { amount: paying, method, reference: ref } : undefined });
-    setBusy(false); if (r.error) return toast(r.error, "err"); toast(`${r.ok} created`); onDone(r.id!);
+      idempotency_key: crypto.randomUUID(),
+      lines: lines.map(({ key, ...x }) => x), payment: mode === "order" && paying > 0 ? { amount: paying, method, reference: ref } : undefined }); }
+    catch (e: any) { setBusy(false); return toast(e?.message ?? "Sale failed", "err"); }
+    setBusy(false); if (!r || r.error) return toast((r && r.error) || "Sale failed", "err"); toast(`${r.ok ?? "Sale"} created`); onDone(r.id!);
   }
 
   async function attachHardCopy(files: FileList | null) {
     const f = files?.[0]; if (!f || !rxId) return;
     try {
       const sb = supabaseBrowser();
-      const { data: p } = await sb.from("profiles").select("org_id").single();
+      const { data: { user: u } } = await sb.auth.getUser(); const { data: p } = await sb.from("profiles").select("org_id").eq("id", u?.id ?? "").single();
       const path = `${p?.org_id}/${crypto.randomUUID()}.jpg`;
       const { error } = await sb.storage.from("prescriptions").upload(path, await shrink(f), { contentType: "image/jpeg" });
       if (error) return toast(dbError(error.message), "err");
@@ -167,9 +170,12 @@ export function Pos({ products, customers, branches, packages, options, quoteDay
       <button disabled={busy || !gateOk} onClick={submit} className="btn btn-gold w-full !py-3 text-base disabled:opacity-50">{busy ? "Saving…" : mode === "order" ? `Place order | ${inr(r2(total))}` : "Save quotation"}</button></div></div>);
 
   return (<motion.div className="fixed inset-0 z-50 flex flex-col bg-canvas" initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 32, stiffness: 300 }}>
-    <header className="flex items-center gap-3 border-b border-slate-100 bg-white px-4 py-3">
-      <button onClick={onClose} aria-label="Close" className="rounded-full bg-slate-100 p-2"><X size={16} /></button><h2 className="font-display text-xl font-semibold">{q0 ? `Convert ${q0.code}` : "New sale"}</h2>
-      <div className="relative ml-auto flex rounded-xl bg-slate-100 p-1">{(["order", "quotation"] as const).map((m) => <button key={m} disabled={!!q0} onClick={() => setMode(m)} className={`relative rounded-lg px-4 py-1.5 text-sm font-medium capitalize ${mode === m ? "text-white" : "text-slate-600"}`}>
+    <header className="flex flex-wrap items-center gap-2 border-b border-slate-100 bg-white px-3 py-2.5 sm:px-4 sm:py-3 sm:gap-3">
+      <div className="flex items-center gap-2 min-w-0">
+        <button onClick={onClose} aria-label="Close" className="rounded-full bg-slate-100 p-2 shrink-0 hover:bg-slate-200"><X size={16} /></button>
+        <h2 className="font-display text-lg sm:text-xl font-semibold truncate">{q0 ? `Convert ${q0.code}` : "New sale"}</h2>
+      </div>
+      <div className="relative ml-auto flex rounded-xl bg-slate-100 p-1 shrink-0">{(["order", "quotation"] as const).map((m) => <button key={m} disabled={!!q0} onClick={() => setMode(m)} className={`relative rounded-lg px-2.5 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm font-medium capitalize ${mode === m ? "text-white" : "text-slate-600"}`}>
         {mode === m && <motion.span layoutId="mode" className="absolute inset-0 rounded-lg bg-navy-800" />}<span className="relative">{m}</span></button>)}</div>
       <select value={branchId} onChange={(e) => setBranchId(e.target.value)} className="field hidden w-auto py-2 sm:block">{branches.map((b: any) => <option key={b.id} value={b.id}>{b.name}</option>)}</select><button type="button" onClick={()=>setSupplyType(s=>s==="intrastate"?"interstate":"intrastate")} className={`hidden sm:flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium ${supplyType==="interstate"?"border-amber-400 bg-amber-50 text-amber-800":"border-slate-200"}`}>{supplyType==="intrastate"?"Intra-state":"Inter-state (IGST)"}</button></header>
     <div className="flex min-h-0 flex-1">
@@ -199,7 +205,7 @@ export function Pos({ products, customers, branches, packages, options, quoteDay
       {desktop && <aside className="w-[400px] shrink-0 border-l border-slate-100 bg-white">{cartBody}</aside>}
     </div>
     {!desktop && <button onClick={() => setCart(true)} className="fixed inset-x-4 bottom-4 z-10 flex items-center justify-between rounded-2xl bg-navy-800 px-5 py-4 font-semibold text-white shadow-2xl"><span className="flex items-center gap-2"><ShoppingBag size={18} />Bag ({lines.reduce((a, l) => a + l.qty, 0)})</span><span>{inr(r2(total))}</span></button>}
-    {!desktop && <Drawer open={cart} onClose={() => setCart(false)} title="Bag">{<div className="-mx-6 -my-5 h-[calc(100vh-80px)]">{cartBody}</div>}</Drawer>}
+    {!desktop && <Drawer open={cart} onClose={() => setCart(false)} title="Bag">{<div className="-mx-4 -my-4 sm:-mx-6 sm:-my-5 h-[calc(100dvh-75px)]">{cartBody}</div>}</Drawer>}
     <LensPicker open={lens} onClose={() => setLens(false)} packages={packages} options={options} rx={rx} onPick={(l: any) => { setLines((ls) => [...ls, { key: uid(), line_type: "lens", qty: 1, discount_pct: 0, ...l }]); toast("Lenses added"); }} />
     <PosRxDrawer open={rxOpen} onClose={() => setRxOpen(false)} customerId={custId}
       onCreated={(r) => { setRxList((list) => [r, ...list.filter((x) => x.id !== r.id)]); setRxId(r.id); setRxConsent(false); }} />

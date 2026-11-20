@@ -4,13 +4,13 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, Modal, Pill, useToast } from "@poweros/ui";
 import { Plus, Search, Filter, Download, Pencil, Trash2, CheckCircle2, IndianRupee, FileText, TrendingUp, AlertTriangle, ChevronDown, ChevronRight, X, ReceiptText, Building2, Calendar, CreditCard } from "lucide-react";
-import { upsertInvoice, markPaid, deleteInvoice, claimITC, createSupplier, updateSupplier } from "./actions";
+import { upsertInvoice, markPaid, deleteInvoice, claimITC, createSupplier, updateSupplier, receiveStock } from "./actions";
 
 const TAX_RATES = [0, 5, 12, 18, 28];
 const STATES = ["Tamil Nadu","Andhra Pradesh","Karnataka","Kerala","Maharashtra","Delhi","Gujarat","Rajasthan","West Bengal","Punjab","Haryana","Other"];
 const PAY_MODES = ["Cash","Bank Transfer","Cheque","UPI","NEFT/RTGS","Credit Card"];
-type Line = { description: string; hsn: string; qty: string; rate: string; tax_pct: string };
-const EMPTY_LINE: Line = { description:"", hsn:"", qty:"1", rate:"", tax_pct:"18" };
+type Line = { description: string; hsn: string; qty: string; rate: string; tax_pct: string; product_id: string };
+const EMPTY_LINE: Line = { description:"", hsn:"", qty:"1", rate:"", tax_pct:"18", product_id:"" };
 const inr = (n: any) => `₹${Number(n||0).toLocaleString("en-IN",{maximumFractionDigits:2})}`;
 const fmt2 = (n: any) => Number(n||0).toFixed(2);
 
@@ -91,7 +91,7 @@ function PayModal({ inv, onClose }: { inv: any; onClose: () => void }) {
 }
 
 /* ── Invoice Drawer ───────────────────────────────────────────────────────── */
-function InvoiceDrawer({ inv, suppliers, branches, onClose }: { inv: any|null; suppliers: any[]; branches: any[]; onClose: () => void }) {
+function InvoiceDrawer({ inv, suppliers, branches, products, onClose }: { inv: any|null; suppliers: any[]; branches: any[]; products: any[]; onClose: () => void }) {
   const isEdit = !!inv?.id;
   const [supSearch, setSupSearch] = useState(inv?.supplier_name??"");
   const [selSup, setSelSup] = useState<any>(inv?.supplier_id ? suppliers.find(s=>s.id===inv.supplier_id) : null);
@@ -104,7 +104,7 @@ function InvoiceDrawer({ inv, suppliers, branches, onClose }: { inv: any|null; s
     itc_eligible: inv?.itc_eligible??true, notes: inv?.notes??"", status: inv?.status??"pending",
   });
   const [lines, setLines] = useState<Line[]>(
-    inv?.lines?.length ? inv.lines.map((l:any)=>({ description:l.description??"", hsn:l.hsn??"", qty:String(l.qty??"1"), rate:String(l.rate??""), tax_pct:String(l.tax_pct??18) }))
+    inv?.lines?.length ? inv.lines.map((l:any)=>({ description:l.description??"", hsn:l.hsn??"", qty:String(l.qty??"1"), rate:String(l.rate??""), tax_pct:String(l.tax_pct??18), product_id:l.product_id??"" }))
     : [{ ...EMPTY_LINE }]);
   const [busy, setBusy] = useState(false); const [err, setErr] = useState(""); const toast = useToast(); const router = useRouter();
 
@@ -134,6 +134,9 @@ function InvoiceDrawer({ inv, suppliers, branches, onClose }: { inv: any|null; s
     <Drawer open onClose={onClose} title={isEdit?"Edit purchase invoice":"New purchase invoice"} subtitle="All fields marked * are required" wide
       footer={<>
         <button onClick={onClose} className="btn btn-ghost">Cancel</button>
+        {isEdit && !inv?.stock_posted_at && (
+          <button onClick={async()=>{ setBusy(true); const r=await receiveStock(inv.id); setBusy(false); if(r.error) return setErr(r.error); toast(r.ok!); router.refresh(); onClose(); }} disabled={busy} className="btn btn-ghost border border-emerald-300 text-emerald-700">Receive stock</button>
+        )}
         <button onClick={()=>save(true)} disabled={busy} className="btn btn-ghost border border-slate-200">Save draft</button>
         <button onClick={()=>save(false)} disabled={busy} className="btn btn-gold">{busy?"Saving…":isEdit?"Save changes":"Create invoice"}</button>
       </>}>
@@ -218,6 +221,16 @@ function InvoiceDrawer({ inv, suppliers, branches, onClose }: { inv: any|null; s
                 const c = calcLine(l, f.supply_type);
                 return (
                   <tr key={i} className="group">
+                    <td className="pr-2 py-1">
+                      <select value={l.product_id} onChange={e=>{
+                        const p = products.find((x:any)=>x.id===e.target.value);
+                        setLine(i,"product_id",e.target.value);
+                        if (p && !l.description) setLine(i,"description", `${p.brands?.name??""} ${p.model}`.trim());
+                      }} className="field text-sm py-1.5">
+                        <option value="">— no product —</option>
+                        {products.map((p:any)=><option key={p.id} value={p.id}>{p.sku} · {p.brands?.name??""} {p.model}</option>)}
+                      </select>
+                    </td>
                     <td className="pr-2 py-1"><input value={l.description} onChange={e=>setLine(i,"description",e.target.value)} placeholder="Item description" className="field text-sm py-1.5"/></td>
                     <td className="pr-2 py-1"><input value={l.hsn} onChange={e=>setLine(i,"hsn",e.target.value)} placeholder="HSN" className="field text-sm py-1.5 font-mono"/></td>
                     <td className="pr-2 py-1"><input type="number" min="0" value={l.qty} onChange={e=>setLine(i,"qty",e.target.value)} className="field text-sm py-1.5 text-right"/></td>
@@ -279,8 +292,8 @@ function InvoiceDrawer({ inv, suppliers, branches, onClose }: { inv: any|null; s
 }
 
 /* ── Main view ────────────────────────────────────────────────────────────── */
-export function PurchaseInvoicesView({ invoices, suppliers, branches, itcSummary }: {
-  invoices: any[]; suppliers: any[]; branches: any[]; itcSummary: any[];
+export function PurchaseInvoicesView({ invoices, suppliers, branches, products, itcSummary }: {
+  invoices: any[]; suppliers: any[]; branches: any[]; products: any[]; itcSummary: any[];
 }) {
   const router = useRouter(); const toast = useToast();
   const [search, setSearch] = useState(""); const [statusFilter, setStatusFilter] = useState("all"); const [tab, setTab] = useState<"invoices"|"suppliers">("invoices");
@@ -542,7 +555,7 @@ export function PurchaseInvoicesView({ invoices, suppliers, branches, itcSummary
 
       {/* Invoice drawer */}
       {drawerInv!==null&&(
-        <InvoiceDrawer inv={drawerInv==="new"?null:drawerInv} suppliers={suppliers} branches={branches} onClose={()=>setDrawerInv(null)}/>)}
+        <InvoiceDrawer inv={drawerInv==="new"?null:drawerInv} suppliers={suppliers} branches={branches} products={products} onClose={()=>setDrawerInv(null)}/>)}
 
       {/* Pay modal */}
       {payInv&&<PayModal inv={payInv} onClose={()=>setPayInv(null)}/>}

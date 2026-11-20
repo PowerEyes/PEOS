@@ -32,9 +32,9 @@ function EyeCard({ side, v, set, check }: { side: "od" | "os"; v: Eye; set: (k: 
   const line = any
     ? `${od ? "OD" : "OS"}: ${fmt(v.sph) || "—"} / ${fmt(v.cyl) || "—"}${v.axis != null ? ` × ${v.axis}` : ""}${v.add != null ? `  ADD ${fmt(v.add)}` : ""}`
     : "";
-  return (<div className={`rounded-2xl border p-4 ${od ? "border-blue-200 bg-blue-50/40" : "border-orange-200 bg-orange-50/40"}`}>
+  return (<div className={`rounded-2xl border p-3 sm:p-4 ${od ? "border-blue-200 bg-blue-50/40" : "border-orange-200 bg-orange-50/40"}`}>
     <p className={`mb-3 font-semibold ${od ? "text-blue-700" : "text-orange-600"}`}>{od ? "Right eye (OD)" : "Left eye (OS)"}</p>
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
       <RxInput label="SPH" kind="sph" value={v.sph} highlight={hl("sph")} onChange={(x) => set("sph", x)} />
       <RxInput label="CYL" kind="cyl" value={v.cyl} highlight={hl("cyl")} onChange={(x) => set("cyl", x)} />
       <RxInput label="AXIS" kind="axis" value={v.axis} highlight={hl("axis")} warn={axisWarn} onChange={(x) => set("axis", x)} />
@@ -77,7 +77,7 @@ function RxDrawer({ open, onClose, customers, presetId }: { open: boolean; onClo
     if (source === "external" && !practice.trim()) return toast("Enter the practice / doctor name", "err");
     if (source === "external" && !blob) return toast("An external prescription needs a photo of the hard copy", "err");
     setBusy(true); let image_path: string | null = null;
-    if (blob) { const sb = supabaseBrowser(); const { data: p } = await sb.from("profiles").select("org_id").single();
+    if (blob) { const sb = supabaseBrowser(); const { data: { user: u } } = await sb.auth.getUser(); const { data: p } = await sb.from("profiles").select("org_id").eq("id", u?.id ?? "").single();
       const path = `${p?.org_id}/${crypto.randomUUID()}.jpg`; const { error } = await sb.storage.from("prescriptions").upload(path, blob, { contentType: "image/jpeg" }); if (!error) image_path = path; }
     const r = await createPrescription({ customer_id: cid, values: v, source, image_path, external_practice: source === "external" ? practice.trim() : undefined, ...meta });
     setBusy(false); if (r.error) return toast(r.error, "err");
@@ -128,7 +128,7 @@ function RxDrawer({ open, onClose, customers, presetId }: { open: boolean; onClo
             <span className="text-[11px] text-slate-400">Type values or use ▲▼ / ↑↓ (±0.25, Shift = ±1.00).</span>
             <button onClick={() => setV((p) => ({ ...p, os: { ...p.od } }))} className="btn btn-ghost !py-1.5 text-xs"><Copy size={13} />Copy right eye to left</button></div>
           <EyeCard side="od" v={v.od} set={setEye("od")} check={check} /><EyeCard side="os" v={v.os} set={setEye("os")} check={check} />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="block"><span className="mb-1 block text-xs text-slate-500">PD far (mm)</span><input type="number" step=".5" value={v.pd_far ?? ""} onChange={(e) => setV({ ...v, pd_far: e.target.value ? +e.target.value : null })} className="field" /></label>
             <label className="block"><span className="mb-1 block text-xs text-slate-500">PD near (mm)</span><input type="number" step=".5" value={v.pd_near ?? ""} onChange={(e) => setV({ ...v, pd_near: e.target.value ? +e.target.value : null })} className="field" /></label>
             <label className="block"><span className="mb-1 block text-xs text-slate-500">Examined by</span><input value={meta.examined_by} onChange={(e) => setMeta({ ...meta, examined_by: e.target.value })} className="field" /></label>
@@ -145,7 +145,7 @@ function Detail({ r, onClose }: { r: any | null; onClose: () => void }) {
   if (!r) return <Modal open={false} onClose={onClose} title="" children={null} />;
   const eyeRow = (s: "od" | "os") => <div className={`rounded-2xl border p-4 ${s === "od" ? "border-blue-200 bg-blue-50/40" : "border-orange-200 bg-orange-50/40"}`}>
     <p className={`mb-2 font-semibold ${s === "od" ? "text-blue-700" : "text-orange-600"}`}>{s === "od" ? "Right eye (OD)" : "Left eye (OS)"}</p>
-    <dl className="grid grid-cols-3 gap-2 text-sm">{[["SPH", fmt(r[`${s}_sph`])], ["CYL", fmt(r[`${s}_cyl`])], ["AXIS", r[`${s}_axis`] ?? ""], ["ADD", fmt(r[`${s}_add`])], ["VA dist", r[`${s}_va_dist`]], ["VA near", r[`${s}_va_near`]]].map(([k, x]) =>
+    <dl className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">{[["SPH", fmt(r[`${s}_sph`])], ["CYL", fmt(r[`${s}_cyl`])], ["AXIS", r[`${s}_axis`] ?? ""], ["ADD", fmt(r[`${s}_add`])], ["VA dist", r[`${s}_va_dist`]], ["VA near", r[`${s}_va_near`]]].map(([k, x]) =>
       <div key={k as string}><dt className="text-xs text-slate-500">{k}</dt><dd className="font-semibold">{x || "-"}</dd></div>)}</dl></div>;
   const site = process.env.NEXT_PUBLIC_WEB_URL ?? "https://powereyes.in";
   const num = (r.customers?.whatsapp || r.customers?.phone || "").replace(/\D/g, "").slice(-10);
@@ -163,8 +163,8 @@ export function RxView({ rows, customers }: { rows: any[]; customers: Cust[] }) 
   useEffect(() => { if (sp.get("new")) setOpen(true); }, [sp]);
   const f = rows.filter((r) => `${r.rx_code} ${r.customers?.full_name} ${r.customers?.phone}`.toLowerCase().includes(q.toLowerCase()));
   return (<div className="mx-auto max-w-6xl space-y-5">
-    <div className="flex items-end justify-between"><div><h1 className="font-display text-3xl font-semibold">Prescriptions</h1><p className="text-slate-500">{rows.length} on record</p></div>
-      <button onClick={() => setOpen(true)} className="btn btn-primary"><Plus size={16} />New prescription</button></div>
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3"><div><h1 className="font-display text-2xl sm:text-3xl font-semibold">Prescriptions</h1><p className="text-xs sm:text-sm text-slate-500">{rows.length} on record</p></div>
+      <button onClick={() => setOpen(true)} className="btn btn-primary self-start sm:self-auto"><Plus size={16} />New prescription</button></div>
     <div className="relative"><Search size={16} className="absolute left-3 top-3.5 text-slate-400" /><input value={q} onChange={(e) => setQ(e.target.value)} className="field pl-9" placeholder="Search by Rx number, name or phone" /></div>
     {f.length === 0 ? <div className="card p-10 text-center text-slate-500"><FileText className="mx-auto mb-2" />No prescriptions yet. Add one by photo or by hand.</div> :
       <div className="card divide-y divide-slate-100 overflow-hidden">{f.map((r) => { const s = rxStatus(r.valid_till); return (

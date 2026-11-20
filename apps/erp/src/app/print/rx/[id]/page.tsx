@@ -16,7 +16,8 @@ export default async function RxPrint({ params }: { params: { id: string } }) {
   return (<div className="min-h-screen bg-slate-200 py-6 print:bg-white print:py-0">
     <style>{`@page{size:A5 landscape;margin:0}@media print{html,body{background:#fff}}`}</style>
     <PrintBar />
-    <div className="relative mx-auto flex h-[148mm] w-[210mm] flex-col overflow-hidden bg-white text-[9pt] shadow-xl print:shadow-none">
+    <div className="w-full overflow-x-auto px-2 sm:px-0 flex justify-center">
+      <div className="relative mx-auto flex h-[148mm] w-[210mm] shrink-0 flex-col overflow-hidden bg-white text-[9pt] shadow-xl print:shadow-none">
       <header className="flex items-stretch justify-between bg-white">
         <div className="px-[8mm] py-[4mm]"><h1 className="font-display text-[19pt] font-bold uppercase leading-none text-navy-900">{org?.name ?? "Power Eyes Opticals"}</h1>
           <p className="mt-1 font-medium text-gold-600">Since 1998 | Your Family&apos;s Vision Partner</p></div>
@@ -36,5 +37,5 @@ export default async function RxPrint({ params }: { params: { id: string } }) {
         <ul className="list-disc pl-4 leading-snug"><li>Use lenses and frames as recommended.</li><li>Regular eye check-up is advised every 12 months.</li><li>If you experience any discomfort, please visit us.</li>{r.remarks && <li>{r.remarks}</li>}</ul>
         <div className="w-44 border-t border-navy-900 pt-1 text-center"><p className="font-semibold">{r.examined_by || "Optometrist"}</p><p>For {org?.name}</p></div></section>
       <footer className="bg-navy-900 py-[1.5mm] text-center text-[7pt] tracking-widest text-white">CARE FOR TODAY. CLEAR VISION FOR TOMORROW.</footer>
-    </div></div>);
+    </div></div></div>);
 }

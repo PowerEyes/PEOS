@@ -1,0 +1,125 @@
+[     128ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/login:1
+[     322ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:29890
+[     338ms] ModuleBuildError: Module build failed (from ../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+
+Caused by:
+    Syntax Error
+    at processResult (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\webpack\bundle5.js:28:400590)
+    at <unknown> (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\webpack\bundle5.js:28:402302)
+    at <unknown> (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:8645)
+    at <unknown> (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:5019)
+    at r.callback (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:4039)
+[     338ms] [LOG] [HMR] connected @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:39
+[     340ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[     341ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[   17677ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:222
+[   18344ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/sales/pos.tsx
+./src/app/(app)/sales/view.tsx @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[   32562ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:222
+[   34338ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:222
+[   36212ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:222
+[   37389ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3001/login:1
+[   37726ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom.development.js:38560

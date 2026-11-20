@@ -1,0 +1,69 @@
+- generic [ref=f29e2]:
+  - complementary [ref=f29e3]:
+    - generic [ref=f29e5]:
+      - generic [ref=f29e6]: 👁
+      - generic [ref=f29e7]:
+        - paragraph [ref=f29e8]: PowerOS
+        - paragraph [ref=f29e9]: Power Eyes Opticals
+    - navigation [ref=f29e10]:
+      - link "Dashboard" [ref=f29e11] [cursor=pointer]:
+        - /url: /
+      - link "Customers" [ref=f29e18] [cursor=pointer]:
+        - /url: /customers
+      - link "Prescriptions" [ref=f29e25] [cursor=pointer]:
+        - /url: /prescriptions
+      - link "Appointments" [ref=f29e30] [cursor=pointer]:
+        - /url: /appointments
+      - link "POS & Orders" [ref=f29e34] [cursor=pointer]:
+        - /url: /sales
+      - link "Workshop & Lab" [ref=f29e40] [cursor=pointer]:
+        - /url: /workshop
+      - link "Repairs" [ref=f29e44] [cursor=pointer]:
+        - /url: /repairs
+      - link "Inventory" [ref=f29e50] [cursor=pointer]:
+        - /url: /inventory
+      - link "Purchase Invoices" [ref=f29e56] [cursor=pointer]:
+        - /url: /purchase-invoices
+      - button "Finance" [ref=f29e61] [cursor=pointer]
+      - link "CRM Automation" [ref=f29e67] [cursor=pointer]:
+        - /url: /crm
+      - link "Staff" [ref=f29e71] [cursor=pointer]:
+        - /url: /staff
+      - button "Website" [ref=f29e78] [cursor=pointer]
+      - link "Settings" [ref=f29e85] [cursor=pointer]:
+        - /url: /settings
+    - button "Sign out" [ref=f29e92] [cursor=pointer]
+  - generic [ref=f29e96]:
+    - banner [ref=f29e97]:
+      - generic [ref=f29e98]: Power Eyes Opticals
+      - generic [ref=f29e101]:
+        - generic "2 branches" [ref=f29e102]:
+          - generic [ref=f29e103]: P
+          - generic [ref=f29e104]: Power Eyes Owner
+          - generic [ref=f29e105]: owner
+        - link "← Website" [ref=f29e106] [cursor=pointer]:
+          - /url: /
+    - main [ref=f29e107]:
+      - generic [ref=f29e108]:
+        - generic [ref=f29e109]:
+          - generic [ref=f29e110]:
+            - heading "Prescriptions" [level=1] [ref=f29e111]
+            - paragraph [ref=f29e112]: 3 on record
+          - button "New prescription" [ref=f29e113] [cursor=pointer]
+        - textbox "Search by Rx number, name or phone" [ref=f29e119]
+        - generic [ref=f29e120]:
+          - button "E2E Test Customer A01 RX-0009 OD -1.00 -0.50 | OS | 20/11/2026 active" [ref=f29e121] [cursor=pointer]:
+            - generic [ref=f29e122]:
+              - generic [ref=f29e123]: E2E Test Customer A01 RX-0009
+              - generic [ref=f29e124]: OD -1.00 -0.50 | OS | 20/11/2026
+            - generic [ref=f29e125]: active
+          - button "E2E Test Customer A01 RX-0008 OD -2.00 -0.50 | OS -1.75 -0.25 | 20/11/2026 active" [ref=f29e126] [cursor=pointer]:
+            - generic [ref=f29e127]:
+              - generic [ref=f29e128]: E2E Test Customer A01 RX-0008
+              - generic [ref=f29e129]: OD -2.00 -0.50 | OS -1.75 -0.25 | 20/11/2026
+            - generic [ref=f29e130]: active
+          - button "Nishanth RX-0001 OD -1.25 | OS -1.25 | 18/11/2026 active" [ref=f29e131] [cursor=pointer]:
+            - generic [ref=f29e132]:
+              - generic [ref=f29e133]: Nishanth RX-0001
+              - generic [ref=f29e134]: OD -1.25 | OS -1.25 | 18/11/2026
+            - generic [ref=f29e135]: active

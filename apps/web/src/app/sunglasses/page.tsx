@@ -22,7 +22,9 @@ export default async function Page({ searchParams }: { searchParams: Record<stri
   const sb = supabasePublic();
   let q = sb.from("public_catalog").select("*").eq("kind","sunglass");
   // ilike so lowercase links (?shape=aviator) match stored "Aviator" values.
-  if (searchParams.shape) q = q.ilike("attrs->>shape", searchParams.shape);
+  // Multi-word shapes use the URL-safe hyphen form, so - and _ map back to a
+  // space before the match (see eyeglasses/page.tsx).
+  if (searchParams.shape) q = q.ilike("attrs->>shape", searchParams.shape.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim());
   if (searchParams.gender) q = q.eq("gender", searchParams.gender);
   if (searchParams.brand) q = q.eq("brand", searchParams.brand);
   if (Number(searchParams.min) > 0) q = q.gte("selling_price", Number(searchParams.min));

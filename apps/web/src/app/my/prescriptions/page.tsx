@@ -25,7 +25,7 @@ export default async function PrescriptionsPage() {
               <div><p className="font-bold">{r.rx_code}</p><p className="text-xs text-slate-400">{new Date(r.rx_date).toLocaleDateString("en-IN",{dateStyle:"medium"})}{r.examined_by?` · Dr. ${r.examined_by}`:""}</p></div>
               <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${isActive(r)?"bg-emerald-50 text-emerald-700":"bg-rose-50 text-rose-600"}`}>{isActive(r)?`Valid till ${new Date(r.valid_till).toLocaleDateString("en-IN",{dateStyle:"medium"})}`:"Expired"}</span>
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               {[["od","Right Eye (OD)","blue"],["os","Left Eye (OS)","orange"]].map(([s,l,c])=>(
                 <div key={s} className={`rounded-xl border p-3 ${c==="blue"?"border-blue-100 bg-blue-50/50":"border-orange-100 bg-orange-50/50"}`}>
                   <p className={`text-xs font-semibold mb-1 ${c==="blue"?"text-blue-700":"text-orange-600"}`}>{l}</p>

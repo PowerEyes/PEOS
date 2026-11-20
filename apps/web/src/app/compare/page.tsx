@@ -49,8 +49,8 @@ export default async function ComparePage({ searchParams }: { searchParams: { id
               <p className="text-slate-500 text-lg mb-4">No products selected for comparison.</p>
               <Link href="/eyeglasses" className="rounded-lg bg-navy-800 px-6 py-2.5 text-sm font-bold text-white hover:bg-navy-700">Browse Frames</Link>
             </div>
-          : <div className="rounded-2xl bg-white border border-slate-100 shadow-sm overflow-hidden">
-              <table className="w-full">
+          : <div className="rounded-2xl bg-white border border-slate-100 shadow-sm overflow-x-auto">
+              <table className="w-full min-w-[500px]">
                 <thead>
                   <tr className="border-b border-slate-100">
                     <th className="w-36 px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Feature</th>

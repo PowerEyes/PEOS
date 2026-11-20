@@ -1,0 +1,1103 @@
+[     310ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom.development.js:38560
+[   85947ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[   88162ms] [LOG] [Fast Refresh] done in 2216ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1748023ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1748531ms] [LOG] [Fast Refresh] done in 509ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1749614ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3001/print/labels?ids=cc47e4dd-b6d7-4023-8961-da64127b0d9f&copies=1:1
+[ 1749831ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1750278ms] [LOG] [Fast Refresh] done in 446ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1752773ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1753034ms] [LOG] [Fast Refresh] done in 262ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1755651ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1755922ms] [LOG] [Fast Refresh] done in 271ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1758364ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1758650ms] [LOG] [Fast Refresh] done in 286ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1765507ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1765906ms] [LOG] [Fast Refresh] done in 400ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1768225ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1768754ms] [LOG] [Fast Refresh] done in 529ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1771095ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1771428ms] [LOG] [Fast Refresh] done in 333ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1776778ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1777370ms] [LOG] [Fast Refresh] done in 593ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1779678ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1780071ms] [LOG] [Fast Refresh] done in 392ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1821574ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1822513ms] [LOG] [Fast Refresh] done in 938ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1897732ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1899243ms] [LOG] [Fast Refresh] done in 1510ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1904585ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1905337ms] [LOG] [Fast Refresh] done in 752ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1910379ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1910931ms] [LOG] [Fast Refresh] done in 552ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1983355ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1983884ms] [LOG] [Fast Refresh] done in 529ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 1987016ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 1987552ms] [LOG] [Fast Refresh] done in 537ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 2017105ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 2017477ms] [LOG] [Fast Refresh] done in 373ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 2031747ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 2032040ms] [LOG] [Fast Refresh] done in 294ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 2035323ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 2035635ms] [LOG] [Fast Refresh] done in 311ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 2039756ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 2040042ms] [LOG] [Fast Refresh] done in 287ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 2050353ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 2050714ms] [LOG] [Fast Refresh] done in 361ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 2053282ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 2053590ms] [LOG] [Fast Refresh] done in 307ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 5719570ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 5719574ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 5719685ms] [LOG] [Fast Refresh] done in 111ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 5719723ms] [LOG] [Fast Refresh] done in 148ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 5720141ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3001/print/labels?ids=cc47e4dd-b6d7-4023-8961-da64127b0d9f&copies=1:1
+[ 5971445ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 5972266ms] [LOG] [Fast Refresh] done in 822ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6034813ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6035469ms] [LOG] [Fast Refresh] done in 656ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6041398ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6041708ms] [LOG] [Fast Refresh] done in 309ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6049018ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6049347ms] [LOG] [Fast Refresh] done in 330ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6170502ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6170993ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6177345ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6177687ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6183484ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6183769ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6187887ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6188164ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6193306ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6193620ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6198808ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6199094ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6208267ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6208568ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6217246ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6217589ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6224614ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6224889ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6231741ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6231949ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6256611ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6256929ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6273159ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6273437ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6298499ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6298891ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6298892ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected ',', got '{'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:99:1]
+  99 │       rx_consent: gateActive && rxConsent && !rxHasImage,
+ 100 │       lines: lines.map(({ key, ...x }) => x), payment: mode === "order" && paying > 0 ? { amount: paying, method, reference: ref } : undefined }); }
+ 101 │     catch (e: any) { setBusy(false); return toast(e?.message ?? "Sale failed", "err"); }
+ 102 │     setBusy(false); if (!r || r.error) return toast((r && r.error) || "Sale failed", "err"); toast(${r.ok ?? "Sale"} created); onDone(r.id!);
+     ·                                                                                                     ─
+ 103 │ 
+ 104 │   async function attachHardCopy(files: FileList | null) {
+ 104 │     const f = files?.[0]; if (!f || !rxId) return;
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/sales/pos.tsx
+./src/app/(app)/sales/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6303605ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6303847ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6303848ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/sales/pos.tsx
+./src/app/(app)/sales/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6310443ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6310839ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6310839ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/sales/pos.tsx
+./src/app/(app)/sales/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6336357ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6337637ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/purchase-invoices/actions.ts
+./src/app/(app)/purchase-invoices/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6337637ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/sales/pos.tsx
+./src/app/(app)/sales/view.tsx @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/app-index.js:33
+[ 6339217ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/login:1
+[ 6339303ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/login?_rsc=1lw7d:1
+[ 6339444ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/login:1
+[ 6339747ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///../../node_modules/.pnpm/react-dom@18.3.1_react@18.3.1/node_modules/react-dom/cjs/react-dom.development.js:29890
+[ 6339772ms] ModuleBuildError: Module build failed (from ../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+
+Caused by:
+    Syntax Error
+    at processResult (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\webpack\bundle5.js:28:400590)
+    at <unknown> (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\webpack\bundle5.js:28:402302)
+    at <unknown> (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:8645)
+    at <unknown> (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:5019)
+    at r.callback (file://C:\Users\Public\Documents\PowerOSC\node_modules\.pnpm\next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\loader-runner\LoaderRunner.js:1:4039)
+[ 6339776ms] [LOG] [HMR] connected @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/websocket.js:39
+[ 6339797ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[ 6339797ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[ 6339858ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[ 6339858ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[ 6343656ms] [ERROR] ./src/app/(app)/purchase-invoices/actions.ts
+Error: 
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:148:1]
+ 148 │ }
+ 149 │   const sb = supabaseServer();
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+     ·              ─────────────────────────────────────────
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     ╰────
+
+  × Return statement is not allowed here
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:150:1]
+ 150 │   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+     ·   ───────────────────────────────────────────
+ 154 │ }
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+     ╰────
+
+  × Expression expected
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\purchase-invoices\actions.ts:151:1]
+ 151 │   if (error) return { error: dbError(error.message) };
+ 152 │   revalidatePath("/purchase-invoices");
+ 153 │   return { ok: `ITC claimed for ${period}` };
+ 154 │ }
+     · ─
+ 155 │ 
+ 156 │ export async function deleteInvoice(id: string): Promise<R> {
+ 157 │   const sb = supabaseServer();
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[ 6343656ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[ 6360993ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:222
+[ 6361658ms] [ERROR] ./src/app/(app)/sales/pos.tsx
+Error: 
+  × Expected '}', got '<eof>'
+     ╭─[C:\Users\Public\Documents\PowerOSC\apps\erp\src\app\(app)\sales\pos.tsx:210:1]
+ 210 │     <QuickCustomer open={qc} onClose={() => setQc(false)} onCreated={(c, rxId) => { setExtraC((x) => [c, ...x]); setCustId(c.id); setCq(""); setQc(false); toast(`${c.full_name} added`); if (rxId) setRxId(rxId); }} />
+ 211 │     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={byCode} />
+ 212 │   </motion.div>);
+ 213 │ }
+     · ─
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/app/(app)/sales/pos.tsx
+./src/app/(app)/sales/view.tsx @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/internal/helpers/hydration-error-info.js:63
+[ 6375878ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:222
+[ 6377655ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/pages/hot-reloader-client.js:222
+[ 6379293ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:3001/login:1
+[ 6380514ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom.development.js:38560
+[ 6841612ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6842566ms] [LOG] [Fast Refresh] done in 955ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6842587ms] [LOG] [Fast Refresh] done in 976ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6842616ms] [LOG] [Fast Refresh] done in 1005ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6848108ms] [WARNING] The resource http://localhost:3001/_next/static/css/app/layout.css?v=1795165013220 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3001/login:1
+[ 6872353ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6873280ms] [LOG] [Fast Refresh] done in 926ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6889914ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6890670ms] [LOG] [Fast Refresh] done in 755ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6896288ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6896830ms] [LOG] [Fast Refresh] done in 542ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6901985ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6902479ms] [LOG] [Fast Refresh] done in 494ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6908085ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6908511ms] [LOG] [Fast Refresh] done in 427ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6914213ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6915375ms] [LOG] [Fast Refresh] done in 1162ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44
+[ 6923358ms] [LOG] [Fast Refresh] rebuilding @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:187
+[ 6923830ms] [LOG] [Fast Refresh] done in 473ms @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/client/components/react-dev-overlay/app/hot-reloader-client.js:44

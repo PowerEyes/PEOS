@@ -92,7 +92,7 @@ function RepairForm({ open,onClose,repair,customers,branches,initialCustomer }:a
     const paths=[...existing];
     if(shots.length){
       const sb=supabaseBrowser();
-      const {data:p}=await sb.from("profiles").select("org_id").single();
+      const { data: { user: u } } = await sb.auth.getUser(); const {data:p}=await sb.from("profiles").select("org_id").eq("id", u?.id ?? "").single();
       const folder=p?.org_id&&custId?`${p.org_id}/${custId}`:p?.org_id?`${p.org_id}/_no_customer`:"";
       for(const s of shots){
         const path=`${folder}/${crypto.randomUUID()}.jpg`;
@@ -145,7 +145,7 @@ function Detail({ r,onClose }:{r:any|null;onClose:()=>void}) {
     const cur:string[]=r.after_images??[]; const room=3-cur.length; if(room<=0) return toast("Up to 3 after photos","err");
     setAfterBusy(true);
     const sb=supabaseBrowser();
-    const {data:p}=await sb.from("profiles").select("org_id").single();
+    const { data: { user: u } } = await sb.auth.getUser(); const {data:p}=await sb.from("profiles").select("org_id").eq("id", u?.id ?? "").single();
     const folder=p?.org_id&&r.customer_id?`${p.org_id}/${r.customer_id}`:p?.org_id?`${p.org_id}/_no_customer`:"";
     const added:string[]=[];
     for(const file of Array.from(files).slice(0,room)){

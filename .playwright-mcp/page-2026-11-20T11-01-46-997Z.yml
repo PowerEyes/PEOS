@@ -1,0 +1,137 @@
+- generic [ref=f19e2]:
+  - complementary [ref=f19e3]:
+    - generic [ref=f19e5]:
+      - generic [ref=f19e6]: 👁
+      - generic [ref=f19e7]:
+        - paragraph [ref=f19e8]: PowerOS
+        - paragraph [ref=f19e9]: Power Eyes Opticals
+    - navigation [ref=f19e10]:
+      - link "Dashboard" [ref=f19e11] [cursor=pointer]:
+        - /url: /
+      - link "Customers" [ref=f19e18] [cursor=pointer]:
+        - /url: /customers
+      - link "Prescriptions" [ref=f19e25] [cursor=pointer]:
+        - /url: /prescriptions
+      - link "Appointments" [ref=f19e30] [cursor=pointer]:
+        - /url: /appointments
+      - link "POS & Orders" [ref=f19e34] [cursor=pointer]:
+        - /url: /sales
+      - link "Workshop & Lab" [ref=f19e40] [cursor=pointer]:
+        - /url: /workshop
+      - link "Repairs" [ref=f19e44] [cursor=pointer]:
+        - /url: /repairs
+      - link "Inventory" [ref=f19e50] [cursor=pointer]:
+        - /url: /inventory
+      - link "Purchase Invoices" [ref=f19e56] [cursor=pointer]:
+        - /url: /purchase-invoices
+      - generic [ref=f19e60]:
+        - button "Finance" [ref=f19e61] [cursor=pointer]
+        - generic [ref=f19e67]:
+          - link "Overview" [ref=f19e68] [cursor=pointer]:
+            - /url: /finance
+          - link "Sales Report" [ref=f19e72] [cursor=pointer]:
+            - /url: /finance/reports
+          - link "GSTR-1 Export" [ref=f19e77] [cursor=pointer]:
+            - /url: /finance/gstr1
+      - link "CRM Automation" [ref=f19e82] [cursor=pointer]:
+        - /url: /crm
+      - link "Staff" [ref=f19e86] [cursor=pointer]:
+        - /url: /staff
+      - button "Website" [ref=f19e93] [cursor=pointer]
+      - link "Settings" [ref=f19e100] [cursor=pointer]:
+        - /url: /settings
+    - button "Sign out" [ref=f19e107] [cursor=pointer]
+  - generic [ref=f19e111]:
+    - banner [ref=f19e112]:
+      - generic [ref=f19e113]: Power Eyes Opticals
+      - generic [ref=f19e116]:
+        - generic "2 branches" [ref=f19e117]:
+          - generic [ref=f19e118]: P
+          - generic [ref=f19e119]: Power Eyes Owner
+          - generic [ref=f19e120]: owner
+        - link "← Website" [ref=f19e121] [cursor=pointer]:
+          - /url: /
+    - main [ref=f19e122]:
+      - generic [ref=f19e123]:
+        - generic [ref=f19e125]:
+          - heading "Finance" [level=1] [ref=f19e126]
+          - paragraph [ref=f19e127]: Revenue, GST, expenses and reporting
+        - generic [ref=f19e128]:
+          - button "Dashboard" [ref=f19e129] [cursor=pointer]
+          - button "GST Ledger" [ref=f19e131] [cursor=pointer]
+          - button "Expenses" [ref=f19e132] [cursor=pointer]
+          - button "Day Closing" [ref=f19e133] [cursor=pointer]
+          - button "Credit Notes" [ref=f19e134] [cursor=pointer]
+          - button "Reports" [ref=f19e135] [cursor=pointer]
+        - generic [ref=f19e137]:
+          - generic [ref=f19e138]:
+            - generic [ref=f19e139]:
+              - paragraph [ref=f19e140]: Revenue this month
+              - paragraph [ref=f19e141]: ₹9,368
+              - paragraph [ref=f19e142]: "Today: ₹9,368"
+            - generic [ref=f19e143]:
+              - paragraph [ref=f19e144]: Expenses this month
+              - paragraph [ref=f19e145]: ₹0
+              - paragraph [ref=f19e146]: 0 entries
+            - generic [ref=f19e147]:
+              - paragraph [ref=f19e148]: Net (est.)
+              - paragraph [ref=f19e149]: ₹9,368
+              - paragraph [ref=f19e150]: Revenue minus expenses
+            - generic [ref=f19e151]:
+              - paragraph [ref=f19e152]: Outstanding
+              - paragraph [ref=f19e153]: ₹0
+              - paragraph [ref=f19e154]: 0 unpaid orders
+          - generic [ref=f19e155]:
+            - paragraph [ref=f19e157]: GST this month
+            - generic [ref=f19e158]:
+              - generic [ref=f19e159]:
+                - paragraph [ref=f19e160]: Output GST
+                - paragraph [ref=f19e161]: ₹446.08
+                - paragraph [ref=f19e162]: CGST ₹223.05 + SGST ₹223.03
+              - generic [ref=f19e163]:
+                - paragraph [ref=f19e164]: Input ITC
+                - paragraph [ref=f19e165]: ₹0
+                - paragraph [ref=f19e166]: From purchase invoices
+              - generic [ref=f19e167]:
+                - paragraph [ref=f19e168]: Net liability
+                - paragraph [ref=f19e169]: ₹446.08
+                - paragraph [ref=f19e170]: Output minus ITC
+          - generic [ref=f19e171]:
+            - paragraph [ref=f19e172]: Revenue — last 30 days
+            - generic [ref=f19e173]:
+              - 'generic "10-22: ₹0" [ref=f19e174]'
+              - 'generic "10-23: ₹0" [ref=f19e175]'
+              - 'generic "10-24: ₹0" [ref=f19e176]'
+              - 'generic "10-25: ₹0" [ref=f19e177]'
+              - 'generic "10-26: ₹0" [ref=f19e178]'
+              - 'generic "10-27: ₹0" [ref=f19e179]'
+              - 'generic "10-28: ₹0" [ref=f19e180]'
+              - 'generic "10-29: ₹0" [ref=f19e181]'
+              - 'generic "10-30: ₹0" [ref=f19e182]'
+              - 'generic "10-31: ₹0" [ref=f19e183]'
+              - 'generic "11-01: ₹0" [ref=f19e184]'
+              - 'generic "11-02: ₹0" [ref=f19e185]'
+              - 'generic "11-03: ₹0" [ref=f19e186]'
+              - 'generic "11-04: ₹0" [ref=f19e187]'
+              - 'generic "11-05: ₹0" [ref=f19e188]'
+              - 'generic "11-06: ₹0" [ref=f19e189]'
+              - 'generic "11-07: ₹0" [ref=f19e190]'
+              - 'generic "11-08: ₹0" [ref=f19e191]'
+              - 'generic "11-09: ₹0" [ref=f19e192]'
+              - 'generic "11-10: ₹0" [ref=f19e193]'
+              - 'generic "11-11: ₹0" [ref=f19e194]'
+              - 'generic "11-12: ₹0" [ref=f19e195]'
+              - 'generic "11-13: ₹0" [ref=f19e196]'
+              - 'generic "11-14: ₹0" [ref=f19e197]'
+              - 'generic "11-15: ₹0" [ref=f19e198]'
+              - 'generic "11-16: ₹0" [ref=f19e199]'
+              - 'generic "11-17: ₹0" [ref=f19e200]'
+              - 'generic "11-18: ₹0" [ref=f19e201]'
+              - 'generic "11-19: ₹0" [ref=f19e202]'
+              - 'generic "11-20: ₹9,367.5" [ref=f19e203]'
+            - generic [ref=f19e204]:
+              - generic [ref=f19e205]: 10-22
+              - generic [ref=f19e206]: 11-20
+          - generic [ref=f19e208]:
+            - generic [ref=f19e209]: Unpaid orders
+            - generic [ref=f19e210]: "0"

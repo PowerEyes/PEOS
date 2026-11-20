@@ -1,0 +1,187 @@
+- generic [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - complementary [ref=f4e3]:
+      - generic [ref=f4e5]:
+        - generic [ref=f4e6]: 👁
+        - generic [ref=f4e7]:
+          - paragraph [ref=f4e8]: PowerOS
+          - paragraph [ref=f4e9]: Power Eyes Opticals
+      - navigation [ref=f4e10]:
+        - link "Dashboard" [ref=f4e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f4e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f4e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f4e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f4e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f4e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f4e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f4e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f4e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - button "Finance" [ref=f4e61] [cursor=pointer]
+        - link "CRM Automation" [ref=f4e67] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f4e71] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f4e78] [cursor=pointer]
+        - link "Settings" [ref=f4e85] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f4e92] [cursor=pointer]
+    - generic [ref=f4e96]:
+      - banner [ref=f4e97]:
+        - generic [ref=f4e98]: Power Eyes Opticals
+        - generic [ref=f4e101]:
+          - generic "2 branches" [ref=f4e102]:
+            - generic [ref=f4e103]: P
+            - generic [ref=f4e104]: Power Eyes Owner
+            - generic [ref=f4e105]: owner
+          - link "← Website" [ref=f4e106] [cursor=pointer]:
+            - /url: /
+      - main [ref=f4e107]:
+        - generic [ref=f4e108]:
+          - generic [ref=f4e109]:
+            - heading "Appointments" [level=1] [ref=f4e110]
+            - generic [ref=f4e113]:
+              - textbox [ref=f4e114]: 2026-11-20
+              - button "Book" [ref=f4e115] [cursor=pointer]
+          - generic [ref=f4e117]:
+            - generic [ref=f4e118]:
+              - paragraph [ref=f4e119]: "1"
+              - paragraph [ref=f4e120]: Total
+            - generic [ref=f4e121]:
+              - paragraph [ref=f4e122]: "0"
+              - paragraph [ref=f4e123]: Confirmed
+            - generic [ref=f4e124]:
+              - paragraph [ref=f4e125]: "0"
+              - paragraph [ref=f4e126]: Completed
+            - generic [ref=f4e127]:
+              - paragraph [ref=f4e128]: "1"
+              - paragraph [ref=f4e129]: Pending
+          - generic [ref=f4e133]:
+            - generic [ref=f4e134]:
+              - paragraph [ref=f4e135]: 11:30
+              - paragraph [ref=f4e136]: 30m
+            - generic [ref=f4e137]:
+              - generic [ref=f4e138]:
+                - paragraph [ref=f4e139]: E2E Test Customer A01
+                - generic [ref=f4e140]: CUS-0006
+                - generic [ref=f4e141]: Scheduled
+              - paragraph [ref=f4e142]: Eye Test
+              - paragraph [ref=f4e143]: 📞 9000000001
+              - paragraph [ref=f4e144]: 👨‍⚕️ Dr. Test Optometrist
+              - paragraph [ref=f4e145]: "\"E2E pilot test appointment\""
+            - generic [ref=f4e146]:
+              - button "Eye Exam" [ref=f4e147] [cursor=pointer]
+              - generic [ref=f4e151]:
+                - button [ref=f4e152] [cursor=pointer]
+                - button [ref=f4e155] [cursor=pointer]
+          - generic [ref=f4e161]:
+            - generic [ref=f4e162]:
+              - generic [ref=f4e163]:
+                - paragraph [ref=f4e164]: Eye Examination
+                - paragraph [ref=f4e168]: E2E Test Customer A01 · Fri, 20 Nov 11:30
+              - button [ref=f4e169] [cursor=pointer]
+            - generic [ref=f4e174]:
+              - generic [ref=f4e175]:
+                - button "Visual Acuity" [ref=f4e235] [cursor=pointer]
+                - button "2 Refraction" [ref=f4e182] [cursor=pointer]:
+                  - generic [ref=f4e183]: "2"
+                  - generic [ref=f4e184]: Refraction
+                - button "3 Clinical Findings" [ref=f4e187] [cursor=pointer]:
+                  - generic [ref=f4e188]: "3"
+                  - generic [ref=f4e189]: Clinical Findings
+                - button "4 Fundus" [ref=f4e192] [cursor=pointer]:
+                  - generic [ref=f4e193]: "4"
+                  - generic [ref=f4e194]: Fundus
+                - button "5 Prescription" [ref=f4e197] [cursor=pointer]:
+                  - generic [ref=f4e198]: "5"
+                  - generic [ref=f4e199]: Prescription
+              - generic [ref=f4e238]:
+                - generic [ref=f4e239]:
+                  - generic [ref=f4e240]: "2"
+                  - generic [ref=f4e241]:
+                    - paragraph [ref=f4e242]: Refraction
+                    - paragraph [ref=f4e243]: Step 2 of 5
+                - generic [ref=f4e244]:
+                  - generic [ref=f4e245]:
+                    - paragraph [ref=f4e246]: Auto-Refractor (Objective)
+                    - generic [ref=f4e247]:
+                      - text: SPH
+                      - generic [ref=f4e249]: CYL
+                      - generic [ref=f4e250]: AXIS
+                    - generic [ref=f4e251]:
+                      - generic [ref=f4e252]: OD (Right)
+                      - spinbutton [ref=f4e253]
+                      - spinbutton [ref=f4e254]
+                      - spinbutton [ref=f4e255]
+                    - generic [ref=f4e256]:
+                      - generic [ref=f4e257]: OS (Left)
+                      - spinbutton [ref=f4e258]
+                      - spinbutton [ref=f4e259]
+                      - spinbutton [ref=f4e260]
+                    - paragraph [ref=f4e261]: Final Subjective Refraction
+                    - generic [ref=f4e262]:
+                      - text: SPH
+                      - generic [ref=f4e264]: CYL
+                      - generic [ref=f4e265]: AXIS
+                      - generic [ref=f4e266]: ADD
+                      - generic [ref=f4e267]: VA
+                    - generic [ref=f4e268]:
+                      - generic [ref=f4e269]: OD (Right)
+                      - spinbutton [ref=f4e270]
+                      - spinbutton [ref=f4e271]
+                      - spinbutton [ref=f4e272]
+                      - spinbutton [ref=f4e273]
+                      - combobox [ref=f4e274]:
+                        - option "—"
+                        - option "6/60"
+                        - option "6/36"
+                        - option "6/24"
+                        - option "6/18"
+                        - option "6/12"
+                        - option "6/9"
+                        - option "6/6" [selected]
+                        - option "6/5"
+                        - option "CF"
+                        - option "HM"
+                        - option "PL"
+                        - option "NPL"
+                    - generic [ref=f4e275]:
+                      - generic [ref=f4e276]: OS (Left)
+                      - spinbutton [ref=f4e277]
+                      - spinbutton [ref=f4e278]
+                      - spinbutton [ref=f4e279]
+                      - spinbutton [ref=f4e280]
+                      - combobox [ref=f4e281]:
+                        - option "—"
+                        - option "6/60"
+                        - option "6/36"
+                        - option "6/24"
+                        - option "6/18"
+                        - option "6/12"
+                        - option "6/9"
+                        - option "6/6" [selected]
+                        - option "6/5"
+                        - option "CF"
+                        - option "HM"
+                        - option "PL"
+                        - option "NPL"
+                  - generic [ref=f4e282]:
+                    - generic [ref=f4e283]:
+                      - text: PD Far (mm)
+                      - spinbutton "PD Far (mm)" [ref=f4e284]: "62"
+                    - generic [ref=f4e285]:
+                      - text: PD Near (mm)
+                      - spinbutton "PD Near (mm)" [ref=f4e286]
+              - generic [ref=f4e230]:
+                - button "Cancel" [ref=f4e231] [cursor=pointer]
+                - button "Back" [ref=f4e287] [cursor=pointer]
+                - 'button "Next: Clinical Findings" [active] [ref=f4e290] [cursor=pointer]'
+  - alert [ref=f4e131]

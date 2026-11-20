@@ -18,15 +18,40 @@ type Step = (typeof STEPS)[number];
 
 function ProgressBar({ step }: { step: number }) {
   return (
-    <div className="flex items-center gap-0 px-6 py-4 border-b border-slate-100">
-      {STEPS.map((s,i) => (
-        <div key={s} className="flex items-center">
-          <div className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition ${i < step ? "bg-navy-800 text-white" : i === step ? "bg-gold-500 text-white" : "bg-slate-100 text-slate-400"}`}>
-            {i < step ? <Check size={14}/> : i+1}
+    <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 bg-slate-50/50">
+      {/* Mobile view (< sm): Active step title + progress bar */}
+      <div className="sm:hidden flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-navy-800 text-[11px] font-bold text-white">
+            {step + 1}
+          </span>
+          <span className="text-xs font-bold text-navy-900">{STEPS[step]}</span>
+          <span className="text-[11px] text-slate-400">({step + 1} of {STEPS.length})</span>
+        </div>
+        <div className="flex items-center gap-1">
+          {STEPS.map((_, i) => (
+            <span
+              key={i}
+              className={`h-1.5 rounded-full transition-all ${
+                i === step ? "w-6 bg-gold-500" : i < step ? "w-2.5 bg-navy-800" : "w-2.5 bg-slate-200"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Tablet & Desktop view (>= sm) */}
+      <div className="hidden sm:flex items-center justify-between">
+        {STEPS.map((s, i) => (
+          <div key={s} className="flex items-center flex-1 last:flex-initial">
+            <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition ${i < step ? "bg-navy-800 text-white" : i === step ? "bg-gold-500 text-white" : "bg-slate-100 text-slate-400"}`}>
+              {i < step ? <Check size={14}/> : i+1}
+            </div>
+            <span className={`ml-2 text-xs sm:text-sm font-medium whitespace-nowrap ${i === step ? "text-navy-900 font-bold" : "text-slate-400"}`}>{s}</span>
+            {i < STEPS.length - 1 && <div className={`mx-2 sm:mx-3 h-px flex-1 ${i < step ? "bg-navy-800" : "bg-slate-200"}`}/>}
           </div>
-          <span className={`ml-2 text-sm font-medium ${i === step ? "text-navy-900" : "text-slate-400"}`}>{s}</span>
-          {i < STEPS.length-1 && <div className={`mx-3 h-px w-10 ${i < step ? "bg-navy-800" : "bg-slate-200"}`}/>}
-        </div>))}
+        ))}
+      </div>
     </div>);
 }
 
@@ -34,18 +59,27 @@ function RxForm({ values, onChange }: { values: any; onChange: (v: any) => void 
   const fields = [["sph","SPH"],["cyl","CYL"],["axis","AXIS"]] as [string,string][];
   return (
     <div className="space-y-3">
-      {[["od","Right Eye (OD)","blue"],["os","Left Eye (OS)","orange"]] .map(([side,label,col]) => (
-        <div key={side} className={`rounded-2xl border p-4 ${col==="blue"?"border-blue-200 bg-blue-50/40":"border-orange-200 bg-orange-50/40"}`}>
-          <p className={`font-semibold mb-3 text-sm ${col==="blue"?"text-blue-700":"text-orange-600"}`}>{label}</p>
-          <div className="grid grid-cols-3 gap-2">
+      {[["od","Right Eye (OD)","blue"],["os","Left Eye (OS)","orange"]].map(([side,label,col]) => (
+        <div key={side} className={`rounded-2xl border p-3 sm:p-4 ${col==="blue"?"border-blue-200 bg-blue-50/40":"border-orange-200 bg-orange-50/40"}`}>
+          <p className={`font-semibold mb-2.5 text-xs sm:text-sm ${col==="blue"?"text-blue-700":"text-orange-600"}`}>{label}</p>
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {fields.map(([k,l]) => (
-              <label key={k} className="block"><span className="mb-1 block text-xs text-slate-500">{l}</span>
-                <input type="number" step={k==="axis"?"1":"0.25"} value={values?.[side]?.[k]??""} onChange={e=>onChange({...values,[side]:{...values?.[side],[k]:e.target.value?Number(e.target.value):null}})} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-center outline-none focus:border-navy-700 focus:ring-2 focus:ring-navy-700/10"/></label>))}
+              <label key={k} className="block">
+                <span className="mb-1 block text-[11px] sm:text-xs text-slate-500">{l}</span>
+                <input
+                  type="number"
+                  step={k==="axis"?"1":"0.25"}
+                  value={values?.[side]?.[k]??""}
+                  onChange={e=>onChange({...values,[side]:{...values?.[side],[k]:e.target.value?Number(e.target.value):null}})}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-2 py-2 text-xs sm:text-sm text-center outline-none focus:border-navy-700 focus:ring-2 focus:ring-navy-700/10"
+                />
+              </label>
+            ))}
           </div>
         </div>))}
       <div className="grid grid-cols-2 gap-2">
-        <label className="block"><span className="mb-1 block text-xs text-slate-500">PD far (mm)</span><input type="number" step="0.5" value={values?.pd_far??""} onChange={e=>onChange({...values,pd_far:e.target.value?Number(e.target.value):null})} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-navy-700"/></label>
-        <label className="block"><span className="mb-1 block text-xs text-slate-500">PD near (mm)</span><input type="number" step="0.5" value={values?.pd_near??""} onChange={e=>onChange({...values,pd_near:e.target.value?Number(e.target.value):null})} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-navy-700"/></label>
+        <label className="block"><span className="mb-1 block text-xs text-slate-500">PD far (mm)</span><input type="number" step="0.5" value={values?.pd_far??""} onChange={e=>onChange({...values,pd_far:e.target.value?Number(e.target.value):null})} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm outline-none focus:border-navy-700"/></label>
+        <label className="block"><span className="mb-1 block text-xs text-slate-500">PD near (mm)</span><input type="number" step="0.5" value={values?.pd_near??""} onChange={e=>onChange({...values,pd_near:e.target.value?Number(e.target.value):null})} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm outline-none focus:border-navy-700"/></label>
       </div>
     </div>);
 }
@@ -153,7 +187,7 @@ export function LensConfigurator({ open, onClose, product }: { open: boolean; on
           <div className={`grid h-5 w-5 shrink-0 place-items-center rounded border-2 transition ${on?"border-gold-500 bg-gold-500":""}`}>{on&&<Check size={12} className="text-white"/>}</div>
           <div className="h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-slate-100 to-blue-100"/>
           <div className="flex-1 min-w-0"><p className="text-sm font-semibold">{o.name} {o.badge&&<span className="ml-1 rounded bg-amber-200 px-1.5 text-[10px] font-bold text-amber-900">{o.badge}</span>}</p><p className="text-xs text-slate-500 truncate">{o.description}</p></div>
-          <span className="text-sm font-semibold text-navy-800 shrink-0">+{inr(o.price)}</span>
+          <span className="text-sm font-semibold text-navy-800 shrink-0">{Number(o.price)>0?`+${inr(o.price)}`:"Included"}</span>
         </button>);})}</div>
     </div>),
   };
@@ -164,19 +198,21 @@ export function LensConfigurator({ open, onClose, product }: { open: boolean; on
         <div className="fixed inset-0 z-50">
           <motion.div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}/>
           <div className="absolute inset-0 flex items-end justify-center sm:items-center sm:p-4">
-            <motion.div className="relative flex h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white sm:h-auto sm:max-h-[90vh] sm:rounded-3xl shadow-2xl"
+            <motion.div className="relative flex h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl bg-white sm:h-auto sm:max-h-[90dvh] sm:rounded-3xl shadow-2xl"
               initial={{y:60,opacity:0}} animate={{y:0,opacity:1}} exit={{y:60,opacity:0}} transition={{type:"spring",damping:28,stiffness:320}}>
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center text-xl">👓</div>
-                  <div><p className="font-bold text-sm text-navy-900">{product?.brand} {product?.model}</p>
-                    <p className="text-xs text-slate-500">{product?.attrs?.color} · {product?.attrs?.size} · {product?.sku}</p></div>
+              <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 sm:px-5 sm:py-4">
+                <div className="flex items-center gap-2 min-w-0 pr-2">
+                  <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg sm:text-xl shrink-0">👓</div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-xs sm:text-sm text-navy-900 truncate">{product?.brand} {product?.model}</p>
+                    <p className="text-[11px] text-slate-500 truncate">{product?.attrs?.color} · {product?.attrs?.size} · {product?.sku}</p>
+                  </div>
                 </div>
-                <button onClick={onClose} className="rounded-full bg-slate-100 p-2 hover:bg-slate-200"><X size={16}/></button>
+                <button onClick={onClose} className="rounded-full bg-slate-100 p-1.5 sm:p-2 hover:bg-slate-200 shrink-0"><X size={16}/></button>
               </div>
               <ProgressBar step={step}/>
-              <div className="flex-1 overflow-y-auto px-5 py-4">
+              <div className="flex-1 overflow-y-auto px-4 py-4 sm:px-5">
                 <AnimatePresence mode="wait">
                   <motion.div key={step} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} exit={{opacity:0,x:-20}} transition={{duration:.18}}>
                     {stepContent[step]}
@@ -184,7 +220,7 @@ export function LensConfigurator({ open, onClose, product }: { open: boolean; on
                 </AnimatePresence>
               </div>
               {/* Footer */}
-              <div className="border-t border-slate-100 bg-slate-50 p-4">
+              <div className="border-t border-slate-100 bg-slate-50 p-3.5 sm:p-4">
                 {step>0&&step<3&&(
                   <div className="mb-3 rounded-xl bg-white border border-slate-100 p-3 text-sm">
                     <div className="flex justify-between"><span className="text-slate-500">Frame</span><span className="font-semibold">{inr(product?.selling_price)}</span></div>

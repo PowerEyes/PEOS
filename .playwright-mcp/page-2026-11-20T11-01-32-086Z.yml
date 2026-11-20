@@ -1,0 +1,85 @@
+- generic [ref=f13e2]:
+  - complementary [ref=f13e3]:
+    - generic [ref=f13e5]:
+      - generic [ref=f13e6]: 👁
+      - generic [ref=f13e7]:
+        - paragraph [ref=f13e8]: PowerOS
+        - paragraph [ref=f13e9]: Power Eyes Opticals
+    - navigation [ref=f13e10]:
+      - link "Dashboard" [ref=f13e11] [cursor=pointer]:
+        - /url: /
+      - link "Customers" [ref=f13e18] [cursor=pointer]:
+        - /url: /customers
+      - link "Prescriptions" [ref=f13e25] [cursor=pointer]:
+        - /url: /prescriptions
+      - link "Appointments" [ref=f13e30] [cursor=pointer]:
+        - /url: /appointments
+      - link "POS & Orders" [ref=f13e34] [cursor=pointer]:
+        - /url: /sales
+      - link "Workshop & Lab" [ref=f13e40] [cursor=pointer]:
+        - /url: /workshop
+      - link "Repairs" [ref=f13e44] [cursor=pointer]:
+        - /url: /repairs
+      - link "Inventory" [ref=f13e50] [cursor=pointer]:
+        - /url: /inventory
+      - link "Purchase Invoices" [ref=f13e56] [cursor=pointer]:
+        - /url: /purchase-invoices
+      - button "Finance" [ref=f13e61] [cursor=pointer]
+      - link "CRM Automation" [ref=f13e67] [cursor=pointer]:
+        - /url: /crm
+      - link "Staff" [ref=f13e71] [cursor=pointer]:
+        - /url: /staff
+      - button "Website" [ref=f13e78] [cursor=pointer]
+      - link "Settings" [ref=f13e85] [cursor=pointer]:
+        - /url: /settings
+    - button "Sign out" [ref=f13e92] [cursor=pointer]
+  - generic [ref=f13e96]:
+    - banner [ref=f13e97]:
+      - generic [ref=f13e98]: Power Eyes Opticals
+      - generic [ref=f13e101]:
+        - generic "2 branches" [ref=f13e102]:
+          - generic [ref=f13e103]: P
+          - generic [ref=f13e104]: Power Eyes Owner
+          - generic [ref=f13e105]: owner
+        - link "← Website" [ref=f13e106] [cursor=pointer]:
+          - /url: /
+    - main [ref=f13e107]:
+      - generic [ref=f13e108]:
+        - generic [ref=f13e109]:
+          - generic [ref=f13e110]:
+            - heading "POS & Orders" [level=1] [ref=f13e111]
+            - paragraph [ref=f13e112]: Quotations, orders and payments in one place
+          - button "New sale" [ref=f13e113] [cursor=pointer]
+        - generic [ref=f13e115]:
+          - button "Orders 4" [ref=f13e116] [cursor=pointer]
+          - button "Quotations 0" [ref=f13e119] [cursor=pointer]
+        - textbox "Search by number, name or phone" [ref=f13e125]
+        - generic [ref=f13e126]:
+          - button "E2E Test Customer A01 ORD-0004 20 Nov 2026 | due ₹500 ₹3,000 partial ready" [ref=f13e127] [cursor=pointer]:
+            - generic [ref=f13e128]:
+              - generic [ref=f13e129]: E2E Test Customer A01 ORD-0004
+              - generic [ref=f13e130]: 20 Nov 2026 | due ₹500
+            - generic [ref=f13e131]: ₹3,000
+            - generic [ref=f13e132]: partial
+            - generic [ref=f13e133]: ready
+          - button "Diwakar ORD-0003 20 Nov 2026 ₹3,000 paid delivered" [ref=f13e134] [cursor=pointer]:
+            - generic [ref=f13e135]:
+              - generic [ref=f13e136]: Diwakar ORD-0003
+              - generic [ref=f13e137]: 20 Nov 2026
+            - generic [ref=f13e138]: ₹3,000
+            - generic [ref=f13e139]: paid
+            - generic [ref=f13e140]: delivered
+          - button "Nishanth ORD-0002 20 Nov 2026 | due ₹1,492.5 ₹2,917.5 partial ready" [ref=f13e141] [cursor=pointer]:
+            - generic [ref=f13e142]:
+              - generic [ref=f13e143]: Nishanth ORD-0002
+              - generic [ref=f13e144]: 20 Nov 2026 | due ₹1,492.5
+            - generic [ref=f13e145]: ₹2,917.5
+            - generic [ref=f13e146]: partial
+            - generic [ref=f13e147]: ready
+          - button "Diwakar ORD-0001 20 Nov 2026 ₹450 paid ready" [ref=f13e148] [cursor=pointer]:
+            - generic [ref=f13e149]:
+              - generic [ref=f13e150]: Diwakar ORD-0001
+              - generic [ref=f13e151]: 20 Nov 2026
+            - generic [ref=f13e152]: ₹450
+            - generic [ref=f13e153]: paid
+            - generic [ref=f13e154]: ready

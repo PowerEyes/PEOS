@@ -1,0 +1,46 @@
+- generic [ref=f17e2]:
+  - complementary [ref=f17e3]:
+    - generic [ref=f17e5]:
+      - generic [ref=f17e6]: 👁
+      - generic [ref=f17e7]:
+        - paragraph [ref=f17e8]: PowerOS
+        - paragraph [ref=f17e9]: Power Eyes Opticals
+    - navigation [ref=f17e10]:
+      - link "Dashboard" [ref=f17e11] [cursor=pointer]:
+        - /url: /
+      - link "Customers" [ref=f17e18] [cursor=pointer]:
+        - /url: /customers
+      - link "Prescriptions" [ref=f17e25] [cursor=pointer]:
+        - /url: /prescriptions
+      - link "Appointments" [ref=f17e30] [cursor=pointer]:
+        - /url: /appointments
+      - link "POS & Orders" [ref=f17e34] [cursor=pointer]:
+        - /url: /sales
+      - link "Workshop & Lab" [ref=f17e40] [cursor=pointer]:
+        - /url: /workshop
+      - link "Repairs" [ref=f17e44] [cursor=pointer]:
+        - /url: /repairs
+      - link "Inventory" [ref=f17e50] [cursor=pointer]:
+        - /url: /inventory
+      - link "Purchase Invoices" [ref=f17e56] [cursor=pointer]:
+        - /url: /purchase-invoices
+      - button "Finance" [ref=f17e61] [cursor=pointer]
+      - link "CRM Automation" [ref=f17e67] [cursor=pointer]:
+        - /url: /crm
+      - link "Staff" [ref=f17e71] [cursor=pointer]:
+        - /url: /staff
+      - button "Website" [ref=f17e78] [cursor=pointer]
+      - link "Settings" [ref=f17e85] [cursor=pointer]:
+        - /url: /settings
+    - button "Sign out" [ref=f17e92] [cursor=pointer]
+  - generic [ref=f17e96]:
+    - banner [ref=f17e97]:
+      - generic [ref=f17e98]: Power Eyes Opticals
+      - generic [ref=f17e101]:
+        - generic "2 branches" [ref=f17e102]:
+          - generic [ref=f17e103]: P
+          - generic [ref=f17e104]: Power Eyes Owner
+          - generic [ref=f17e105]: owner
+        - link "← Website" [ref=f17e106] [cursor=pointer]:
+          - /url: /
+    - main [ref=f17e107]

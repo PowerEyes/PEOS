@@ -69,9 +69,9 @@ export default async function EyewearPage() {
             const w = warrantyInfo(item.orderDate);
             return (
               <div key={item.id} className="rounded-2xl bg-white border border-slate-100 shadow-sm overflow-hidden">
-                <div className="flex gap-4 p-5">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-5">
                   {/* Frame icon */}
-                  <div className="h-20 w-20 shrink-0 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-3xl">👓</div>
+                  <div className="h-16 w-16 sm:h-20 sm:w-20 shrink-0 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl sm:text-3xl">👓</div>
                   {/* Details */}
                   <div className="flex-1 min-w-0 space-y-1.5">
                     <div className="flex flex-wrap items-start justify-between gap-2">

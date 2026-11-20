@@ -39,14 +39,14 @@ export function SettingsPage({ settings, orgName, branches, loyalty, templates, 
           <Shield size={16} className="mr-1 inline" /> Only owners and admins can change settings — you can review everything below.
         </div>)}
       <div className="grid gap-6 lg:grid-cols-[250px_minmax(0,1fr)]">
-        <nav className="card h-fit space-y-0.5 p-2">
+        <nav className="card flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible p-2 h-fit">
           {SECTIONS.map((sec) => (
             <button key={sec.key} onClick={() => setActive(sec.key)}
-              className={`flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition ${active === sec.key ? "bg-navy-800 text-white" : "hover:bg-slate-50"}`}>
-              <sec.icon size={16} className="mt-0.5 shrink-0" />
+              className={`flex items-center lg:items-start gap-2 lg:gap-3 shrink-0 whitespace-nowrap lg:whitespace-normal rounded-xl px-3 py-2 lg:py-2.5 text-left transition ${active === sec.key ? "bg-navy-800 text-white" : "hover:bg-slate-50 text-slate-700"}`}>
+              <sec.icon size={16} className="shrink-0 lg:mt-0.5" />
               <span className="min-w-0">
-                <span className="block text-sm font-medium">{sec.label}</span>
-                <span className={`block truncate text-xs ${active === sec.key ? "text-white/60" : "text-slate-400"}`}>{sec.desc}</span>
+                <span className="block text-xs sm:text-sm font-medium">{sec.label}</span>
+                <span className={`hidden lg:block truncate text-xs ${active === sec.key ? "text-white/60" : "text-slate-400"}`}>{sec.desc}</span>
               </span>
             </button>))}
         </nav>

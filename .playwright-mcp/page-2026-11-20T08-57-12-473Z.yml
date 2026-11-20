@@ -1,0 +1,66 @@
+- generic [ref=f34e2]:
+  - complementary [ref=f34e3]:
+    - generic [ref=f34e5]:
+      - generic [ref=f34e6]: 👁
+      - generic [ref=f34e7]:
+        - paragraph [ref=f34e8]: PowerOS
+        - paragraph [ref=f34e9]: Power Eyes Opticals
+    - navigation [ref=f34e10]:
+      - link "Dashboard" [ref=f34e11] [cursor=pointer]:
+        - /url: /
+      - link "Customers" [ref=f34e18] [cursor=pointer]:
+        - /url: /customers
+      - link "Prescriptions" [ref=f34e25] [cursor=pointer]:
+        - /url: /prescriptions
+      - link "Appointments" [ref=f34e30] [cursor=pointer]:
+        - /url: /appointments
+      - link "POS & Orders" [ref=f34e34] [cursor=pointer]:
+        - /url: /sales
+      - link "Workshop & Lab" [ref=f34e40] [cursor=pointer]:
+        - /url: /workshop
+      - link "Repairs" [ref=f34e44] [cursor=pointer]:
+        - /url: /repairs
+      - link "Inventory" [ref=f34e50] [cursor=pointer]:
+        - /url: /inventory
+      - link "Purchase Invoices" [ref=f34e56] [cursor=pointer]:
+        - /url: /purchase-invoices
+      - button "Finance" [ref=f34e61] [cursor=pointer]
+      - link "CRM Automation" [ref=f34e67] [cursor=pointer]:
+        - /url: /crm
+      - link "Staff" [ref=f34e71] [cursor=pointer]:
+        - /url: /staff
+      - button "Website" [ref=f34e78] [cursor=pointer]
+      - link "Settings" [ref=f34e85] [cursor=pointer]:
+        - /url: /settings
+    - button "Sign out" [ref=f34e92] [cursor=pointer]
+  - generic [ref=f34e96]:
+    - banner [ref=f34e97]:
+      - generic [ref=f34e98]: Power Eyes Opticals
+      - generic [ref=f34e101]:
+        - generic "2 branches" [ref=f34e102]:
+          - generic [ref=f34e103]: P
+          - generic [ref=f34e104]: Power Eyes Owner
+          - generic [ref=f34e105]: owner
+        - link "← Website" [ref=f34e106] [cursor=pointer]:
+          - /url: /
+    - main [ref=f34e107]:
+      - generic [ref=f34e108]:
+        - generic [ref=f34e109]:
+          - heading "Appointments" [level=1] [ref=f34e110]
+          - generic [ref=f34e113]:
+            - textbox [ref=f34e114]: 2026-11-20
+            - button "Book" [ref=f34e115] [cursor=pointer]
+        - generic [ref=f34e117]:
+          - generic [ref=f34e118]:
+            - paragraph [ref=f34e119]: "0"
+            - paragraph [ref=f34e120]: Total
+          - generic [ref=f34e121]:
+            - paragraph [ref=f34e122]: "0"
+            - paragraph [ref=f34e123]: Confirmed
+          - generic [ref=f34e124]:
+            - paragraph [ref=f34e125]: "0"
+            - paragraph [ref=f34e126]: Completed
+          - generic [ref=f34e127]:
+            - paragraph [ref=f34e128]: "0"
+            - paragraph [ref=f34e129]: Pending
+        - generic [ref=f34e130]: Loading…

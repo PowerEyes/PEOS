@@ -113,6 +113,50 @@ export async function markPaid(id: string, payment: {
   return { ok: fullyPaid ? "Marked as fully paid" : "Partial payment recorded" };
 }
 
+export async function receiveStock(invoiceId: string): Promise<R> {
+  const sb = supabaseServer();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+  const { data: profile } = await sb.from("profiles").select("org_id").eq("id", user.id).single();
+  if (!profile?.org_id) return { error: "No organisation" };
+  const { data: inv, error: e1 } = await sb.from("purchase_invoices")
+    .select("id,org_id,branch_id,lines,stock_posted_at,status")
+    .eq("id", invoiceId).eq("org_id", profile.org_id).single();
+  if (e1 || !inv) return { error: "Invoice not found" };
+  if (inv.stock_posted_at) return { error: "Stock already received for this invoice" };
+  if (!inv.branch_id) return { error: "Set a branch on the invoice before receiving stock" };
+  const lines = Array.isArray(inv.lines) ? inv.lines : [];
+  // Atomic claim: only the first concurrent caller flips stock_posted_at from null.
+  const { data: claimed, error: claimErr } = await sb.from("purchase_invoices")
+    .update({ stock_posted_at: new Date().toISOString() })
+    .eq("id", invoiceId).eq("org_id", profile.org_id).is("stock_posted_at", null)
+    .select("id").maybeSingle();
+  if (claimErr) return { error: dbError(claimErr.message) };
+  if (!claimed) return { error: "Stock already received for this invoice" };
+  let posted = 0;
+  for (const l of lines) {
+    const pid = l?.product_id;
+    const qty = Number(l?.qty) || 0;
+    if (!pid || qty <= 0) continue;
+    const { error } = await sb.from("stock_movements").insert({
+      org_id: inv.org_id, branch_id: inv.branch_id, product_id: pid,
+      delta: qty, reason: "purchase", note: `Invoice ${invoiceId}`,
+    });
+    if (error) {
+      // Roll back the claim so it can be retried
+      await sb.from("purchase_invoices").update({ stock_posted_at: null }).eq("id", invoiceId);
+      return { error: dbError(error.message) };
+    }
+    posted++;
+  }
+  if (posted === 0) {
+    await sb.from("purchase_invoices").update({ stock_posted_at: null }).eq("id", invoiceId);
+    return { error: "No product-linked lines to receive. Add a product to at least one line." };
+  }
+  revalidatePath("/purchase-invoices");
+  revalidatePath("/inventory");
+  return { ok: `Stock received for ${posted} line(s)` };
+}
 export async function claimITC(id: string, period: string): Promise<R> {
   const sb = supabaseServer();
   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);

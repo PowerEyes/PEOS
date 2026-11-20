@@ -1,0 +1,124 @@
+- generic [active] [ref=f26e1]:
+  - generic [ref=f26e2]:
+    - complementary [ref=f26e3]:
+      - generic [ref=f26e5]:
+        - generic [ref=f26e6]: 👁
+        - generic [ref=f26e7]:
+          - paragraph [ref=f26e8]: PowerOS
+          - paragraph [ref=f26e9]: Power Eyes Opticals
+      - navigation [ref=f26e10]:
+        - link "Dashboard" [ref=f26e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f26e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f26e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f26e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f26e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f26e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f26e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f26e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f26e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - button "Finance" [ref=f26e61] [cursor=pointer]
+        - link "CRM Automation" [ref=f26e67] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f26e71] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f26e78] [cursor=pointer]
+        - link "Settings" [ref=f26e85] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f26e92] [cursor=pointer]
+    - generic [ref=f26e96]:
+      - banner [ref=f26e97]:
+        - generic [ref=f26e98]: Power Eyes Opticals
+        - generic [ref=f26e101]:
+          - generic "2 branches" [ref=f26e102]:
+            - generic [ref=f26e103]: P
+            - generic [ref=f26e104]: Power Eyes Owner
+            - generic [ref=f26e105]: owner
+          - link "← Website" [ref=f26e106] [cursor=pointer]:
+            - /url: /
+      - main [ref=f26e107]:
+        - generic [ref=f26e108]:
+          - generic [ref=f26e109]:
+            - heading "Appointments" [level=1] [ref=f26e110]
+            - generic [ref=f26e113]:
+              - textbox [ref=f26e114]: 2026-11-20
+              - button "Book" [ref=f26e115] [cursor=pointer]
+          - generic [ref=f26e117]:
+            - generic [ref=f26e118]:
+              - paragraph [ref=f26e119]: "1"
+              - paragraph [ref=f26e120]: Total
+            - generic [ref=f26e121]:
+              - paragraph [ref=f26e122]: "0"
+              - paragraph [ref=f26e123]: Confirmed
+            - generic [ref=f26e124]:
+              - paragraph [ref=f26e125]: "1"
+              - paragraph [ref=f26e126]: Completed
+            - generic [ref=f26e127]:
+              - paragraph [ref=f26e128]: "0"
+              - paragraph [ref=f26e129]: Pending
+          - generic [ref=f26e132]:
+            - generic [ref=f26e133]:
+              - paragraph [ref=f26e134]: 11:30
+              - paragraph [ref=f26e135]: 30m
+            - generic [ref=f26e136]:
+              - generic [ref=f26e137]:
+                - paragraph [ref=f26e138]: E2E Test Customer A01
+                - generic [ref=f26e139]: CUS-0006
+                - generic [ref=f26e140]: Completed
+              - paragraph [ref=f26e141]: Eye Test
+              - paragraph [ref=f26e142]: 📞 9000000001
+              - paragraph [ref=f26e143]: 👨‍⚕️ Dr. Test Optometrist
+              - paragraph [ref=f26e144]: "\"E2E pilot test appointment\""
+            - generic [ref=f26e145]: Exam done
+          - dialog "Book appointment" [ref=f26e151]:
+            - generic [ref=f26e152]:
+              - heading "Book appointment" [level=2] [ref=f26e154]
+              - button "Close" [ref=f26e155] [cursor=pointer]
+            - generic [ref=f26e160]:
+              - generic [ref=f26e161]:
+                - generic [ref=f26e162]:
+                  - paragraph [ref=f26e211]: Diwakar
+                  - paragraph [ref=f26e212]: "9840185186"
+                - button "Change" [ref=f26e213] [cursor=pointer]
+              - generic [ref=f26e184]:
+                - generic [ref=f26e185]: Type
+                - combobox "Type" [ref=f26e186]:
+                  - option "Eye Test" [selected]
+                  - option "Contact Lens Fitting"
+                  - option "Follow Up"
+                  - option "Consultation"
+                  - option "Other"
+              - generic [ref=f26e187]:
+                - generic [ref=f26e188]:
+                  - generic [ref=f26e189]: Date
+                  - textbox "Date" [ref=f26e190]: 2026-11-20
+                - generic [ref=f26e191]:
+                  - generic [ref=f26e192]: Time
+                  - textbox "Time" [ref=f26e193]: 10:00
+                - generic [ref=f26e194]:
+                  - generic [ref=f26e195]: Duration (mins)
+                  - spinbutton "Duration (mins)" [ref=f26e196]: "30"
+              - generic [ref=f26e197]:
+                - generic [ref=f26e198]:
+                  - generic [ref=f26e199]: Optometrist
+                  - textbox "Optometrist" [ref=f26e200]
+                - generic [ref=f26e201]:
+                  - generic [ref=f26e202]: Branch
+                  - combobox "Branch" [ref=f26e203]:
+                    - option "Mogappair East" [selected]
+                    - option "Mogappair West"
+              - generic [ref=f26e204]:
+                - generic [ref=f26e205]: Notes
+                - textbox "Notes" [ref=f26e206]
+            - generic [ref=f26e207]:
+              - button "Cancel" [ref=f26e208] [cursor=pointer]
+              - button "Book" [ref=f26e209] [cursor=pointer]
+  - alert [ref=f26e210]

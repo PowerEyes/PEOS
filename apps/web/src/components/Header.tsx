@@ -32,7 +32,7 @@ const QUICK_LINKS: QuickLink[] = [
   { label:"Offers",           sub:"Category → current deals",       href:"/offers",                   emoji:"🎉" },
   { label:"Round Frames",     sub:"Eyeglasses → Round",             href:"/eyeglasses?shape=round",   emoji:"⭕" },
   { label:"Square Frames",    sub:"Eyeglasses → Square",            href:"/eyeglasses?shape=square",  emoji:"🟦" },
-  { label:"Cat Eye Frames",   sub:"Eyeglasses → Cat Eye",           href:"/eyeglasses?shape=cat eye", emoji:"🐱" },
+  { label:"Cat Eye Frames",   sub:"Eyeglasses → Cat Eye",           href:"/eyeglasses?shape=cat-eye", emoji:"🐱" },
   { label:"Aviator Frames",   sub:"Eyeglasses → Aviator",           href:"/eyeglasses?shape=aviator", emoji:"✈️" },
   { label:"Book Eye Test",    sub:"Quick link → 20-min eye check",  href:"/eye-test",                 emoji:"📅" },
   { label:"Track Order",      sub:"Quick link → order status",      href:"/track-order",              emoji:"📦" },
@@ -59,6 +59,7 @@ export function Header({ portal = false }: { portal?: boolean }) {
   const [searching, setSearching] = useState(false);
   const [searchFocus, setSearchFocus] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>|null>(null);
   const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 
@@ -133,9 +134,9 @@ export function Header({ portal = false }: { portal?: boolean }) {
           {logo.image
             ? <img src={siteImgUrl(logo.image)!} alt={logo.imageAlt || logo.title} className="h-10 w-10 shrink-0 rounded-full object-cover"/>
             : <div className="grid h-10 w-10 place-items-center rounded-full bg-navy-900 text-white font-bold text-lg select-none">{logo.icon}</div>}
-          <div className="hidden sm:block">
-            <p className="font-extrabold text-navy-900 text-base leading-tight">{logo.title}{logo.badge ? <> <span className="text-gold-500">{logo.badge}</span></> : null}</p>
-            <p className="text-[9px] text-slate-400 tracking-widest">{logo.tagline}</p>
+          <div className="block">
+            <p className="font-extrabold text-navy-900 text-sm sm:text-base leading-tight">{logo.title}{logo.badge ? <> <span className="text-gold-500">{logo.badge}</span></> : null}</p>
+            <p className="hidden text-[9px] text-slate-400 tracking-widest sm:block">{logo.tagline}</p>
           </div>
         </Link>)}
 
@@ -208,7 +209,7 @@ export function Header({ portal = false }: { portal?: boolean }) {
         {/* Right icons */}
         <div className="flex items-center gap-1 sm:gap-2">
           <Link href="/eye-test" className="hidden rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold hover:border-navy-700 transition sm:flex items-center gap-1">👁 Book Eye Test</Link>
-          <button onClick={() => setSearchFocus(true)} className="rounded-full p-2 hover:bg-slate-100 lg:hidden"><Search size={20}/></button>
+          <button onClick={() => { setSearchFocus(true); mobileSearchRef.current?.focus(); }} className="rounded-full p-2 hover:bg-slate-100 lg:hidden" aria-label="Search"><Search size={20}/></button>
           <Link href="/my" className="flex flex-col items-center rounded-full p-2 hover:bg-slate-100" aria-label="Account">
             <User size={20}/><span className="text-[9px] text-slate-500 hidden sm:block">Account</span>
           </Link>
@@ -258,7 +259,12 @@ export function Header({ portal = false }: { portal?: boolean }) {
       <div className="border-b border-slate-100 px-4 py-2 lg:hidden">
         <div className="relative">
           <Search size={15} className="absolute left-3 top-2.5 text-slate-400 pointer-events-none"/>
-          <input value={query} onChange={e => onQueryChange(e.target.value)} onKeyDown={e=>e.key==="Enter"&&goSearch(query)}
+          <input
+            ref={mobileSearchRef}
+            value={query}
+            onChange={e => onQueryChange(e.target.value)}
+            onFocus={() => setSearchFocus(true)}
+            onKeyDown={e=>e.key==="Enter"&&goSearch(query)}
             className="w-full rounded-full border border-slate-200 bg-slate-50 py-2 pl-9 pr-4 text-sm outline-none focus:border-navy-700"
             placeholder="Search frames, sunglasses, lenses..."/>
         </div>
@@ -288,11 +294,11 @@ export function Header({ portal = false }: { portal?: boolean }) {
       <AnimatePresence>
         {mobileOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
-            <motion.div className="absolute inset-0 bg-black/40" onClick={()=>setMobileOpen(false)} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}/>
-            <motion.div className="absolute right-0 top-0 flex h-full w-72 flex-col bg-white shadow-2xl" initial={{x:288}} animate={{x:0}} exit={{x:288}} transition={{type:"spring",damping:30,stiffness:300}}>
+            <motion.div className="absolute inset-0 bg-navy-900/50 backdrop-blur-sm" onClick={()=>setMobileOpen(false)} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}/>
+            <motion.div className="absolute right-0 top-0 flex h-full w-80 max-w-[calc(100vw-48px)] flex-col bg-white shadow-2xl" initial={{x:"100%"}} animate={{x:0}} exit={{x:"100%"}} transition={{type:"spring",damping:30,stiffness:300}}>
               <div className="flex items-center justify-between border-b border-slate-100 p-4">
                 <span className="font-bold text-navy-900">{portal ? "My Account" : "Menu"}</span>
-                <button onClick={()=>setMobileOpen(false)}><X size={20}/></button>
+                <button onClick={()=>setMobileOpen(false)} className="rounded-full bg-slate-100 p-1.5 hover:bg-slate-200 transition"><X size={18}/></button>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-1">
                 {portal && PORTAL_NAV.map(({ href, label, icon: I }) => (
@@ -311,12 +317,43 @@ export function Header({ portal = false }: { portal?: boolean }) {
                   <Link key={l.label} href={l.href} onClick={()=>setMobileOpen(false)} className="block rounded-xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-navy-50 hover:text-navy-900 transition">{l.label}</Link>))}
               </div>
               <div className="border-t border-slate-100 p-4 space-y-2">
-                <Link href="/eye-test" onClick={()=>setMobileOpen(false)} className="flex items-center justify-center gap-2 rounded-xl bg-gold-500 px-4 py-3 text-sm font-bold text-white">👁 Book Eye Test</Link>
-                <a href={waHref(whatsappNumber)} target="_blank" className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600">💬 WhatsApp Us</a>
+                <Link href="/eye-test" onClick={()=>setMobileOpen(false)} className="flex items-center justify-center gap-2 rounded-xl bg-gold-500 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-gold-600 transition">👁 Book Eye Test</Link>
+                <a href={waHref(whatsappNumber)} target="_blank" className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:border-slate-300 transition">💬 WhatsApp Us</a>
                 {!portal && <Link href="/track-order" onClick={()=>setMobileOpen(false)} className="block text-center text-xs text-slate-400 hover:underline py-1">Track an order without login</Link>}
               </div>
             </motion.div>
           </div>)}
       </AnimatePresence>
+
+      {/* One-handed Mobile Bottom Navigation Bar (Fixed on mobile phones/tablets < lg) */}
+      <nav aria-label="Mobile Bottom Navigation" className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1 pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_10px_rgba(0,0,0,0.06)] print:hidden">
+        <div className="flex items-center justify-around max-w-lg mx-auto">
+          <Link href="/" className="flex flex-col items-center justify-center py-1 px-3 text-slate-600 hover:text-navy-900 transition active:scale-95">
+            <span className="text-lg leading-none">🏠</span>
+            <span className="text-[10px] font-medium mt-0.5">Home</span>
+          </Link>
+          <Link href="/eyeglasses" className="flex flex-col items-center justify-center py-1 px-3 text-slate-600 hover:text-navy-900 transition active:scale-95">
+            <span className="text-lg leading-none">👓</span>
+            <span className="text-[10px] font-medium mt-0.5">Shop</span>
+          </Link>
+          <Link href="/my/wishlist" className="flex flex-col items-center justify-center py-1 px-3 text-slate-600 hover:text-navy-900 transition active:scale-95">
+            <Heart size={18} />
+            <span className="text-[10px] font-medium mt-0.5">Wishlist</span>
+          </Link>
+          <Link href="/cart" className="relative flex flex-col items-center justify-center py-1 px-3 text-slate-600 hover:text-navy-900 transition active:scale-95">
+            <ShoppingBag size={18} />
+            {count > 0 && (
+              <span className="absolute top-0 right-2 grid h-4 w-4 place-items-center rounded-full bg-gold-500 text-[9px] font-bold text-white shadow-sm">
+                {count > 9 ? "9+" : count}
+              </span>
+            )}
+            <span className="text-[10px] font-medium mt-0.5">Bag</span>
+          </Link>
+          <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center justify-center py-1 px-3 text-slate-600 hover:text-navy-900 transition active:scale-95">
+            <Menu size={18} />
+            <span className="text-[10px] font-medium mt-0.5">Menu</span>
+          </button>
+        </div>
+      </nav>
     </header>);
 }

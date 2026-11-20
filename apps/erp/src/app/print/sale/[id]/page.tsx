@@ -4,7 +4,7 @@ import { inr } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
 export default async function SalePrint({ params }: { params: { id: string } }) {
   const sb = supabaseServer();
-  const { data: s } = await sb.from("sales").select("*, customers(*), sale_lines(*), payments(*), branches(*)").eq("id", params.id).single();
+  const { data: s } = await sb.from("sales").select("*, customers!sales_customer_id_fkey(*), sale_lines(*), payments(*), branches(*)").eq("id", params.id).single();
   if (!s) notFound();
   const { data: org } = await sb.from("organizations").select("name").single();
   const { data: g } = await sb.from("org_settings").select("value").eq("key","gstin").maybeSingle();
@@ -21,8 +21,9 @@ export default async function SalePrint({ params }: { params: { id: string } }) 
   const invoiceType = isQ ? "QUOTATION" : s.gst_applied ? "TAX INVOICE" : "BILL OF SUPPLY";
   return (<div className="min-h-screen bg-slate-200 py-6 print:bg-white print:py-0">
     <style>{`@page{size:A5 portrait;margin:0}@media print{html,body{background:#fff}}`}</style>
-    <div className="mx-auto mb-4 flex w-[148mm] justify-end print:hidden"><PrintButton label={`Print A5 ${invoiceType}`} /></div>
-    <div className="mx-auto flex min-h-[210mm] w-[148mm] flex-col bg-white p-[7mm] text-[8pt] shadow-xl print:shadow-none">
+    <div className="mx-auto mb-4 flex w-[148mm] max-w-full justify-end px-4 print:hidden"><PrintButton label={`Print A5 ${invoiceType}`} /></div>
+    <div className="w-full overflow-x-auto px-2 sm:px-0 flex justify-center">
+      <div className="flex min-h-[210mm] w-[148mm] shrink-0 flex-col bg-white p-[7mm] text-[8pt] shadow-xl print:shadow-none">
       {/* Header */}
       <header className="flex items-start justify-between border-b-2 border-gold-500 pb-2">
         <div><h1 className="font-display text-[14pt] font-bold uppercase leading-none text-navy-900">{org?.name}</h1>
@@ -76,5 +77,5 @@ export default async function SalePrint({ params }: { params: { id: string } }) 
       <footer className="mt-auto pt-3 text-[7pt] text-slate-600">
         <ul className="list-disc pl-4">{isQ?<><li>Valid for {14} days. Stock subject to availability.</li><li>This is not a tax invoice.</li></>:<><li>Goods once sold can be exchanged only as per store policy.</li><li>Carry this invoice for warranty and service claims.</li>{s.gst_applied&&<li>This is a computer-generated tax invoice.</li>}</>}</ul>
         {footerNote && <p className="mt-1 font-medium text-navy-800">{footerNote}</p>}
-        <div className="mt-4 flex justify-between text-[7.5pt]"><span>Customer signature: ___________</span><span>For {org?.name}</span></div></footer></div></div>);
+        <div className="mt-4 flex justify-between text-[7.5pt]"><span>Customer signature: ___________</span><span>For {org?.name}</span></div></footer></div></div></div>);
 }

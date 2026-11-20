@@ -27,11 +27,11 @@ function AddCustomer({ open, onClose }: { open: boolean; onClose: () => void }) 
           <input name="phone" required placeholder="Contact number *" className="field" /></div>
         <input name="email" type="email" placeholder="Email (optional)" className="field" />
         <input name="referred_by_doctor" placeholder="Referred by doctor (optional)" className="field" />
-        <div className="grid grid-cols-3 gap-3">
-          <div className="field flex items-center gap-3 text-sm"><label className="flex gap-1"><input type="radio" name="gender" value="male" defaultChecked />Male</label>
-            <label className="flex gap-1"><input type="radio" name="gender" value="female" />Female</label></div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="field flex items-center gap-3 text-sm"><label className="flex gap-1 items-center"><input type="radio" name="gender" value="male" defaultChecked />Male</label>
+            <label className="flex gap-1 items-center"><input type="radio" name="gender" value="female" />Female</label></div>
           <input name="dob" type="date" value={dob} onChange={(e) => setDob(e.target.value)} className="field" aria-label="Date of birth" />
-          <div className="field text-sm text-slate-500">Age: {ageFrom(dob || null) ?? "--"}</div></div>
+          <div className="field text-sm text-slate-500 flex items-center">Age: {ageFrom(dob || null) ?? "--"}</div></div>
         <p className="pt-2 text-sm font-semibold text-navy-700">Address</p>
         <textarea name="address_line1" placeholder="Address line 1" rows={2} className="field" />
         <div className="grid gap-3 sm:grid-cols-2"><input name="address_line2" placeholder="Address line 2 (optional)" className="field" /><input name="landmark" placeholder="Landmark (optional)" className="field" /></div>
@@ -47,6 +47,8 @@ function AddCustomer({ open, onClose }: { open: boolean; onClose: () => void }) 
 const TABS = ["Overview", "Profile", "Prescriptions", "Orders", "Repairs", "Notes"];
 function EditCustomer({ c, onClose }: { c: Customer | null; onClose: () => void }) {
   const router = useRouter(); const [busy, setBusy] = useState(false); const [err, setErr] = useState("");
+  const [consent, setConsent] = useState(!!c?.whatsapp_opt_in);
+  useEffect(() => { setConsent(!!c?.whatsapp_opt_in); }, [c?.id, c?.whatsapp_opt_in]);
   if (!c) return null;
   const customerId = c.id;
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -62,11 +64,16 @@ function EditCustomer({ c, onClose }: { c: Customer | null; onClose: () => void 
       <div className="grid gap-3 sm:grid-cols-2"><input name="phone" required placeholder="Contact number *" className="field" defaultValue={c.phone??""}/><input name="whatsapp" placeholder="WhatsApp" className="field" defaultValue={c.whatsapp??""}/></div>
       <input name="email" type="email" placeholder="Email (optional)" className="field" defaultValue={c.email??""}/>
       <input name="referred_by_doctor" placeholder="Referred by doctor" className="field" defaultValue={c.referred_by_doctor??""}/>
-      <div className="grid grid-cols-2 gap-3"><div className="field flex items-center gap-4 text-sm"><label className="flex gap-1"><input type="radio" name="gender" value="male" defaultChecked={c.gender==="male"}/> Male</label><label className="flex gap-1"><input type="radio" name="gender" value="female" defaultChecked={c.gender==="female"}/> Female</label></div><input name="dob" type="date" className="field" defaultValue={c.dob??""}/></div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><div className="field flex items-center gap-4 text-sm"><label className="flex gap-1 items-center"><input type="radio" name="gender" value="male" defaultChecked={c.gender==="male"}/> Male</label><label className="flex gap-1 items-center"><input type="radio" name="gender" value="female" defaultChecked={c.gender==="female"}/> Female</label></div><input name="dob" type="date" className="field" defaultValue={c.dob??""} aria-label="Date of birth"/></div>
       <p className="text-sm font-semibold text-navy-700">Address</p>
       <textarea name="address_line1" placeholder="Address line 1" rows={2} className="field" defaultValue={c.address_line1??""}/>
       <div className="grid gap-3 sm:grid-cols-3"><input name="city" required placeholder="City *" className="field" defaultValue={c.city??""}/><input name="state" required placeholder="State *" className="field" defaultValue={c.state??""}/><input name="pincode" required placeholder="Pincode *" className="field" defaultValue={c.pincode??""}/></div>
       <textarea name="notes" maxLength={500} rows={3} placeholder="Notes" className="field" defaultValue={c.notes??""}/>
+      <input type="hidden" name="whatsapp_opt_in" value={consent ? "on" : "off"} />
+      <label className="flex items-center gap-2 text-sm text-slate-700">
+        <input type="checkbox" checked={consent} onChange={(e)=>setConsent(e.target.checked)} className="h-4 w-4 rounded border-slate-300 accent-navy-700" />
+        <span>Consent to receive WhatsApp marketing messages (opt-in recorded with timestamp)</span>
+      </label>
       {err && <p className="rounded-xl bg-rose-50 p-3 text-sm text-rose-600">{err}</p>}
     </form></Drawer>);
 }
@@ -87,19 +94,21 @@ function Customer360({ c, onClose }: { c: Customer | null; onClose: () => void }
   return (<>
     <Modal open={!!c} onClose={onClose} wide title="Customer 360" subtitle="Complete view of the customer in one place">
       {c && <div>
-        <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
-          <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-navy-800 font-display text-2xl text-white">{c.full_name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</div>
-          <div className="flex-1"><h3 className="text-2xl font-semibold">{c.full_name}</h3>
-            <p className="text-sm text-slate-500">{c.customer_code} | {c.vision_id} | {c.gender} {ageFrom(c.dob) ? `| ${ageFrom(c.dob)} yrs` : ""}</p>
+        <div className="flex flex-col gap-4 p-4 sm:p-6 sm:flex-row sm:items-center">
+          <div className="grid h-16 w-16 sm:h-20 sm:w-20 shrink-0 place-items-center rounded-full bg-navy-800 font-display text-xl sm:text-2xl text-white">{c.full_name.split(" ").map((w) => w[0]).slice(0, 2).join("")}</div>
+          <div className="flex-1 min-w-0"><h3 className="text-xl sm:text-2xl font-semibold truncate">{c.full_name}</h3>
+            <p className="text-xs sm:text-sm text-slate-500">{c.customer_code} | {c.vision_id} | {c.gender} {ageFrom(c.dob) ? `| ${ageFrom(c.dob)} yrs` : ""}</p>
             <div className="mt-2 flex flex-wrap gap-2"><Pill tone="green">{c.status}</Pill>{c.tags?.map((t) => <Pill key={t} tone="blue">{t}</Pill>)}</div></div>
-          <WhatsAppSend phone={wa ?? ""} keys={["welcome", "welcome_back", "referral", "internal_followup"]}
-            vars={{ Name: c.full_name, "Existing Customer Name": referrer || "[Existing Customer Name]" }}
-            defaultKey="welcome" label="WhatsApp" className="btn btn-ghost text-emerald-700" />
-          <button onClick={() => setEditing(true)} className="btn btn-ghost">Edit</button>
+          <div className="flex flex-wrap items-center gap-2">
+            <WhatsAppSend phone={wa ?? ""} keys={["welcome", "welcome_back", "referral", "internal_followup"]}
+              vars={{ Name: c.full_name, "Existing Customer Name": referrer || "[Existing Customer Name]" }}
+              defaultKey="welcome" label="WhatsApp" className="btn btn-ghost text-emerald-700" />
+            <button onClick={() => setEditing(true)} className="btn btn-ghost">Edit</button>
+          </div>
         </div>
         <div className="flex gap-1 overflow-x-auto border-y border-slate-100 bg-slate-50 px-4">
           {TABS.map((t) => <button key={t} onClick={() => setTab(t)} className={`whitespace-nowrap px-3 py-3 text-sm font-medium ${tab === t ? "border-b-2 border-gold-500 text-navy-900" : "text-slate-500"}`}>{t}</button>)}</div>
-        <div className="space-y-3 p-6 text-sm">
+        <div className="space-y-3 p-4 sm:p-6 text-sm">
           {(tab === "Overview" || tab === "Profile") && <>
             <p className="flex gap-2"><Phone size={15} />{c.phone}</p>
             {c.email && <p className="flex gap-2"><Mail size={15} />{c.email}</p>}
@@ -130,9 +139,9 @@ export function CustomersView({ initial }: { initial: Customer[] }) {
   const rows = initial.filter((c) => `${c.full_name} ${c.phone} ${c.email ?? ""} ${c.vision_id} ${c.customer_code}`.toLowerCase().includes(q.toLowerCase()));
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      <div className="flex items-end justify-between gap-3"><div><h1 className="font-display text-3xl font-semibold">Customers</h1>
-        <p className="text-slate-500">{initial.length} customers and their vision care journey</p></div>
-        <button onClick={() => setAdding(true)} className="btn btn-primary"><UserPlus size={16} />Add customer</button></div>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3"><div><h1 className="font-display text-2xl sm:text-3xl font-semibold">Customers</h1>
+        <p className="text-xs sm:text-sm text-slate-500">{initial.length} customers and their vision care journey</p></div>
+        <button onClick={() => setAdding(true)} className="btn btn-primary self-start sm:self-auto"><UserPlus size={16} />Add customer</button></div>
       <div className="relative"><Search size={16} className="absolute left-3 top-3.5 text-slate-400" /><input value={q} onChange={(e) => setQ(e.target.value)} className="field pl-9" placeholder="Search by name, phone, email or Vision ID…" /></div>
       {rows.length === 0 ? <div className="card p-10 text-center text-slate-500">No customers found. Add the first one to get started.</div> :
         <div className="card divide-y divide-slate-100 overflow-hidden">

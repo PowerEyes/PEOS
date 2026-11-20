@@ -1,0 +1,206 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - complementary [ref=f5e3]:
+      - generic [ref=f5e5]:
+        - generic [ref=f5e6]: 👁
+        - generic [ref=f5e7]:
+          - paragraph [ref=f5e8]: PowerOS
+          - paragraph [ref=f5e9]: Power Eyes Opticals
+      - navigation [ref=f5e10]:
+        - link "Dashboard" [ref=f5e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f5e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f5e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f5e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f5e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f5e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f5e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f5e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f5e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - button "Finance" [ref=f5e61] [cursor=pointer]
+        - link "CRM Automation" [ref=f5e67] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f5e71] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f5e78] [cursor=pointer]
+        - link "Settings" [ref=f5e85] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f5e92] [cursor=pointer]
+    - generic [ref=f5e96]:
+      - banner [ref=f5e97]:
+        - generic [ref=f5e98]: Power Eyes Opticals
+        - generic [ref=f5e101]:
+          - generic "2 branches" [ref=f5e102]:
+            - generic [ref=f5e103]: P
+            - generic [ref=f5e104]: Power Eyes Owner
+            - generic [ref=f5e105]: owner
+          - link "← Website" [ref=f5e106] [cursor=pointer]:
+            - /url: /
+      - main [ref=f5e107]:
+        - generic [ref=f5e108]:
+          - generic [ref=f5e109]:
+            - generic [ref=f5e110]:
+              - heading "Prescriptions" [level=1] [ref=f5e111]
+              - paragraph [ref=f5e112]: 2 on record
+            - button "New prescription" [ref=f5e113] [cursor=pointer]
+          - textbox "Search by Rx number, name or phone" [ref=f5e119]
+          - generic [ref=f5e120]:
+            - button "E2E Test Customer A01 RX-0008 OD -2.00 -0.50 | OS -1.75 -0.25 | 20/11/2026 active" [ref=f5e121] [cursor=pointer]:
+              - generic [ref=f5e122]:
+                - generic [ref=f5e123]: E2E Test Customer A01 RX-0008
+                - generic [ref=f5e124]: OD -2.00 -0.50 | OS -1.75 -0.25 | 20/11/2026
+              - generic [ref=f5e125]: active
+            - button "Nishanth RX-0001 OD -1.25 | OS -1.25 | 18/11/2026 active" [ref=f5e126] [cursor=pointer]:
+              - generic [ref=f5e127]:
+                - generic [ref=f5e128]: Nishanth RX-0001
+                - generic [ref=f5e129]: OD -1.25 | OS -1.25 | 18/11/2026
+              - generic [ref=f5e130]: active
+          - dialog "New prescription" [ref=f5e200]:
+            - generic [ref=f5e201]:
+              - generic [ref=f5e202]:
+                - heading "New prescription" [level=2] [ref=f5e203]
+                - paragraph [ref=f5e204]: E2E Test Customer A01 | VIS-0006
+              - button "Close" [ref=f5e205] [cursor=pointer]
+            - generic [ref=f5e272]:
+              - generic [ref=f5e273]:
+                - generic [ref=f5e274]: Type values or use ▲▼ / ↑↓ (±0.25, Shift = ±1.00).
+                - button "Copy right eye to left" [ref=f5e275] [cursor=pointer]
+              - generic [ref=f5e279]:
+                - paragraph [ref=f5e280]: Right eye (OD)
+                - generic [ref=f5e281]:
+                  - generic [ref=f5e282]:
+                    - generic [ref=f5e283]:
+                      - generic [ref=f5e284]: SPH
+                      - button "Flip SPH sign" [ref=f5e285] [cursor=pointer]: "-"
+                    - generic [ref=f5e286]:
+                      - textbox "SPH" [ref=f5e287]: "-1.00"
+                      - generic:
+                        - button "Increase SPH" [ref=f5e288] [cursor=pointer]
+                        - button "Decrease SPH" [ref=f5e291] [cursor=pointer]
+                  - generic [ref=f5e294]:
+                    - generic [ref=f5e295]:
+                      - generic [ref=f5e296]: CYL
+                      - button "Flip CYL sign" [ref=f5e297] [cursor=pointer]: "-"
+                    - generic [ref=f5e298]:
+                      - textbox "CYL" [ref=f5e299]: "-0.50"
+                      - generic:
+                        - button "Increase CYL" [ref=f5e300] [cursor=pointer]
+                        - button "Decrease CYL" [ref=f5e303] [cursor=pointer]
+                  - generic [ref=f5e306]:
+                    - generic [ref=f5e307]: AXIS
+                    - generic [ref=f5e309]:
+                      - textbox "AXIS" [ref=f5e310]: "180"
+                      - generic:
+                        - button "Increase AXIS" [ref=f5e311] [cursor=pointer]
+                        - button "Decrease AXIS" [ref=f5e314] [cursor=pointer]
+                  - generic [ref=f5e317]:
+                    - generic [ref=f5e318]: ADD
+                    - generic [ref=f5e320]:
+                      - textbox "ADD" [ref=f5e321]
+                      - generic:
+                        - button "Increase ADD" [ref=f5e322] [cursor=pointer]
+                        - button "Decrease ADD" [ref=f5e325] [cursor=pointer]
+                  - generic [ref=f5e328]:
+                    - generic [ref=f5e329]: VA distance
+                    - combobox "VA distance" [ref=f5e330]:
+                      - option "-" [selected]
+                      - option "6/6"
+                      - option "6/9"
+                      - option "6/12"
+                      - option "6/18"
+                      - option "6/24"
+                      - option "6/36"
+                      - option "6/60"
+                  - generic [ref=f5e331]:
+                    - generic [ref=f5e332]: VA near
+                    - combobox "VA near" [ref=f5e333]:
+                      - option "-" [selected]
+                      - option "N5"
+                      - option "N6"
+                      - option "N8"
+                      - option "N10"
+                      - option "N12"
+                      - option "N18"
+                - paragraph [ref=f5e409]: "OD: -1.00 / -0.50 × 180"
+              - generic [ref=f5e334]:
+                - paragraph [ref=f5e335]: Left eye (OS)
+                - generic [ref=f5e336]:
+                  - generic [ref=f5e337]:
+                    - generic [ref=f5e338]:
+                      - generic [ref=f5e339]: SPH
+                      - button "Flip SPH sign" [ref=f5e340] [cursor=pointer]: ±
+                    - generic [ref=f5e341]:
+                      - textbox "SPH" [ref=f5e342]
+                      - generic:
+                        - button "Increase SPH" [ref=f5e343] [cursor=pointer]
+                        - button "Decrease SPH" [ref=f5e346] [cursor=pointer]
+                  - generic [ref=f5e349]:
+                    - generic [ref=f5e350]:
+                      - generic [ref=f5e351]: CYL
+                      - button "Flip CYL sign" [ref=f5e352] [cursor=pointer]: ±
+                    - generic [ref=f5e353]:
+                      - textbox "CYL" [ref=f5e354]
+                      - generic:
+                        - button "Increase CYL" [ref=f5e355] [cursor=pointer]
+                        - button "Decrease CYL" [ref=f5e358] [cursor=pointer]
+                  - generic [ref=f5e361]:
+                    - generic [ref=f5e362]: AXIS
+                    - generic [ref=f5e364]:
+                      - textbox "AXIS" [ref=f5e365]
+                      - generic:
+                        - button "Increase AXIS" [ref=f5e366] [cursor=pointer]
+                        - button "Decrease AXIS" [ref=f5e369] [cursor=pointer]
+                  - generic [ref=f5e372]:
+                    - generic [ref=f5e373]: ADD
+                    - generic [ref=f5e375]:
+                      - textbox "ADD" [ref=f5e376]
+                      - generic:
+                        - button "Increase ADD" [ref=f5e377] [cursor=pointer]
+                        - button "Decrease ADD" [ref=f5e380] [cursor=pointer]
+                  - generic [ref=f5e383]:
+                    - generic [ref=f5e384]: VA distance
+                    - combobox "VA distance" [ref=f5e385]:
+                      - option "-" [selected]
+                      - option "6/6"
+                      - option "6/9"
+                      - option "6/12"
+                      - option "6/18"
+                      - option "6/24"
+                      - option "6/36"
+                      - option "6/60"
+                  - generic [ref=f5e386]:
+                    - generic [ref=f5e387]: VA near
+                    - combobox "VA near" [ref=f5e388]:
+                      - option "-" [selected]
+                      - option "N5"
+                      - option "N6"
+                      - option "N8"
+                      - option "N10"
+                      - option "N12"
+                      - option "N18"
+              - generic [ref=f5e389]:
+                - generic [ref=f5e390]:
+                  - generic [ref=f5e391]: PD far (mm)
+                  - spinbutton "PD far (mm)" [ref=f5e392]: "62"
+                - generic [ref=f5e393]:
+                  - generic [ref=f5e394]: PD near (mm)
+                  - spinbutton "PD near (mm)" [ref=f5e395]
+                - generic [ref=f5e396]:
+                  - generic [ref=f5e397]: Examined by
+                  - textbox "Examined by" [ref=f5e398]
+                - generic [ref=f5e399]:
+                  - generic [ref=f5e400]: Valid till
+                  - textbox "Valid till" [ref=f5e401]: 2027-11-20
+              - textbox "Remarks" [ref=f5e402]
+            - generic [ref=f5e403]:
+              - button "Back" [ref=f5e404] [cursor=pointer]
+              - button "Saving…" [disabled] [ref=f5e410]
+  - alert [ref=f5e131]

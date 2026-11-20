@@ -1,0 +1,139 @@
+- generic [ref=f16e1]:
+  - generic [ref=f16e2]:
+    - complementary [ref=f16e3]:
+      - generic [ref=f16e5]:
+        - generic [ref=f16e6]: 👁
+        - generic [ref=f16e7]:
+          - paragraph [ref=f16e8]: PowerOS
+          - paragraph [ref=f16e9]: Power Eyes Opticals
+      - navigation [ref=f16e10]:
+        - link "Dashboard" [ref=f16e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f16e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f16e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f16e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f16e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f16e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f16e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f16e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f16e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - button "Finance" [ref=f16e61] [cursor=pointer]
+        - link "CRM Automation" [ref=f16e67] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f16e71] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f16e78] [cursor=pointer]
+        - link "Settings" [ref=f16e85] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f16e92] [cursor=pointer]
+    - generic [ref=f16e96]:
+      - banner [ref=f16e97]:
+        - generic [ref=f16e98]: Power Eyes Opticals
+        - generic [ref=f16e101]:
+          - generic "2 branches" [ref=f16e102]:
+            - generic [ref=f16e103]: P
+            - generic [ref=f16e104]: Power Eyes Owner
+            - generic [ref=f16e105]: owner
+          - link "← Website" [ref=f16e106] [cursor=pointer]:
+            - /url: /
+      - main [ref=f16e107]:
+        - generic [ref=f16e108]:
+          - generic [ref=f16e109]:
+            - generic [ref=f16e110]:
+              - heading "POS & Orders" [level=1] [ref=f16e111]
+              - paragraph [ref=f16e112]: Quotations, orders and payments in one place
+            - button "New sale" [ref=f16e113] [cursor=pointer]
+          - generic [ref=f16e115]:
+            - button "Orders 3" [ref=f16e116] [cursor=pointer]
+            - button "Quotations 0" [ref=f16e119] [cursor=pointer]
+          - textbox "Search by number, name or phone" [ref=f16e125]
+          - generic [ref=f16e126]:
+            - button "Diwakar ORD-0003 20 Nov 2026 | due ₹3,000 ₹3,000 unpaid ready" [active] [ref=f16e127] [cursor=pointer]:
+              - generic [ref=f16e128]:
+                - generic [ref=f16e129]: Diwakar ORD-0003
+                - generic [ref=f16e130]: 20 Nov 2026 | due ₹3,000
+              - generic [ref=f16e131]: ₹3,000
+              - generic [ref=f16e132]: unpaid
+              - generic [ref=f16e133]: ready
+            - button "Nishanth ORD-0002 20 Nov 2026 | due ₹1,492.5 ₹2,917.5 partial lab pending" [ref=f16e134] [cursor=pointer]:
+              - generic [ref=f16e135]:
+                - generic [ref=f16e136]: Nishanth ORD-0002
+                - generic [ref=f16e137]: 20 Nov 2026 | due ₹1,492.5
+              - generic [ref=f16e138]: ₹2,917.5
+              - generic [ref=f16e139]: partial
+              - generic [ref=f16e140]: lab pending
+            - button "Diwakar ORD-0001 20 Nov 2026 ₹450 paid ready" [ref=f16e141] [cursor=pointer]:
+              - generic [ref=f16e142]:
+                - generic [ref=f16e143]: Diwakar ORD-0001
+                - generic [ref=f16e144]: 20 Nov 2026
+              - generic [ref=f16e145]: ₹450
+              - generic [ref=f16e146]: paid
+              - generic [ref=f16e147]: ready
+          - dialog "Order ORD-0003" [ref=f16e151]:
+            - generic [ref=f16e152]:
+              - generic [ref=f16e153]:
+                - heading "Order ORD-0003" [level=2] [ref=f16e154]
+                - paragraph [ref=f16e155]: Diwakar | VIS-0005 | Mogappair East | 20 Nov 2026
+              - button "Close" [ref=f16e156] [cursor=pointer]
+            - generic [ref=f16e161]:
+              - generic [ref=f16e162]:
+                - generic [ref=f16e163]:
+                  - generic [ref=f16e164]: ready
+                  - generic [ref=f16e165]: unpaid
+                - generic [ref=f16e167]:
+                  - generic [ref=f16e168]:
+                    - paragraph [ref=f16e169]: Ray-Ban E2E-TEST-FRAME
+                    - paragraph [ref=f16e170]: 2 x ₹1,500
+                  - paragraph [ref=f16e171]: ₹3,000
+                - generic [ref=f16e172]:
+                  - paragraph [ref=f16e173]: Status history
+                  - generic [ref=f16e174]:
+                    - generic [ref=f16e177]:
+                      - paragraph [ref=f16e178]: draft — Order placed
+                      - paragraph [ref=f16e179]: 20 Nov 2026, 1:06 pm
+                    - generic [ref=f16e182]:
+                      - paragraph [ref=f16e183]: draft → ready
+                      - paragraph [ref=f16e184]: 20 Nov 2026, 1:06 pm
+              - generic [ref=f16e185]:
+                - generic [ref=f16e186]:
+                  - paragraph [ref=f16e187]:
+                    - generic [ref=f16e188]: Subtotal
+                    - text: ₹3,000
+                  - paragraph [ref=f16e189]:
+                    - generic [ref=f16e190]: Taxable
+                    - text: ₹2,857.14
+                  - paragraph [ref=f16e191]:
+                    - generic [ref=f16e192]: CGST
+                    - text: ₹71.43
+                  - paragraph [ref=f16e193]:
+                    - generic [ref=f16e194]: SGST
+                    - text: ₹71.43
+                  - paragraph [ref=f16e195]:
+                    - generic [ref=f16e196]: GST included
+                    - text: ₹142.86
+                  - paragraph [ref=f16e197]:
+                    - generic [ref=f16e198]: Total
+                    - text: ₹3,000
+                  - paragraph [ref=f16e199]:
+                    - generic [ref=f16e200]: Paid
+                    - text: ₹0
+                  - paragraph [ref=f16e201]:
+                    - generic [ref=f16e202]: Balance
+                    - text: ₹3,000
+                - link "Print A5" [ref=f16e203] [cursor=pointer]:
+                  - /url: /print/sale/56764943-0aa5-4347-ab1d-c6a4c5e7db65
+                - button "Send on WhatsApp" [ref=f16e208] [cursor=pointer]
+                - button "Add payment" [ref=f16e211] [cursor=pointer]
+                - button "Mark delivered" [ref=f16e215] [cursor=pointer]
+                - link "Issue credit note / return" [ref=f16e219] [cursor=pointer]:
+                  - /url: /finance?cn=56764943-0aa5-4347-ab1d-c6a4c5e7db65
+                - button "Cancel order" [ref=f16e220] [cursor=pointer]
+  - alert [ref=f16e148]

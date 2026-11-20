@@ -247,8 +247,16 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
       <L t="Key (stable id, unique within section)"><input className="field font-mono" value={f.key} onChange={e=>setF({...f,key:e.target.value})} placeholder="e.g. banner_new"/></L>
       <L t="Parent key (group under another row)"><input className="field font-mono" value={f.parent_key} onChange={e=>setF({...f,parent_key:e.target.value})} placeholder="e.g. col_shop"/></L>
     </div>
-    <L t="Title"><input className="field" value={f.title} onChange={e=>setF({...f,title:e.target.value})}/></L>
-    <L t="Subtitle"><input className="field" value={f.subtitle} onChange={e=>setF({...f,subtitle:e.target.value})}/></L>
+    {/* The hero headline is the one place an operator wants a controlled wrap.
+        A single-line input cannot hold a newline, so hero rows get a textarea;
+        every other section keeps the compact input. The website splits on that
+        newline and emits <br/> (withLineBreaks). */}
+    {f.section === "hero"
+      ? <L t="Title — Enter starts a new line"><textarea className="field" rows={2} value={f.title} onChange={e=>setF({...f,title:e.target.value})} placeholder={"Your Family's\nVision Partner"}/></L>
+      : <L t="Title"><input className="field" value={f.title} onChange={e=>setF({...f,title:e.target.value})}/></L>}
+    {f.section === "hero"
+      ? <L t="Subtitle — Enter starts a new line"><textarea className="field" rows={2} value={f.subtitle} onChange={e=>setF({...f,subtitle:e.target.value})}/></L>
+      : <L t="Subtitle"><input className="field" value={f.subtitle} onChange={e=>setF({...f,subtitle:e.target.value})}/></L>}
     <L t="Body text"><textarea className="field" rows={3} value={f.body} onChange={e=>setF({...f,body:e.target.value})}/></L>
 
     <ImageField

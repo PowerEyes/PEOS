@@ -18,7 +18,7 @@ export function EyeTestBooking() {
     <div className="text-center mb-10"><h1 className="font-display text-4xl font-bold text-navy-900">Book an Eye Test</h1><p className="mt-2 text-slate-500">Professional eye care at our Mogappair stores</p></div>
     <div className="card p-6 space-y-5">
       <div><p className="mb-2 flex items-center gap-2 text-sm font-semibold text-navy-700"><MapPin size={15}/>Choose store</p>
-        <div className="grid grid-cols-2 gap-3">{["Mogappair East","Mogappair West"].map(b=><button key={b} onClick={()=>setBranch(b)} className={`rounded-2xl border-2 p-4 text-sm font-medium transition ${branch===b?"border-gold-500 bg-amber-50":"border-slate-100 hover:border-slate-300"}`}>{b}</button>)}</div></div>
+        <div className="grid grid-cols-2 gap-3">{["Mogappair East","Mogappair West"].map(b=><button key={b} onClick={()=>setBranch(b)} className={`rounded-2xl border-2 p-3 sm:p-4 text-xs sm:text-sm font-medium transition text-center ${branch===b?"border-gold-500 bg-amber-50":"border-slate-100 hover:border-slate-300"}`}>{b}</button>)}</div></div>
       <div><p className="mb-2 flex items-center gap-2 text-sm font-semibold text-navy-700"><Calendar size={15}/>Appointment type</p>
         <div className="grid gap-2">{TYPES.map(t=><button key={t} onClick={()=>setType(t)} className={`rounded-xl border-2 px-4 py-2.5 text-left text-sm transition ${type===t?"border-gold-500 bg-amber-50":"border-slate-100 hover:border-slate-300"}`}>{t}</button>)}</div></div>
       <div><p className="mb-2 flex items-center gap-2 text-sm font-semibold text-navy-700"><Calendar size={15}/>Date</p>

@@ -1,0 +1,574 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: Preview mode — hidden blocks and cards are shown below. Visitors never see these.
+    - link "Exit preview" [ref=e5] [cursor=pointer]:
+      - /url: /
+  - banner [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: 📍 Mogappair East, Chennai · Your Family's Vision Partner Since 1998 ·
+      - link "💬 WhatsApp Support" [ref=e9] [cursor=pointer]:
+        - /url: https://wa.me/919840496404
+      - generic [ref=e10]:
+        - generic [ref=e11]: EN
+        - generic [ref=e12]: "|"
+        - generic [ref=e13]: ₹ INR
+        - link "Find a Store" [ref=e14] [cursor=pointer]:
+          - /url: /store-locator
+    - generic [ref=e15]:
+      - link "👁 POWER EYES OPTICALS Since 1998 — Your Family's Vision Partner" [ref=e16] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e17]: 👁
+        - generic [ref=e18]:
+          - paragraph [ref=e19]: POWER EYES OPTICALS
+          - paragraph [ref=e20]: Since 1998 — Your Family's Vision Partner
+      - textbox "Search frames, sunglasses, lenses, brands..." [ref=e23]
+      - generic [ref=e24]:
+        - link "👁 Book Eye Test" [ref=e25] [cursor=pointer]:
+          - /url: /eye-test
+        - link "Account" [ref=e26] [cursor=pointer]:
+          - /url: /my
+        - link "Wishlist" [ref=e31] [cursor=pointer]:
+          - /url: /my/wishlist
+        - link "Cart" [ref=e35] [cursor=pointer]:
+          - /url: /cart
+    - navigation [ref=e40]:
+      - generic [ref=e41]:
+        - link "Eyeglasses" [ref=e43] [cursor=pointer]:
+          - /url: /eyeglasses
+        - link "Sunglasses" [ref=e47] [cursor=pointer]:
+          - /url: /sunglasses
+        - link "Contact Lenses" [ref=e49] [cursor=pointer]:
+          - /url: /contact-lenses
+        - link "Computer Glasses" [ref=e51] [cursor=pointer]:
+          - /url: /eyeglasses?kind=computer
+        - link "Kids Eyewear" [ref=e53] [cursor=pointer]:
+          - /url: /eyeglasses?gender=kids
+        - link "Lens & Coatings" [ref=e55] [cursor=pointer]:
+          - /url: /lenses
+        - link "Offers" [ref=e57] [cursor=pointer]:
+          - /url: /offers
+        - link "Eye Test" [ref=e59] [cursor=pointer]:
+          - /url: /eye-test
+        - link "About Us" [ref=e61] [cursor=pointer]:
+          - /url: /about
+  - generic [ref=e62]:
+    - generic [ref=e63]: hero
+    - generic [ref=e64]: "— 1 card hidden from visitors: Clearer Vision. Brighter Days."
+  - generic [ref=e65]:
+    - generic [ref=e69]:
+      - paragraph [ref=e70]: Since 1998
+      - heading "Your Family's Vision Partner" [level=1] [ref=e71]: Your Family'sVision Partner
+      - paragraph [ref=e72]: Eyewear, eye care and expert guidance for every generation.
+      - generic [ref=e73]:
+        - link "Shop Eyewear" [ref=e74] [cursor=pointer]:
+          - /url: /eyeglasses
+        - link "Book Eye Test" [ref=e75] [cursor=pointer]:
+          - /url: /eye-test
+      - generic [ref=e76]:
+        - generic [ref=e77]: 👁️ Expert Eye Care
+        - generic [ref=e78]: 📋 Prescription Support
+        - generic [ref=e79]: 🏪 Real Stores E&W
+        - generic [ref=e80]: 👨‍👩‍👧 Family Vision ID
+    - paragraph [ref=e83]: Clearer VisionBrighter Days
+  - generic [ref=e85]:
+    - link "🕶️ Eyeglasses For everyday life Shop Now" [ref=e86] [cursor=pointer]:
+      - /url: /eyeglasses
+      - generic [ref=e87]: 🕶️
+      - paragraph [ref=e88]: Eyeglasses
+      - paragraph [ref=e89]: For everyday life
+      - generic [ref=e90]: Shop Now
+    - link "😎 Sunglasses Style meets protection Shop Now" [ref=e93] [cursor=pointer]:
+      - /url: /sunglasses
+      - generic [ref=e94]: 😎
+      - paragraph [ref=e95]: Sunglasses
+      - paragraph [ref=e96]: Style meets protection
+      - generic [ref=e97]: Shop Now
+    - link "👧 Kids Eyewear Growing eyes, brighter tomorrows Shop Now" [ref=e100] [cursor=pointer]:
+      - /url: /eyeglasses?gender=kids
+      - generic [ref=e101]: 👧
+      - paragraph [ref=e102]: Kids Eyewear
+      - paragraph [ref=e103]: Growing eyes, brighter tomorrows
+      - generic [ref=e104]: Shop Now
+    - link "🔬 Lenses Advanced vision for a better you Shop Now" [ref=e107] [cursor=pointer]:
+      - /url: /lenses
+      - generic [ref=e108]: 🔬
+      - paragraph [ref=e109]: Lenses
+      - paragraph [ref=e110]: Advanced vision for a better you
+      - generic [ref=e111]: Shop Now
+  - generic [ref=e115]:
+    - generic [ref=e116]:
+      - generic [ref=e117]:
+        - heading "Find Your Perfect Frame" [level=2] [ref=e118]
+        - paragraph [ref=e119]: Explore by shape, face shape, lifestyle or need
+      - link "View All Frames" [ref=e120] [cursor=pointer]:
+        - /url: /eyeglasses
+    - generic [ref=e123]:
+      - link "By Shape" [ref=e124] [cursor=pointer]:
+        - /url: /eyeglasses
+      - link "By Face Shape" [ref=e125] [cursor=pointer]:
+        - /url: /eyeglasses
+      - link "By Lifestyle" [ref=e126] [cursor=pointer]:
+        - /url: /eyeglasses
+      - link "By Need" [ref=e127] [cursor=pointer]:
+        - /url: /eyeglasses
+      - link "By Gender" [ref=e128] [cursor=pointer]:
+        - /url: /eyeglasses
+      - link "Help Me Choose" [ref=e129] [cursor=pointer]:
+        - /url: /help-me-choose
+  - generic [ref=e132]:
+    - link "👓 Round" [ref=e133] [cursor=pointer]:
+      - /url: /eyeglasses?shape=round
+      - generic [ref=e134]: 👓
+      - generic [ref=e136]: Round
+    - link "👓 Square" [ref=e137] [cursor=pointer]:
+      - /url: /eyeglasses?shape=square
+      - generic [ref=e138]: 👓
+      - generic [ref=e140]: Square
+    - link "👓 Rectangle" [ref=e141] [cursor=pointer]:
+      - /url: /eyeglasses?shape=rectangle
+      - generic [ref=e142]: 👓
+      - generic [ref=e144]: Rectangle
+    - link "👓 Cat Eye" [ref=e145] [cursor=pointer]:
+      - /url: /eyeglasses?shape=cat-eye
+      - generic [ref=e146]: 👓
+      - generic [ref=e148]: Cat Eye
+    - link "👓 Aviator" [ref=e149] [cursor=pointer]:
+      - /url: /eyeglasses?shape=aviator
+      - generic [ref=e150]: 👓
+      - generic [ref=e152]: Aviator
+    - link "👓 Geometric" [ref=e153] [cursor=pointer]:
+      - /url: /eyeglasses?shape=geometric
+      - generic [ref=e154]: 👓
+      - generic [ref=e156]: Geometric
+    - link "👓 Browline" [ref=e157] [cursor=pointer]:
+      - /url: /eyeglasses?shape=browline
+      - generic [ref=e158]: 👓
+      - generic [ref=e160]: Browline
+    - link "👓 Oval" [ref=e161] [cursor=pointer]:
+      - /url: /eyeglasses?shape=oval
+      - generic [ref=e162]: 👓
+      - generic [ref=e164]: Oval
+  - generic [ref=e165]:
+    - generic [ref=e166]:
+      - generic [ref=e167]:
+        - heading "Best Sellers" [level=2] [ref=e168]
+        - paragraph [ref=e169]: Most loved frames by our customers
+      - link "View All" [ref=e170] [cursor=pointer]:
+        - /url: /eyeglasses
+    - generic [ref=e173]:
+      - link "Eyeglasses" [ref=e174] [cursor=pointer]:
+        - /url: /eyeglasses
+      - link "Sunglasses" [ref=e175] [cursor=pointer]:
+        - /url: /sunglasses
+    - generic [ref=e176]:
+      - generic [ref=e177]:
+        - link "null 173 – opens in new tab" [ref=e178] [cursor=pointer]:
+          - /url: /product/976ae1a5-1016-4d51-affb-fe2a2513a26d
+          - generic [ref=e179]:
+            - generic [ref=e180]: 👓
+            - generic:
+              - generic: 14% OFF
+              - generic: New
+        - button "Add to wishlist" [ref=e182] [cursor=pointer]
+        - generic [ref=e185]:
+          - paragraph
+          - paragraph [ref=e186]: "173"
+          - generic [ref=e187]:
+            - generic [ref=e188]: ₹1,250
+            - generic [ref=e189]: ₹1,450
+          - button "📏 Size guide" [ref=e190] [cursor=pointer]
+          - link "Choose Lenses →" [ref=e191] [cursor=pointer]:
+            - /url: /product/976ae1a5-1016-4d51-affb-fe2a2513a26d
+      - generic [ref=e192]:
+        - link "ROCKERS 178561 – opens in new tab" [ref=e193] [cursor=pointer]:
+          - /url: /product/5aff7cba-d908-49d6-aab8-9eeadc79d586
+          - generic [ref=e194]:
+            - generic [ref=e195]: 👓
+            - generic:
+              - generic: 10% OFF
+              - generic: New
+        - button "Add to wishlist" [ref=e197] [cursor=pointer]
+        - generic [ref=e200]:
+          - paragraph [ref=e201]: ROCKERS
+          - paragraph [ref=e202]: "178561"
+          - generic [ref=e203]:
+            - generic [ref=e204]: ₹1,350
+            - generic [ref=e205]: ₹1,500
+          - button "📏 Size guide" [ref=e206] [cursor=pointer]
+          - link "Choose Lenses →" [ref=e207] [cursor=pointer]:
+            - /url: /product/5aff7cba-d908-49d6-aab8-9eeadc79d586
+  - generic [ref=e209]:
+    - link [ref=e210] [cursor=pointer]:
+      - /url: /eyeglasses?collection=new
+      - generic [ref=e211]:
+        - paragraph [ref=e212]: New Collection
+        - paragraph [ref=e213]: Everyday Frames For Every Story
+        - generic [ref=e214]: Shop Collection
+    - link [ref=e217] [cursor=pointer]:
+      - /url: /lenses
+      - generic [ref=e218]:
+        - paragraph [ref=e219]: Progressive Lenses
+        - paragraph [ref=e220]: Seamless Vision At Every Distance
+        - generic [ref=e221]: Explore Progressive
+    - link [ref=e224] [cursor=pointer]:
+      - /url: /sunglasses
+      - generic [ref=e225]:
+        - paragraph [ref=e226]: Prescription Sunglasses
+        - paragraph [ref=e227]: See Clearly Everywhere
+        - generic [ref=e228]: Shop Sunglasses
+  - generic [ref=e232]:
+    - generic [ref=e233]:
+      - generic [ref=e234]:
+        - heading "Smarter Vision Starts Here" [level=2] [ref=e235]
+        - paragraph [ref=e236]: Specialised lenses for how you live today
+      - link "View All Lenses" [ref=e237] [cursor=pointer]:
+        - /url: /lenses
+    - generic [ref=e240]:
+      - link [ref=e241] [cursor=pointer]:
+        - /url: /lenses?type=blue_light
+        - generic [ref=e242]:
+          - paragraph [ref=e243]: Blue Light
+          - paragraph [ref=e244]: For screen & work
+          - generic [ref=e245]: Explore
+      - link [ref=e248] [cursor=pointer]:
+        - /url: /lenses?type=progressive
+        - generic [ref=e249]:
+          - paragraph [ref=e250]: Progressive
+          - paragraph [ref=e251]: All distances, one lens
+          - generic [ref=e252]: Explore
+      - link [ref=e255] [cursor=pointer]:
+        - /url: /lenses?type=driving
+        - generic [ref=e256]:
+          - paragraph [ref=e257]: Driving
+          - paragraph [ref=e258]: Clearer & safer nights
+          - generic [ref=e259]: Explore
+      - link [ref=e262] [cursor=pointer]:
+        - /url: /lenses?type=photochromic
+        - generic [ref=e263]:
+          - paragraph [ref=e264]: Photochromic
+          - paragraph [ref=e265]: Indoor to outdoor
+          - generic [ref=e266]: Explore
+      - link [ref=e269] [cursor=pointer]:
+        - /url: /lenses?type=high_power
+        - generic [ref=e270]:
+          - paragraph [ref=e271]: High Power
+          - paragraph [ref=e272]: Expert solutions
+          - generic [ref=e273]: Explore
+      - link [ref=e276] [cursor=pointer]:
+        - /url: /lenses?type=kids
+        - generic [ref=e277]:
+          - paragraph [ref=e278]: Kids Lenses
+          - paragraph [ref=e279]: Tough & safe
+          - generic [ref=e280]: Explore
+  - generic [ref=e283]:
+    - generic [ref=e284]:
+      - heading "Frames for Your Life" [level=2] [ref=e285]
+      - link "View All" [ref=e286] [cursor=pointer]:
+        - /url: /eyeglasses
+    - generic [ref=e289]:
+      - link "💼 Office" [ref=e290] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=office
+        - generic [ref=e291]: 💼
+        - generic [ref=e292]: Office
+      - link "💻 Computer" [ref=e293] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=computer
+        - generic [ref=e294]: 💻
+        - generic [ref=e295]: Computer
+      - link "🚗 Driving" [ref=e296] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=driving
+        - generic [ref=e297]: 🚗
+        - generic [ref=e298]: Driving
+      - link "✈️ Travel" [ref=e299] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=travel
+        - generic [ref=e300]: ✈️
+        - generic [ref=e301]: Travel
+      - link "⚽ Sports" [ref=e302] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=sports
+        - generic [ref=e303]: ⚽
+        - generic [ref=e304]: Sports
+      - link "☀️ Everyday" [ref=e305] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=everyday
+        - generic [ref=e306]: ☀️
+        - generic [ref=e307]: Everyday
+      - link "🎒 Kids" [ref=e308] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=kids
+        - generic [ref=e309]: 🎒
+        - generic [ref=e310]: Kids
+      - link "⭐ Premium" [ref=e311] [cursor=pointer]:
+        - /url: /eyeglasses?lifestyle=premium
+        - generic [ref=e312]: ⭐
+        - generic [ref=e313]: Premium
+  - generic [ref=e315]:
+    - generic [ref=e316]:
+      - heading "Not Sure What You Need?" [level=3] [ref=e317]
+      - paragraph [ref=e318]: Get expert guidance from our optometrists.
+      - generic [ref=e319]:
+        - link "💻 Online Consultation" [ref=e320] [cursor=pointer]:
+          - /url: /help-me-choose
+          - generic [ref=e321]: 💻
+          - text: Online Consultation
+        - link "🏪 In-Store Consultation" [ref=e322] [cursor=pointer]:
+          - /url: /store-locator
+          - generic [ref=e323]: 🏪
+          - text: In-Store Consultation
+        - link "📋 Upload Prescription" [ref=e324] [cursor=pointer]:
+          - /url: /my/prescriptions
+          - generic [ref=e325]: 📋
+          - text: Upload Prescription
+      - link "Try EYES Consultation →" [ref=e326] [cursor=pointer]:
+        - /url: /help-me-choose
+    - generic [ref=e327]:
+      - heading "Your Family's Vision, All in One Place" [level=3] [ref=e328]
+      - paragraph [ref=e329]: Create a Vision ID for your entire family.
+      - list [ref=e330]:
+        - listitem [ref=e331]: ✓ Track prescriptions
+        - listitem [ref=e332]: ✓ Set eye test reminders
+        - listitem [ref=e333]: ✓ Manage family members
+        - listitem [ref=e334]: ✓ Get personalised recommendations
+      - link "Create Your Family Vision ID →" [ref=e335] [cursor=pointer]:
+        - /url: /my/vision-id
+  - generic [ref=e336]:
+    - generic [ref=e337]:
+      - heading "Our Stores in Mogappair" [level=2] [ref=e338]
+      - link "View All Stores" [ref=e339] [cursor=pointer]:
+        - /url: /store-locator
+    - generic [ref=e342]:
+      - generic [ref=e343]:
+        - generic [ref=e344]: 🏪
+        - generic [ref=e345]:
+          - paragraph [ref=e346]: Mogappair East
+          - paragraph [ref=e347]: 2/56 Velayapathi Salai, Mogappair East, Chennai - 600037
+          - paragraph [ref=e348]: 98401 85186 / 98404 96404
+          - generic [ref=e349]:
+            - link "Directions" [ref=e350] [cursor=pointer]:
+              - /url: https://maps.google.com/?q=2%2F56%20Velayapathi%20Salai%2C%20Mogappair%20East%2C%20Chennai%20-%20600037 Power Eyes
+            - link "WhatsApp" [ref=e354] [cursor=pointer]:
+              - /url: https://wa.me/919840496404
+      - generic [ref=e357]:
+        - generic [ref=e358]: 🏪
+        - generic [ref=e359]:
+          - paragraph [ref=e360]: Mogappair West
+          - paragraph [ref=e361]: Power Eyes Opticals, PC2/7A, 95, 2nd Block, Mogappair West Main Road, Mogappair West, Chennai, Tamil Nadu - 600037
+          - paragraph [ref=e362]: 98401 85186 / 98404 96404
+          - generic [ref=e363]:
+            - link "Directions" [ref=e364] [cursor=pointer]:
+              - /url: https://maps.google.com/?q=Power%20Eyes%20Opticals%2C%20PC2%2F7A%2C%2095%2C%202nd%20Block%2C%20Mogappair%20West%20Main%20Road%2C%20Mogappair%20West%2C%20Chennai%2C%20Tamil%20Nadu%20-%20600037 Power Eyes
+            - link "WhatsApp" [ref=e368] [cursor=pointer]:
+              - /url: https://wa.me/919840496404
+  - generic [ref=e372]:
+    - generic [ref=e373]:
+      - paragraph [ref=e374]: Book an Eye Test Today
+      - paragraph [ref=e375]: Professional eye care for you and your family at our Mogappair stores.
+    - link "Book Eye Test →" [ref=e376] [cursor=pointer]:
+      - /url: /eye-test
+  - generic [ref=e377]:
+    - generic [ref=e378]:
+      - generic [ref=e379]:
+        - heading "Looks We Love From You" [level=2] [ref=e380]
+        - paragraph [ref=e381]: Real customers. Real style. Tag @PowerEyesOpticals
+      - link "📸 Instagram" [ref=e382] [cursor=pointer]:
+        - /url: https://instagram.com
+    - generic [ref=e383]:
+      - figure "Customer look 1" [ref=e384]:
+        - generic [ref=e385]: 👓
+        - paragraph [ref=e388]: Customer look 1
+      - figure "Customer look 2" [ref=e389]:
+        - generic [ref=e390]: 👓
+        - paragraph [ref=e393]: Customer look 2
+      - figure "Customer look 3" [ref=e394]:
+        - generic [ref=e395]: 👓
+        - paragraph [ref=e398]: Customer look 3
+      - figure "Customer look 4" [ref=e399]:
+        - generic [ref=e400]: 👓
+        - paragraph [ref=e403]: Customer look 4
+      - figure "Customer look 5" [ref=e404]:
+        - generic [ref=e405]: 👓
+        - paragraph [ref=e408]: Customer look 5
+      - figure "Customer look 6" [ref=e409]:
+        - generic [ref=e410]: 👓
+        - paragraph [ref=e413]: Customer look 6
+      - figure "Customer look 7" [ref=e414]:
+        - generic [ref=e415]: 👓
+        - paragraph [ref=e418]: Customer look 7
+      - figure "Customer look 8" [ref=e419]:
+        - generic [ref=e420]: 👓
+        - paragraph [ref=e423]: Customer look 8
+      - figure [ref=e424]:
+        - generic [ref=e425]: 📸
+        - paragraph [ref=e426]: Show Us Your Style
+        - paragraph [ref=e427]: Tag @PowerEyesOpticals
+  - link "💬 Chat on WhatsApp" [ref=e428] [cursor=pointer]:
+    - /url: https://wa.me/919840185186
+  - generic [ref=e429]:
+    - generic [ref=e430]: lenses guide
+    - generic [ref=e431]: — switched off in the ERP, shown here for preview
+  - generic [ref=e433]:
+    - generic [ref=e434]:
+      - heading "Lens Guide" [level=2] [ref=e436]
+      - link "Get Expert Advice" [ref=e437] [cursor=pointer]:
+        - /url: /help-me-choose
+    - generic [ref=e440]:
+      - link "👁️ Single Vision One prescription, one distance A single lens power runs across the whole lens and corrects one viewing distance - distance, reading or screens. It is the simplest and most affordable way to correct a refraction. View packages" [ref=e441] [cursor=pointer]:
+        - /url: /lenses
+        - generic [ref=e442]: 👁️
+        - paragraph [ref=e443]: Single Vision
+        - paragraph [ref=e444]: One prescription, one distance
+        - paragraph [ref=e445]: A single lens power runs across the whole lens and corrects one viewing distance - distance, reading or screens. It is the simplest and most affordable way to correct a refraction.
+        - generic [ref=e446]: View packages
+      - link "🔬 Progressive Near, middle and far in one lens Three zones blend into each other with no visible line, so you can look up for the road, across for the monitor and down for your phone without switching glasses. View packages" [ref=e449] [cursor=pointer]:
+        - /url: /lenses
+        - generic [ref=e450]: 🔬
+        - paragraph [ref=e451]: Progressive
+        - paragraph [ref=e452]: Near, middle and far in one lens
+        - paragraph [ref=e453]: Three zones blend into each other with no visible line, so you can look up for the road, across for the monitor and down for your phone without switching glasses.
+        - generic [ref=e454]: View packages
+      - link "🖥️ Blue Light Easier on screen-heavy days Filters part of the high-energy visible light emitted by monitors and phones. Worth considering if you work at a screen for hours and want less eye strain by the end of the day. View packages" [ref=e457] [cursor=pointer]:
+        - /url: /lenses
+        - generic [ref=e458]: 🖥️
+        - paragraph [ref=e459]: Blue Light
+        - paragraph [ref=e460]: Easier on screen-heavy days
+        - paragraph [ref=e461]: Filters part of the high-energy visible light emitted by monitors and phones. Worth considering if you work at a screen for hours and want less eye strain by the end of the day.
+        - generic [ref=e462]: View packages
+      - link "🌗 Photochromic Darkens outdoors, clears indoors The lens reacts to sunlight and tints automatically outside, then returns to clear indoors. One pair covers the walk in, the drive and the desk. View packages" [ref=e465] [cursor=pointer]:
+        - /url: /lenses
+        - generic [ref=e466]: 🌗
+        - paragraph [ref=e467]: Photochromic
+        - paragraph [ref=e468]: Darkens outdoors, clears indoors
+        - paragraph [ref=e469]: The lens reacts to sunlight and tints automatically outside, then returns to clear indoors. One pair covers the walk in, the drive and the desk.
+        - generic [ref=e470]: View packages
+      - link "🚗 Driving Contrast that holds up at night Tuned for road distance, dashboard readouts and oncoming headlights, with glare control that keeps lane markings and signs crisp after dark. View packages" [ref=e473] [cursor=pointer]:
+        - /url: /lenses
+        - generic [ref=e474]: 🚗
+        - paragraph [ref=e475]: Driving
+        - paragraph [ref=e476]: Contrast that holds up at night
+        - paragraph [ref=e477]: Tuned for road distance, dashboard readouts and oncoming headlights, with glare control that keeps lane markings and signs crisp after dark.
+        - generic [ref=e478]: View packages
+      - link "🪶 High Index Thinner and lighter lenses A denser material keeps strong prescriptions slim, so the frame sits flatter against your face instead of magnifying your eyes at the edges. View packages" [ref=e481] [cursor=pointer]:
+        - /url: /lenses
+        - generic [ref=e482]: 🪶
+        - paragraph [ref=e483]: High Index
+        - paragraph [ref=e484]: Thinner and lighter lenses
+        - paragraph [ref=e485]: A denser material keeps strong prescriptions slim, so the frame sits flatter against your face instead of magnifying your eyes at the edges.
+        - generic [ref=e486]: View packages
+      - link "🧒 Kids Lenses Tough enough for growing eyes Flexible, impact-resistant lenses with coatings that shrug off scratches and fingerprints - built for playgrounds, sport and long school days. View packages" [ref=e489] [cursor=pointer]:
+        - /url: /lenses
+        - generic [ref=e490]: 🧒
+        - paragraph [ref=e491]: Kids Lenses
+        - paragraph [ref=e492]: Tough enough for growing eyes
+        - paragraph [ref=e493]: Flexible, impact-resistant lenses with coatings that shrug off scratches and fingerprints - built for playgrounds, sport and long school days.
+        - generic [ref=e494]: View packages
+  - contentinfo [ref=e497]:
+    - generic [ref=e498]:
+      - generic [ref=e499]:
+        - generic [ref=e500]:
+          - generic [ref=e505]:
+            - generic [ref=e506]: POWER EYES
+            - generic [ref=e507]: SINCE 1998
+          - paragraph [ref=e508]: Your Family's Vision Partner. Expert eye care and premium eyewear for every generation.
+          - generic [ref=e509]:
+            - paragraph [ref=e510]:
+              - link "2/56 Velayapathi Salai, Mogappair East, Chennai – 600 037" [ref=e514] [cursor=pointer]:
+                - /url: https://maps.google.com/?q=2%2F56+Velayapathi+Salai+Mogappair+East+Chennai
+            - paragraph [ref=e515]:
+              - link "98401 85186" [ref=e518] [cursor=pointer]:
+                - /url: tel:+919840185186
+            - paragraph [ref=e519]:
+              - link "powereyes.chennai@gmail.com" [ref=e522] [cursor=pointer]:
+                - /url: mailto:powereyes.chennai@gmail.com
+          - generic [ref=e523]:
+            - link "Instagram" [ref=e524] [cursor=pointer]:
+              - /url: "#"
+            - link "Facebook" [ref=e528] [cursor=pointer]:
+              - /url: "#"
+            - link "YouTube" [ref=e531] [cursor=pointer]:
+              - /url: "#"
+        - generic [ref=e535]:
+          - paragraph [ref=e536]: Shop
+          - list [ref=e537]:
+            - listitem [ref=e538]:
+              - link "Eyeglasses" [ref=e539] [cursor=pointer]:
+                - /url: /eyeglasses
+            - listitem [ref=e540]:
+              - link "Sunglasses" [ref=e541] [cursor=pointer]:
+                - /url: /sunglasses
+            - listitem [ref=e542]:
+              - link "Kids Eyewear" [ref=e543] [cursor=pointer]:
+                - /url: /eyeglasses?gender=kids
+            - listitem [ref=e544]:
+              - link "Contact Lenses" [ref=e545] [cursor=pointer]:
+                - /url: /contact-lenses
+            - listitem [ref=e546]:
+              - link "Lens Packages" [ref=e547] [cursor=pointer]:
+                - /url: /lenses
+            - listitem [ref=e548]:
+              - link "Accessories" [ref=e549] [cursor=pointer]:
+                - /url: /accessories
+        - generic [ref=e550]:
+          - paragraph [ref=e551]: Eye Care
+          - list [ref=e552]:
+            - listitem [ref=e553]:
+              - link "Book Eye Test" [ref=e554] [cursor=pointer]:
+                - /url: /eye-test
+            - listitem [ref=e555]:
+              - link "EYES Consultation" [ref=e556] [cursor=pointer]:
+                - /url: /help-me-choose
+            - listitem [ref=e557]:
+              - link "Upload Prescription" [ref=e558] [cursor=pointer]:
+                - /url: /my/prescriptions
+            - listitem [ref=e559]:
+              - link "Lens Guide" [ref=e560] [cursor=pointer]:
+                - /url: /lens-guide
+            - listitem [ref=e561]:
+              - link "Eye Care Blog" [ref=e562] [cursor=pointer]:
+                - /url: /blog
+        - generic [ref=e563]:
+          - paragraph [ref=e564]: My Account
+          - list [ref=e565]:
+            - listitem [ref=e566]:
+              - link "My Power Eyes" [ref=e567] [cursor=pointer]:
+                - /url: /my
+            - listitem [ref=e568]:
+              - link "Vision ID" [ref=e569] [cursor=pointer]:
+                - /url: /my/vision-id
+            - listitem [ref=e570]:
+              - link "My Orders" [ref=e571] [cursor=pointer]:
+                - /url: /my/orders
+            - listitem [ref=e572]:
+              - link "Track Order" [ref=e573] [cursor=pointer]:
+                - /url: /my/orders
+            - listitem [ref=e574]:
+              - link "Loyalty Rewards" [ref=e575] [cursor=pointer]:
+                - /url: /my/loyalty
+            - listitem [ref=e576]:
+              - link "Wishlist" [ref=e577] [cursor=pointer]:
+                - /url: /wishlist
+        - generic [ref=e578]:
+          - paragraph [ref=e579]: Support
+          - list [ref=e580]:
+            - listitem [ref=e581]:
+              - link "Store Locator" [ref=e582] [cursor=pointer]:
+                - /url: /store-locator
+            - listitem [ref=e583]:
+              - link "Warranty & Repairs" [ref=e584] [cursor=pointer]:
+                - /url: /my/repairs
+            - listitem [ref=e585]:
+              - link "Easy Returns" [ref=e586] [cursor=pointer]:
+                - /url: /returns
+            - listitem [ref=e587]:
+              - link "FAQs" [ref=e588] [cursor=pointer]:
+                - /url: /faq
+            - listitem [ref=e589]:
+              - link "Privacy Policy" [ref=e590] [cursor=pointer]:
+                - /url: /privacy
+            - listitem [ref=e591]:
+              - link "Terms of Service" [ref=e592] [cursor=pointer]:
+                - /url: /terms
+      - generic [ref=e593]:
+        - paragraph [ref=e594]: © 2026 Power Eyes Opticals. All rights reserved.
+        - generic [ref=e595]:
+          - generic [ref=e596]: ✓ 100% Genuine Products
+          - generic [ref=e597]: ✓ Prescription Verified
+          - generic [ref=e598]: ✓ Free Adjustments
+          - generic [ref=e599]: ✓ Easy Returns
+          - generic [ref=e600]: ✓ Secure Payments
+          - generic [ref=e601]: ✓ Dedicated Support

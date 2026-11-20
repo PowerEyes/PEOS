@@ -1,0 +1,149 @@
+- generic [active] [ref=f40e1]:
+  - generic [ref=f40e2]:
+    - complementary [ref=f40e3]:
+      - generic [ref=f40e5]:
+        - generic [ref=f40e6]: 👁
+        - generic [ref=f40e7]:
+          - paragraph [ref=f40e8]: PowerOS
+          - paragraph [ref=f40e9]: Power Eyes Opticals
+      - navigation [ref=f40e10]:
+        - link "Dashboard" [ref=f40e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f40e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f40e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f40e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f40e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f40e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f40e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f40e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f40e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - generic [ref=f40e60]:
+          - button "Finance" [ref=f40e61] [cursor=pointer]
+          - generic [ref=f40e67]:
+            - link "Overview" [ref=f40e68] [cursor=pointer]:
+              - /url: /finance
+            - link "Cashbook" [ref=f40e72] [cursor=pointer]:
+              - /url: /finance?tab=Cashbook
+            - link "Sales Report" [ref=f40e77] [cursor=pointer]:
+              - /url: /finance/reports
+            - link "GSTR-1 Export" [ref=f40e82] [cursor=pointer]:
+              - /url: /finance/gstr1
+        - link "CRM Automation" [ref=f40e87] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f40e91] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f40e98] [cursor=pointer]
+        - link "Settings" [ref=f40e105] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f40e112] [cursor=pointer]
+    - generic [ref=f40e116]:
+      - banner [ref=f40e117]:
+        - generic [ref=f40e118]: Power Eyes Opticals
+        - generic [ref=f40e121]:
+          - generic "2 branches" [ref=f40e122]:
+            - generic [ref=f40e123]: P
+            - generic [ref=f40e124]: Power Eyes Owner
+            - generic [ref=f40e125]: owner
+          - link "← Website" [ref=f40e126] [cursor=pointer]:
+            - /url: /
+      - main [ref=f40e127]:
+        - generic [ref=f40e128]:
+          - generic [ref=f40e130]:
+            - heading "Finance" [level=1] [ref=f40e131]
+            - paragraph [ref=f40e132]: Revenue, GST, expenses and reporting
+          - generic [ref=f40e133]:
+            - button "Dashboard" [ref=f40e134] [cursor=pointer]
+            - button "Cashbook" [ref=f40e136] [cursor=pointer]
+            - button "GST Ledger" [ref=f40e137] [cursor=pointer]
+            - button "Expenses" [ref=f40e138] [cursor=pointer]
+            - button "Day Closing" [ref=f40e139] [cursor=pointer]
+            - button "Credit Notes" [ref=f40e140] [cursor=pointer]
+            - button "Reports" [ref=f40e141] [cursor=pointer]
+          - generic [ref=f40e143]:
+            - generic [ref=f40e144]:
+              - generic [ref=f40e145]:
+                - paragraph [ref=f40e146]: Revenue this month
+                - paragraph [ref=f40e147]: ₹9,368
+                - paragraph [ref=f40e148]: "Today: ₹9,368"
+              - generic [ref=f40e149]:
+                - paragraph [ref=f40e150]: Expenses this month
+                - paragraph [ref=f40e151]: ₹0
+                - paragraph [ref=f40e152]: 0 entries
+              - generic [ref=f40e153]:
+                - paragraph [ref=f40e154]: Net (est.)
+                - paragraph [ref=f40e155]: ₹9,368
+                - paragraph [ref=f40e156]: Revenue minus expenses
+              - generic [ref=f40e157]:
+                - paragraph [ref=f40e158]: Outstanding
+                - paragraph [ref=f40e159]: ₹0
+                - paragraph [ref=f40e160]: 0 unpaid orders
+            - generic [ref=f40e161]:
+              - generic [ref=f40e162]:
+                - paragraph [ref=f40e163]: Collected this month
+                - button "Open cashbook" [ref=f40e164] [cursor=pointer]
+              - paragraph [ref=f40e165]: ₹7,875
+              - generic [ref=f40e166]: cash ₹7,875
+              - paragraph [ref=f40e168]: 5 payments across all channels
+            - generic [ref=f40e169]:
+              - paragraph [ref=f40e171]: GST this month
+              - generic [ref=f40e172]:
+                - generic [ref=f40e173]:
+                  - paragraph [ref=f40e174]: Output GST
+                  - paragraph [ref=f40e175]: ₹446.08
+                  - paragraph [ref=f40e176]: CGST ₹223.05 + SGST ₹223.03
+                - generic [ref=f40e177]:
+                  - paragraph [ref=f40e178]: Input ITC
+                  - paragraph [ref=f40e179]: ₹0
+                  - paragraph [ref=f40e180]: From purchase invoices
+                - generic [ref=f40e181]:
+                  - paragraph [ref=f40e182]: Net liability
+                  - paragraph [ref=f40e183]: ₹446.08
+                  - paragraph [ref=f40e184]: Output minus ITC
+            - generic [ref=f40e185]:
+              - paragraph [ref=f40e186]: Revenue — last 30 days
+              - generic [ref=f40e187]:
+                - 'generic "10-22: ₹0" [ref=f40e188]'
+                - 'generic "10-23: ₹0" [ref=f40e189]'
+                - 'generic "10-24: ₹0" [ref=f40e190]'
+                - 'generic "10-25: ₹0" [ref=f40e191]'
+                - 'generic "10-26: ₹0" [ref=f40e192]'
+                - 'generic "10-27: ₹0" [ref=f40e193]'
+                - 'generic "10-28: ₹0" [ref=f40e194]'
+                - 'generic "10-29: ₹0" [ref=f40e195]'
+                - 'generic "10-30: ₹0" [ref=f40e196]'
+                - 'generic "10-31: ₹0" [ref=f40e197]'
+                - 'generic "11-01: ₹0" [ref=f40e198]'
+                - 'generic "11-02: ₹0" [ref=f40e199]'
+                - 'generic "11-03: ₹0" [ref=f40e200]'
+                - 'generic "11-04: ₹0" [ref=f40e201]'
+                - 'generic "11-05: ₹0" [ref=f40e202]'
+                - 'generic "11-06: ₹0" [ref=f40e203]'
+                - 'generic "11-07: ₹0" [ref=f40e204]'
+                - 'generic "11-08: ₹0" [ref=f40e205]'
+                - 'generic "11-09: ₹0" [ref=f40e206]'
+                - 'generic "11-10: ₹0" [ref=f40e207]'
+                - 'generic "11-11: ₹0" [ref=f40e208]'
+                - 'generic "11-12: ₹0" [ref=f40e209]'
+                - 'generic "11-13: ₹0" [ref=f40e210]'
+                - 'generic "11-14: ₹0" [ref=f40e211]'
+                - 'generic "11-15: ₹0" [ref=f40e212]'
+                - 'generic "11-16: ₹0" [ref=f40e213]'
+                - 'generic "11-17: ₹0" [ref=f40e214]'
+                - 'generic "11-18: ₹0" [ref=f40e215]'
+                - 'generic "11-19: ₹0" [ref=f40e216]'
+                - 'generic "11-20: ₹9,367.5" [ref=f40e217]'
+              - generic [ref=f40e218]:
+                - generic [ref=f40e219]: 10-22
+                - generic [ref=f40e220]: 11-20
+            - generic [ref=f40e222]:
+              - generic [ref=f40e223]: Unpaid orders
+              - generic [ref=f40e224]: "0"
+  - alert [ref=f40e225]

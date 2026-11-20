@@ -129,29 +129,31 @@ export function ExaminationForm({ customerId, appointmentId, existingExam, onClo
         {step===1 && (
           <div className="space-y-5">
             <SectionHeader step={2} total={5} title="Refraction" icon={Eye}/>
-            <div className="rounded-xl bg-slate-50 border border-slate-100 p-4 space-y-3">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Auto-Refractor (Objective)</p>
-              <div className="grid grid-cols-[80px_1fr_1fr_1fr] gap-2 text-xs font-bold text-slate-500 text-center"><span/>SPH<span>CYL</span><span>AXIS</span></div>
-              {[["OD (Right)","ar_od_sph","ar_od_cyl","ar_od_axis"],["OS (Left)","ar_os_sph","ar_os_cyl","ar_os_axis"]].map(([label,s,c,a])=>(
-                <div key={label} className="grid grid-cols-[80px_1fr_1fr_1fr] gap-2 items-center">
-                  <span className="text-xs font-medium text-slate-500">{label}</span>
-                  <EyeInput name={s} value={f[s]} onChange={set(s)} type="number" step="0.25"/>
-                  <EyeInput name={c} value={f[c]} onChange={set(c)} type="number" step="0.25"/>
-                  <EyeInput name={a} value={f[a]} onChange={set(a)} type="number" step="1" min="0"/>
-                </div>))}
+            <div className="rounded-xl bg-slate-50 border border-slate-100 p-4 space-y-3 overflow-x-auto">
+              <div className="min-w-[440px] space-y-3">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Auto-Refractor (Objective)</p>
+                <div className="grid grid-cols-[80px_1fr_1fr_1fr] gap-2 text-xs font-bold text-slate-500 text-center"><span/>SPH<span>CYL</span><span>AXIS</span></div>
+                {[["OD (Right)","ar_od_sph","ar_od_cyl","ar_od_axis"],["OS (Left)","ar_os_sph","ar_os_cyl","ar_os_axis"]].map(([label,s,c,a])=>(
+                  <div key={label} className="grid grid-cols-[80px_1fr_1fr_1fr] gap-2 items-center">
+                    <span className="text-xs font-medium text-slate-500">{label}</span>
+                    <EyeInput name={s} value={f[s]} onChange={set(s)} type="number" step="0.25"/>
+                    <EyeInput name={c} value={f[c]} onChange={set(c)} type="number" step="0.25"/>
+                    <EyeInput name={a} value={f[a]} onChange={set(a)} type="number" step="1" min="0"/>
+                  </div>))}
 
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider pt-3">Final Subjective Refraction</p>
-              <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr] gap-2 text-xs font-bold text-slate-500 text-center"><span/>SPH<span>CYL</span><span>AXIS</span><span>ADD</span><span>VA</span></div>
-              {[["OD (Right)","od_sph","od_cyl","od_axis","od_add","od_va"],["OS (Left)","os_sph","os_cyl","os_axis","os_add","os_va"]].map(([label,s,c,a,ad,va])=>(
-                <div key={label} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr] gap-2 items-center">
-                  <span className="text-xs font-medium text-slate-500">{label}</span>
-                  <EyeInput name={s} value={f[s]} onChange={set(s)} type="number" step="0.25"/>
-                  <EyeInput name={c} value={f[c]} onChange={set(c)} type="number" step="0.25"/>
-                  <EyeInput name={a} value={f[a]} onChange={set(a)} type="number" step="1" min="0"/>
-                  <EyeInput name={ad} value={f[ad]} onChange={set(ad)} type="number" step="0.25"/>
-                  <EyeInput name={va} value={f[va]} onChange={set(va)} opts={VA_DIST_OPTIONS}/>
-                </div>))}
-              <div className="grid grid-cols-2 gap-3 pt-2">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider pt-3">Final Subjective Refraction</p>
+                <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr] gap-2 text-xs font-bold text-slate-500 text-center"><span/>SPH<span>CYL</span><span>AXIS</span><span>ADD</span><span>VA</span></div>
+                {[["OD (Right)","od_sph","od_cyl","od_axis","od_add","od_va"],["OS (Left)","os_sph","os_cyl","os_axis","os_add","os_va"]].map(([label,s,c,a,ad,va])=>(
+                  <div key={label} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr] gap-2 items-center">
+                    <span className="text-xs font-medium text-slate-500">{label}</span>
+                    <EyeInput name={s} value={f[s]} onChange={set(s)} type="number" step="0.25"/>
+                    <EyeInput name={c} value={f[c]} onChange={set(c)} type="number" step="0.25"/>
+                    <EyeInput name={a} value={f[a]} onChange={set(a)} type="number" step="1" min="0"/>
+                    <EyeInput name={ad} value={f[ad]} onChange={set(ad)} type="number" step="0.25"/>
+                    <EyeInput name={va} value={f[va]} onChange={set(va)} opts={VA_DIST_OPTIONS}/>
+                  </div>))}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <label className="block"><span className="text-xs text-slate-500">PD Far (mm)</span><EyeInput name="pd_far" value={f.pd_far} onChange={set("pd_far")} type="number" step="0.5"/></label>
                 <label className="block"><span className="text-xs text-slate-500">PD Near (mm)</span><EyeInput name="pd_near" value={f.pd_near} onChange={set("pd_near")} type="number" step="0.5"/></label>
               </div>

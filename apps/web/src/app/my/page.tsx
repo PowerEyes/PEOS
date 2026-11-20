@@ -69,15 +69,19 @@ export default async function PortalDashboard() {
         </div>
       )}
     </div>
-    <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+    <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2.5 sm:gap-3">
       {cards.map(([I,n,l]: any) => (
-        <div key={l as string} className="card p-4 text-center"><I size={20} className="mx-auto text-gold-500 mb-1"/><p className="text-2xl font-bold text-navy-900">{n as number}</p><p className="text-[11px] text-slate-500 mt-0.5">{l as string}</p></div>))}
+        <div key={l as string} className="card p-3 sm:p-4 text-center">
+          <I size={18} className="mx-auto text-gold-500 mb-1 sm:h-5 sm:w-5"/>
+          <p className="text-xl sm:text-2xl font-bold text-navy-900">{n as number}</p>
+          <p className="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 leading-tight">{l as string}</p>
+        </div>))}
     </div>
-    <div><p className="font-semibold text-navy-900 mb-3">Quick Actions</p>
-      <div className="grid grid-cols-4 gap-3 sm:grid-cols-8">
+    <div><p className="font-semibold text-navy-900 mb-3 text-sm sm:text-base">Quick Actions</p>
+      <div className="grid grid-cols-2 xs:grid-cols-4 sm:grid-cols-8 gap-2.5 sm:gap-3">
         {[["Book Eye Test","/eye-test","📅"],["Upload Rx","/my/prescriptions","📋"],["Eyeglasses","/eyeglasses","🕶️"],["Sunglasses","/sunglasses","😎"],["Reorder","/my/reorder","🔄"],["Track Order","/my/orders","🚚"],["Repair Service","/my/repairs","🔧"],["WhatsApp",waHref(site.whatsappNumber),"💬"]].map(([l,h,e])=>(
-          <Link key={l as string} href={h as string} className="flex flex-col items-center gap-2 rounded-xl border border-slate-100 bg-white p-3 text-center text-xs font-medium text-slate-700 hover:border-gold-400 hover:bg-amber-50 transition">
-            <span className="text-2xl">{e as string}</span><span>{l as string}</span></Link>))}
+          <Link key={l as string} href={h as string} className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-100 bg-white p-3 text-center text-xs font-medium text-slate-700 hover:border-gold-400 hover:bg-amber-50 transition min-h-[76px]">
+            <span className="text-xl sm:text-2xl">{e as string}</span><span className="leading-tight">{l as string}</span></Link>))}
       </div></div>
     <p className="text-xs text-slate-400">Figures above are generated live from your Power Eyes account records.</p>
   </div>);

@@ -20,6 +20,19 @@ export const revalidate = 0;
 // ERP) but their markup lives in those components — Phase 5 wires that up.
 const CHROME = new Set(["announcement", "site_logo", "nav", "footer"]);
 
+/**
+ * A deliberate line break in CMS copy. Text fields are single-line inputs, so
+ * the operator records a break as a newline character. JSX collapses a raw
+ * newline inside a text node down to a space, which would silently swallow the
+ * break — split the string and emit an explicit <br/> instead. Plain text is
+ * untouched: one segment means no <br/> is produced at all.
+ */
+function withLineBreaks(t: unknown) {
+  return String(t ?? "").split(/\r?\n/).map((seg, i) => (
+    <Fragment key={i}>{i > 0 && <br />}{seg}</Fragment>
+  ));
+}
+
 async function getData(preview: boolean) {
   // Preview has to read through the elevated client: ws_anon / wc_anon strip
   // disabled and inactive rows at the database, so the anon key would return
@@ -166,8 +179,8 @@ export default async function HomePage({ searchParams }: { searchParams?: { prev
                 <div className="relative z-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
                   <div className="max-w-2xl text-white space-y-6 animate-slide-up">
                     {main.badge && <p className="text-gold-400 text-sm font-semibold tracking-widest uppercase">{main.badge}</p>}
-                    <h1 className="font-display text-5xl sm:text-6xl font-bold leading-tight">{main.title}</h1>
-                    {main.subtitle && <p className="text-xl text-slate-300">{main.subtitle}</p>}
+                    <h1 className="font-display text-5xl sm:text-6xl font-bold leading-tight">{withLineBreaks(main.title)}</h1>
+                    {main.subtitle && <p className="text-xl text-slate-300">{withLineBreaks(main.subtitle)}</p>}
                     <div className="flex flex-wrap gap-3 pt-2">
                       {main.cta_label && <Link href={main.cta_link || "#"} className="btn-gold text-base px-8 py-4">{main.cta_label}</Link>}
                       {main.cta2_label && <Link href={main.cta2_link || "#"} className="btn-outline text-base px-8 py-4">{main.cta2_label}</Link>}
@@ -253,7 +266,9 @@ export default async function HomePage({ searchParams }: { searchParams?: { prev
         /* ─── SHAPE CHIPS (sits directly under frame_finder) ───── */
         if (s.key === "shape_chip") {
           const items = rowsOf("shape_chip");
-          const chips = items.length ? items : SHAPES.map((t) => ({ title: t, icon: "👓", cta_link: `/eyeglasses?shape=${t.toLowerCase()}` }));
+          // Hyphenate multi-word shapes ("Cat Eye" → cat-eye) so every chip URL
+          // is legal without relying on the browser to encode a raw space.
+          const chips = items.length ? items : SHAPES.map((t) => ({ title: t, icon: "👓", cta_link: `/eyeglasses?shape=${t.toLowerCase().replace(/\s+/g, "-")}` }));
           // Top padding only when it is NOT continuing frame_finder's band.
           const cls = prev === "frame_finder"
             ? `bg-slate-50 ${GUT} pb-14`
@@ -365,6 +380,46 @@ export default async function HomePage({ searchParams }: { searchParams?: { prev
                             <p className="text-[11px] text-white/70 mt-0.5">{lt.subtitle}</p>
                             <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-white/90">Explore <ArrowRight size={11}/></span>
                           </div>
+                        </Link>);})}
+                  </div>
+                </div>
+              </section>
+            </Fragment>
+          );
+        }
+
+        /* ─── LENSES GUIDE (educational) ──────────────────────── */
+        // Deliberately the one block with no in-code fallback: every word is
+        // authored in the Website Controller. No rows → render nothing, rather
+        // than shipping placeholder education copy that would then have to be
+        // hunted down and deleted. Kept separate from `lens_type`, which stays
+        // a pure row of visual tiles.
+        if (s.key === "lenses_guide") {
+          const items = rowsOf("lenses_guide");
+          if (!items.length) return null;
+          return (
+            <Fragment key={s.key}>
+              <section className="bg-slate-50 section-pad">
+                <div className="mx-auto max-w-7xl">
+                  <div className="flex items-end justify-between mb-6">
+                    <div>
+                      <h2 className="font-display text-3xl font-bold text-navy-900">{s.title || "Lens Guide"}</h2>
+                      {s.subtitle && <p className="text-slate-500 mt-1">{s.subtitle}</p>}
+                    </div>
+                    {s.cta_label && <Link href={s.cta_link || "#"} className="hidden sm:flex items-center gap-1 text-sm font-semibold text-navy-700 hover:underline">{s.cta_label} <ChevronRight size={15}/></Link>}
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {items.map((g: any, n: number) => {
+                      const img = siteImgUrl(g.image_path);
+                      return (
+                        <Link key={g.key || n} href={g.cta_link || "#"} className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-1 hover:border-navy-700 hover:shadow-lg">
+                          <span className="mb-3 inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-navy-50 text-2xl">
+                            {img ? <img src={img} alt={g.image_alt || ""} className="h-11 w-11 rounded-xl object-cover"/> : g.icon}
+                          </span>
+                          <p className="font-bold text-navy-900">{g.title}</p>
+                          {g.subtitle && <p className="mt-0.5 text-sm font-medium text-navy-700">{g.subtitle}</p>}
+                          {g.body && <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-600">{g.body}</p>}
+                          <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-navy-700 group-hover:underline">{g.cta_label || "Learn more"} <ArrowRight size={12}/></span>
                         </Link>);})}
                   </div>
                 </div>
@@ -595,7 +650,7 @@ export default async function HomePage({ searchParams }: { searchParams?: { prev
           return (
             <Fragment key={s.key}>
               <a href={item.cta_link || waHref(site.whatsappNumber)} target="_blank" rel="noopener"
-                className="fixed bottom-6 right-6 z-30 flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-xl hover:bg-emerald-600 transition hover:-translate-y-0.5">
+                className="fixed bottom-20 right-6 z-50 flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-3 text-sm font-semibold text-white shadow-xl hover:bg-emerald-600 transition hover:-translate-y-0.5 lg:bottom-6">
                 {item.icon} {item.title}
               </a>
             </Fragment>

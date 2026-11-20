@@ -74,7 +74,7 @@ export function PosRxDrawer({ open, onClose, customerId, onCreated }:
     setBusy(true);    let image_path: string | null = null;
     if (blob) {
       const sb = supabaseBrowser();
-      const { data: p } = await sb.from("profiles").select("org_id").single();
+      const { data: { user: u } } = await sb.auth.getUser(); const { data: p } = await sb.from("profiles").select("org_id").eq("id", u?.id ?? "").single();
       const path = `${p?.org_id}/${crypto.randomUUID()}.jpg`;
       const { error } = await sb.storage.from("prescriptions").upload(path, blob, { contentType: "image/jpeg" });
       if (error) { setBusy(false); return toast(dbError(error.message), "err"); }

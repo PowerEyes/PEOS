@@ -62,6 +62,7 @@ const pkg = z.object({ id: z.string().uuid().optional(), code: z.string().trim()
   design: z.enum(["single_vision", "progressive", "bifocal", "reading", "non_prescription"]), segment: z.string().nullable(), short_desc: z.string().max(150).nullable(),
   base_price: z.number({ invalid_type_error: "Enter the base price" }).min(0), mrp: num, tax_pct: z.number().min(0).max(28),
   features: z.array(z.string()), indexes: z.array(z.string()), coatings: z.array(z.string()), sph_min: num, sph_max: num, cyl_max: num,
+  images: z.array(z.string()).max(10),
   status: z.enum(["active", "draft", "inactive"]), display_order: z.number().int() });
 export async function saveLensPackage(input: unknown): Promise<R> {
   const p = pkg.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
@@ -72,7 +73,8 @@ export async function saveLensPackage(input: unknown): Promise<R> {
 }
 const opt = z.object({ id: z.string().uuid().optional(), grp: z.enum(["index", "addon"]), code: z.string().trim().min(2, "Enter a code"), name: z.string().trim().min(2, "Enter a name"),
   description: z.string().max(150).nullable(), price: z.number({ invalid_type_error: "Enter the price" }).min(0), tax_pct: z.number().min(0).max(28), badge: z.string().max(20).nullable(),
-  designs: z.array(z.string()), status: z.enum(["active", "draft", "inactive"]), display_order: z.number().int() });
+  designs: z.array(z.string()), images: z.array(z.string()).max(10),
+  status: z.enum(["active", "draft", "inactive"]), display_order: z.number().int() });
 export async function saveLensOption(input: unknown): Promise<R> {
   const p = opt.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
   const { id, ...row } = p.data; const sb = supabaseServer();

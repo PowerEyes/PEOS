@@ -32,7 +32,7 @@ function ReportsContent() {
     setLoading(true);
     supabaseBrowser()
       .from("sales")
-      .select("id,code,status,payment_status,grand_total,paid_total,gst_applied,created_at,kind,customers(full_name,phone)")
+      .select("id,code,status,payment_status,grand_total,paid_total,gst_applied,created_at,kind,customers!sales_customer_id_fkey(full_name,phone)")
       .gte("created_at", from + "T00:00:00")
       .lte("created_at", to   + "T23:59:59")
       .in("kind",["order","quotation"])
@@ -45,7 +45,7 @@ function ReportsContent() {
     setExporting(true);
     const { data } = await supabaseBrowser()
       .from("sales")
-      .select("code,kind,status,payment_status,grand_total,paid_total,gst_applied,created_at,customers(full_name,phone)")
+      .select("code,kind,status,payment_status,grand_total,paid_total,gst_applied,created_at,customers!sales_customer_id_fkey(full_name,phone)")
       .gte("created_at", f+"T00:00:00").lte("created_at", t+"T23:59:59")
       .order("created_at",{ascending:false}).limit(2000);
     const rows = (data ?? []).map((s:any) => ({

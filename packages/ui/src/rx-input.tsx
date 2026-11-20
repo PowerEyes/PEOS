@@ -116,7 +116,7 @@ export function RxInput({ kind, label, value, onChange, highlight, warn }: RxInp
   const display = focused && raw != null ? raw : fmtVal(kind, value);
 
   const inputCls = [
-    "w-full rounded-xl border px-3 py-2 pr-7 text-sm outline-none transition focus:ring-2",
+    "w-full rounded-xl border px-3 py-2 pr-8 text-sm outline-none transition focus:ring-2",
     highlight
       ? "border-gold-400 bg-amber-50 ring-2 ring-gold-400/40 focus:border-gold-400 focus:ring-gold-400/40"
       : warn
@@ -128,7 +128,7 @@ export function RxInput({ kind, label, value, onChange, highlight, warn }: RxInp
     <label className="block">
       {(label || c.signed) && (
         <span className="mb-1 flex items-center justify-between gap-1">
-          <span className="truncate text-xs text-slate-500">{label}</span>
+          <span className="truncate text-xs font-medium text-slate-500">{label}</span>
           {c.signed && (
             <button
               type="button"
@@ -136,7 +136,7 @@ export function RxInput({ kind, label, value, onChange, highlight, warn }: RxInp
               aria-label={label ? `Flip ${label} sign` : "Flip sign"}
               onMouseDown={(e) => e.preventDefault()} // keep focus in the input
               onClick={flip}
-              className="shrink-0 rounded border border-slate-200 px-1 text-[10px] leading-[14px] text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:text-navy-700"
+              className="shrink-0 rounded-md border border-slate-200 px-1.5 py-0.5 text-xs font-semibold leading-none text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-navy-700 active:scale-95 transition"
             >
               {value == null || value === 0 ? "±" : value < 0 ? "-" : "+"}
             </button>
@@ -173,16 +173,16 @@ export function RxInput({ kind, label, value, onChange, highlight, warn }: RxInp
             }
           }}
         />
-        <span className="pointer-events-none absolute inset-y-0 right-1 flex w-5 flex-col items-center justify-center gap-px">
+        <span className="pointer-events-none absolute inset-y-0 right-1 flex w-6 flex-col items-center justify-center gap-0.5">
           <button
             type="button"
             tabIndex={-1}
             aria-label={`Increase ${label ?? kind}`}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => stepBy(c.step)}
-            className="pointer-events-auto rounded p-px text-slate-400 hover:bg-slate-100 hover:text-navy-700"
+            className="pointer-events-auto rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-navy-700 active:scale-90 transition"
           >
-            <ChevronUp size={11} strokeWidth={2.5} />
+            <ChevronUp size={12} strokeWidth={2.5} />
           </button>
           <button
             type="button"
@@ -190,9 +190,9 @@ export function RxInput({ kind, label, value, onChange, highlight, warn }: RxInp
             aria-label={`Decrease ${label ?? kind}`}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => stepBy(-c.step)}
-            className="pointer-events-auto rounded p-px text-slate-400 hover:bg-slate-100 hover:text-navy-700"
+            className="pointer-events-auto rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-navy-700 active:scale-90 transition"
           >
-            <ChevronDown size={11} strokeWidth={2.5} />
+            <ChevronDown size={12} strokeWidth={2.5} />
           </button>
         </span>
       </span>

@@ -1,0 +1,4 @@
+[    2251ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ webpack-internal:///(app-pages-browser)/../../node_modules/.pnpm/next@14.2.15_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/compiled/react-dom/cjs/react-dom.development.js:38560
+[  293017ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://localhost:3001/api/ocr:1
+[  512981ms] [ERROR] Failed to load resource: the server responded with a status of 406 () @ https://lnoagnobwrptbcdeshji.supabase.co/rest/v1/profiles?select=org_id:1
+[  513329ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://lnoagnobwrptbcdeshji.supabase.co/storage/v1/object/prescriptions/undefined/b7d424d5-fc62-4282-8ac5-ce47a3890488.jpg:1

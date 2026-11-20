@@ -40,7 +40,7 @@ Deno.serve(async (req: Request) => {
     // that have not been notified yet
     // Group by customer to send one message per customer
     const { data: carts } = await sb.from("cart_items")
-      .select("id,customer_id,product_name,total,notified_at,customers(full_name,phone)")
+      .select("id,customer_id,product_name,total,notified_at,customers(full_name,phone,whatsapp_opt_in)")
       .eq("org_id", ORG)
       .lte("created_at", cutoff)      // older than threshold
       .gte("created_at", oneDayAgo)   // not too old
@@ -61,6 +61,8 @@ Deno.serve(async (req: Request) => {
     for (const [customerId, item] of byCustomer) {
       const c = item.customers as any;
       if (!c?.phone) continue;
+      // Respect communication opt-out
+      if (c.whatsapp_opt_in === false) continue;
 
       // Check customer hasn't placed an order in the last 24h (cart may be cleared)
       const { count: recentOrders } = await sb.from("sales")

@@ -104,24 +104,24 @@ export default function CartPage() {
           <div className="space-y-4">
             <AnimatePresence>
               {state.items.map(item => (
-                <motion.div key={item.id} layout initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,x:-40}} className="card flex gap-4 p-4">
-                  <div className="h-24 w-24 shrink-0 rounded-xl bg-gradient-to-br from-slate-50 to-white border border-slate-100 flex items-center justify-center overflow-hidden">
+                <motion.div key={item.id} layout initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} exit={{opacity:0,x:-40}} className="card flex gap-3 sm:gap-4 p-3 sm:p-4 items-start">
+                  <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-xl bg-gradient-to-br from-slate-50 to-white border border-slate-100 flex items-center justify-center overflow-hidden">
                     {item.image ? <img src={imgUrl(item.image)!} alt="" className="h-full w-full object-contain p-2"/> : <span className="text-3xl">👓</span>}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-slate-500">{item.brand}</p>
-                    <p className="font-bold text-navy-900 truncate">{item.productName}</p>
-                    {item.lensPackageName && <p className="text-xs text-blue-600 mt-0.5">+ {item.lensPackageName}{item.addons?.length ? ` | ${item.addons.join(", ")}` : ""}</p>}
-                    {item.rx && <p className="text-xs text-slate-400 mt-0.5">Rx: OD {item.rx.od?.sph ?? "—"} | OS {item.rx.os?.sph ?? "—"}</p>}
+                    <p className="text-xs text-slate-500 truncate">{item.brand}</p>
+                    <p className="font-bold text-sm sm:text-base text-navy-900 truncate">{item.productName}</p>
+                    {item.lensPackageName && <p className="text-xs text-blue-600 mt-0.5 truncate">+ {item.lensPackageName}{item.addons?.length ? ` | ${item.addons.join(", ")}` : ""}</p>}
+                    {item.rx && <p className="text-xs text-slate-400 mt-0.5 truncate">Rx: OD {item.rx.od?.sph ?? "—"} | OS {item.rx.os?.sph ?? "—"}</p>}
                     <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-1 rounded-xl border border-slate-200">
-                        <button onClick={() => setQty(item.id, item.qty - 1)} className="p-2 hover:bg-slate-50 rounded-l-xl"><Minus size={14}/></button>
-                        <span className="w-8 text-center text-sm font-semibold">{item.qty}</span>
-                        <button onClick={() => setQty(item.id, item.qty + 1)} className="p-2 hover:bg-slate-50 rounded-r-xl"><Plus size={14}/></button>
+                      <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white">
+                        <button onClick={() => setQty(item.id, item.qty - 1)} className="p-1.5 sm:p-2 hover:bg-slate-50 rounded-l-xl transition" aria-label="Decrease quantity"><Minus size={14}/></button>
+                        <span className="w-7 sm:w-8 text-center text-xs sm:text-sm font-semibold">{item.qty}</span>
+                        <button onClick={() => setQty(item.id, item.qty + 1)} className="p-1.5 sm:p-2 hover:bg-slate-50 rounded-r-xl transition" aria-label="Increase quantity"><Plus size={14}/></button>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="font-bold text-navy-900">{inr(item.total)}</span>
-                        <button onClick={() => remove(item.id)} className="rounded-lg p-1.5 hover:bg-rose-50 text-rose-500 transition"><Trash2 size={16}/></button>
+                        <span className="font-bold text-sm sm:text-base text-navy-900">{inr(item.total)}</span>
+                        <button onClick={() => remove(item.id)} className="rounded-lg p-1.5 hover:bg-rose-50 text-rose-500 transition active:scale-95" aria-label="Remove item"><Trash2 size={16}/></button>
                       </div>
                     </div>
                   </div>

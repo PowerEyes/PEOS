@@ -1,0 +1,176 @@
+- generic [active] [ref=f37e1]:
+  - generic [ref=f37e2]:
+    - complementary [ref=f37e3]:
+      - generic [ref=f37e5]:
+        - generic [ref=f37e6]: 👁
+        - generic [ref=f37e7]:
+          - paragraph [ref=f37e8]: PowerOS
+          - paragraph [ref=f37e9]: Power Eyes Opticals
+      - navigation [ref=f37e10]:
+        - link "Dashboard" [ref=f37e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f37e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f37e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f37e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f37e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f37e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f37e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f37e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f37e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - generic [ref=f37e60]:
+          - button "Finance" [ref=f37e61] [cursor=pointer]
+          - generic [ref=f37e67]:
+            - link "Overview" [ref=f37e68] [cursor=pointer]:
+              - /url: /finance
+            - link "Cashbook" [ref=f37e72] [cursor=pointer]:
+              - /url: /finance?tab=Cashbook
+            - link "Sales Report" [ref=f37e77] [cursor=pointer]:
+              - /url: /finance/reports
+            - link "GSTR-1 Export" [ref=f37e82] [cursor=pointer]:
+              - /url: /finance/gstr1
+        - link "CRM Automation" [ref=f37e87] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f37e91] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f37e98] [cursor=pointer]
+        - link "Settings" [ref=f37e105] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f37e112] [cursor=pointer]
+    - generic [ref=f37e116]:
+      - banner [ref=f37e117]:
+        - generic [ref=f37e118]: Power Eyes Opticals
+        - generic [ref=f37e121]:
+          - generic "2 branches" [ref=f37e122]:
+            - generic [ref=f37e123]: P
+            - generic [ref=f37e124]: Power Eyes Owner
+            - generic [ref=f37e125]: owner
+          - link "← Website" [ref=f37e126] [cursor=pointer]:
+            - /url: /
+      - main [ref=f37e127]:
+        - generic [ref=f37e128]:
+          - generic [ref=f37e130]:
+            - heading "Finance" [level=1] [ref=f37e131]
+            - paragraph [ref=f37e132]: Revenue, GST, expenses and reporting
+          - generic [ref=f37e133]:
+            - button "Dashboard" [ref=f37e134] [cursor=pointer]
+            - button "Cashbook" [ref=f37e136] [cursor=pointer]
+            - button "GST Ledger" [ref=f37e137] [cursor=pointer]
+            - button "Expenses" [ref=f37e138] [cursor=pointer]
+            - button "Day Closing" [ref=f37e139] [cursor=pointer]
+            - button "Credit Notes" [ref=f37e140] [cursor=pointer]
+            - button "Reports" [ref=f37e141] [cursor=pointer]
+          - generic [ref=f37e228]:
+            - generic [ref=f37e229]:
+              - generic [ref=f37e230]:
+                - paragraph [ref=f37e231]: Money in
+                - paragraph [ref=f37e232]: ₹7,875
+                - paragraph [ref=f37e233]: All channels
+              - generic [ref=f37e234]:
+                - paragraph [ref=f37e235]: Money out
+                - paragraph [ref=f37e236]: ₹0
+                - paragraph [ref=f37e237]: Expenses, suppliers, refunds
+              - generic [ref=f37e238]:
+                - paragraph [ref=f37e239]: Net
+                - paragraph [ref=f37e240]: ₹7,875
+                - paragraph [ref=f37e241]: In minus out
+              - generic [ref=f37e242]:
+                - paragraph [ref=f37e243]: Cash balance
+                - paragraph [ref=f37e244]: ₹7,875
+                - paragraph [ref=f37e245]: Cash in − cash out
+            - generic [ref=f37e246]:
+              - generic [ref=f37e247]:
+                - generic [ref=f37e248]:
+                  - button "Today" [ref=f37e249] [cursor=pointer]
+                  - button "This month" [ref=f37e250] [cursor=pointer]
+                  - button "Last month" [ref=f37e251] [cursor=pointer]
+                  - button "Last 30 days" [ref=f37e252] [cursor=pointer]
+                - generic [ref=f37e253]:
+                  - generic [ref=f37e254]:
+                    - generic [ref=f37e255]: From
+                    - textbox "From" [ref=f37e256]: 2026-11-01
+                  - generic [ref=f37e257]:
+                    - generic [ref=f37e258]: To
+                    - textbox "To" [ref=f37e259]: 2026-11-20
+                  - generic [ref=f37e260]:
+                    - generic [ref=f37e261]: Method
+                    - combobox "Method" [ref=f37e262]:
+                      - option "All" [selected]
+                      - option "cash"
+                      - option "upi"
+                      - option "card"
+                      - option "bank"
+                      - option "razorpay"
+                      - option "other"
+                  - generic [ref=f37e263]:
+                    - generic [ref=f37e264]: Direction
+                    - combobox "Direction" [ref=f37e265]:
+                      - option "Both" [selected]
+                      - option "In"
+                      - option "Out"
+                  - generic [ref=f37e266]:
+                    - generic [ref=f37e267]: Search
+                    - textbox "Search" [ref=f37e268]:
+                      - /placeholder: Name, order no…
+                  - button "CSV" [ref=f37e269] [cursor=pointer]
+              - generic [ref=f37e274]:
+                - text: cash
+                - generic [ref=f37e275]: +₹7,875
+                - text: /
+                - generic [ref=f37e276]: −₹0
+            - generic [ref=f37e277]:
+              - generic [ref=f37e278]:
+                - generic [ref=f37e279]: Date
+                - generic [ref=f37e280]: Entry
+                - generic [ref=f37e281]: In
+                - generic [ref=f37e282]: Out
+                - generic [ref=f37e283]: Running
+              - generic [ref=f37e284]:
+                - generic [ref=f37e285]:
+                  - generic [ref=f37e286]: 2026-11-20
+                  - generic [ref=f37e287]:
+                    - text: E2E Test Customer A01
+                    - generic [ref=f37e288]: Order payment · ORD-0004
+                  - generic [ref=f37e289]: ₹500
+                  - generic [ref=f37e290]: —
+                  - generic [ref=f37e291]: ₹7,875
+                - generic [ref=f37e292]:
+                  - generic [ref=f37e293]: 2026-11-20
+                  - generic [ref=f37e294]:
+                    - text: E2E Test Customer A01
+                    - generic [ref=f37e295]: Order payment · ORD-0004
+                  - generic [ref=f37e296]: ₹2,500
+                  - generic [ref=f37e297]: —
+                  - generic [ref=f37e298]: ₹7,375
+                - generic [ref=f37e299]:
+                  - generic [ref=f37e300]: 2026-11-20
+                  - generic [ref=f37e301]:
+                    - text: Diwakar
+                    - generic [ref=f37e302]: Order payment · ORD-0003
+                  - generic [ref=f37e303]: ₹3,000
+                  - generic [ref=f37e304]: —
+                  - generic [ref=f37e305]: ₹4,875
+                - generic [ref=f37e306]:
+                  - generic [ref=f37e307]: 2026-11-20
+                  - generic [ref=f37e308]:
+                    - text: Nishanth
+                    - generic [ref=f37e309]: Order payment · ORD-0002
+                  - generic [ref=f37e310]: ₹1,425
+                  - generic [ref=f37e311]: —
+                  - generic [ref=f37e312]: ₹1,875
+                - generic [ref=f37e313]:
+                  - generic [ref=f37e314]: 2026-11-20
+                  - generic [ref=f37e315]:
+                    - text: Diwakar
+                    - generic [ref=f37e316]: Order payment · ORD-0001
+                  - generic [ref=f37e317]: ₹450
+                  - generic [ref=f37e318]: —
+                  - generic [ref=f37e319]: ₹450
+  - alert [ref=f37e225]

@@ -91,7 +91,7 @@ export default function ProductPage({ params }: Params) {
   }, [product]);
 
   if (!product) return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
       {/* Same shell as the loaded page — detail.tsx renders <Header/> too */}
       <Header />
       <ProductPageSkeleton />
@@ -129,7 +129,7 @@ export default function ProductPage({ params }: Params) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
       {/* Full site header — same component every other route renders */}
       <Header />
 
@@ -169,7 +169,7 @@ export default function ProductPage({ params }: Params) {
           <div className="space-y-5">
             <div>
               <p className="text-sm text-slate-400 uppercase tracking-wider">{product.brand}</p>
-              <h1 className="font-extrabold text-3xl text-navy-900 mt-1">{product.model}</h1>
+              <h1 className="font-extrabold text-2xl sm:text-3xl text-navy-900 mt-1 break-words">{product.model}</h1>
               {product.sku && <p className="text-xs text-slate-400 mt-0.5">SKU: {product.sku}</p>}
               {reviews.length > 0 && <div className="mt-2"><StarRow rating={avgRating} count={reviews.length}/></div>}
             </div>
@@ -205,7 +205,7 @@ export default function ProductPage({ params }: Params) {
               </div>
             </div>
             {/* Trust row */}
-            <div className="grid grid-cols-3 gap-2 text-xs text-slate-600">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-slate-600">
               {[["🚚","Free Shipping above ₹999"],["🔄","Easy 7-day returns"],["🛡️","1-year warranty"]].map(([e,t])=>(
                 <div key={t as string} className="flex items-center gap-1 rounded-xl bg-slate-50 p-2"><span>{e}</span><span>{t}</span></div>))}
             </div>
@@ -276,9 +276,9 @@ export default function ProductPage({ params }: Params) {
           </section>)}
       </div>
 
-      {/* Sticky add-to-cart bar — appears once the main CTAs scroll out above */}
+      {/* Sticky add-to-cart bar — docked safely above mobile bottom nav on mobile */}
       {showBar && !lb && (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-100 bg-white/95 px-4 py-3 shadow-[0_-4px_16px_rgba(10,34,64,.08)] backdrop-blur">
+        <div className="fixed inset-x-0 bottom-14 lg:bottom-0 z-40 border-t border-slate-100 bg-white/95 px-4 py-3 shadow-[0_-4px_16px_rgba(10,34,64,.08)] backdrop-blur">
           <div className="mx-auto flex max-w-6xl items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-bold text-navy-900">{product.brand} {product.model}</p>
@@ -286,8 +286,8 @@ export default function ProductPage({ params }: Params) {
                 {d > 0 && <span className="ml-1.5 text-xs font-normal text-slate-400 line-through">{inr(product.mrp)}</span>}</p>
             </div>
             {product.power_eligible
-              ? <button onClick={()=>setConfOpen(true)} className="shrink-0 rounded-full bg-gold-500 px-5 py-3 text-sm font-bold text-white hover:bg-gold-600 transition">Choose Lenses</button>
-              : <button onClick={addToBag} className="shrink-0 rounded-full bg-navy-800 px-5 py-3 text-sm font-bold text-white hover:bg-navy-700 transition">Add to Bag</button>}
+              ? <button onClick={()=>setConfOpen(true)} className="shrink-0 rounded-full bg-gold-500 px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white hover:bg-gold-600 transition active:scale-95 shadow-sm">Choose Lenses</button>
+              : <button onClick={addToBag} className="shrink-0 rounded-full bg-navy-800 px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white hover:bg-navy-700 transition active:scale-95 shadow-sm">Add to Bag</button>}
           </div>
         </div>)}
 

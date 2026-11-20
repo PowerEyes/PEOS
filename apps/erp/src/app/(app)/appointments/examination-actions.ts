@@ -61,14 +61,17 @@ export async function saveExamination(fd: FormData) {
   // 0..180 check, and this form's inputs are free text. Round and bound before
   // anything is written, and say which value is wrong rather than letting
   // Postgres phrase it.
-  rec.od_axis = fixAxis(rec.od_axis);
-  rec.os_axis = fixAxis(rec.os_axis);
+  // Validate the ORIGINAL values (before fixAxis clamps them) so out-of-range
+  // axes are rejected rather than silently rewritten to 180.
+  const rawOdAxis = rec.od_axis; const rawOsAxis = rec.os_axis;
   const rangeErr = rxRangeError({
-    od: { sph: rec.od_sph, cyl: rec.od_cyl, axis: rec.od_axis, add: rec.od_add, va_dist: rec.od_va ?? "", va_near: "" },
-    os: { sph: rec.os_sph, cyl: rec.os_cyl, axis: rec.os_axis, add: rec.os_add, va_dist: rec.os_va ?? "", va_near: "" },
+    od: { sph: rec.od_sph, cyl: rec.od_cyl, axis: rawOdAxis, add: rec.od_add, va_dist: rec.od_va ?? "", va_near: "" },
+    os: { sph: rec.os_sph, cyl: rec.os_cyl, axis: rawOsAxis, add: rec.os_add, va_dist: rec.os_va ?? "", va_near: "" },
     pd_far: rec.pd_far, pd_near: rec.pd_near,
   } satisfies RxValues);
   if (rangeErr) return { error: rangeErr };
+  rec.od_axis = fixAxis(rec.od_axis);
+  rec.os_axis = fixAxis(rec.os_axis);
 
   // The prescription is written BEFORE the examination. It used to be written
   // second with its error swallowed, so a rejected row left an examination

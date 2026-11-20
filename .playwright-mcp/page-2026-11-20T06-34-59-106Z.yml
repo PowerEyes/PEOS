@@ -1,0 +1,10 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]: PowerOS
+      - paragraph [ref=e9]: Sign in to Power Eyes Opticals
+      - textbox "Email" [ref=e10]: powereyes.chennai@gmail.com
+      - textbox "Password" [ref=e11]: Nispannai@57
+      - button "Sign in" [ref=e12] [cursor=pointer]
+      - button "New staff? Request access" [ref=e13] [cursor=pointer]
+  - alert [ref=e14]

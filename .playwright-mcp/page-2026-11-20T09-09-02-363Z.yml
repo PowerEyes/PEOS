@@ -1,0 +1,154 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - complementary [ref=f4e3]:
+      - generic [ref=f4e5]:
+        - generic [ref=f4e6]: 👁
+        - generic [ref=f4e7]:
+          - paragraph [ref=f4e8]: PowerOS
+          - paragraph [ref=f4e9]: Power Eyes Opticals
+      - navigation [ref=f4e10]:
+        - link "Dashboard" [ref=f4e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f4e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f4e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f4e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f4e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f4e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f4e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f4e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f4e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - button "Finance" [ref=f4e61] [cursor=pointer]
+        - link "CRM Automation" [ref=f4e67] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f4e71] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f4e78] [cursor=pointer]
+        - link "Settings" [ref=f4e85] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f4e92] [cursor=pointer]
+    - generic [ref=f4e96]:
+      - banner [ref=f4e97]:
+        - generic [ref=f4e98]: Power Eyes Opticals
+        - generic [ref=f4e101]:
+          - generic "2 branches" [ref=f4e102]:
+            - generic [ref=f4e103]: P
+            - generic [ref=f4e104]: Power Eyes Owner
+            - generic [ref=f4e105]: owner
+          - link "← Website" [ref=f4e106] [cursor=pointer]:
+            - /url: /
+      - main [ref=f4e107]:
+        - generic [ref=f4e108]:
+          - generic [ref=f4e109]:
+            - generic [ref=f4e110]:
+              - heading "Purchase Invoices" [level=1] [ref=f4e111]
+              - paragraph [ref=f4e112]: Track purchases, GST paid and Input Tax Credit (ITC)
+            - button "New invoice" [ref=f4e113] [cursor=pointer]
+          - generic [ref=f4e115]:
+            - button "invoices" [ref=f4e116] [cursor=pointer]
+            - button "suppliers" [ref=f4e118] [cursor=pointer]
+          - generic [ref=f4e119]:
+            - generic [ref=f4e120]:
+              - generic [ref=f4e125]:
+                - paragraph [ref=f4e126]: Total purchases
+                - paragraph [ref=f4e127]: ₹9,440
+              - generic [ref=f4e133]:
+                - paragraph [ref=f4e134]: Total GST paid
+                - paragraph [ref=f4e135]: ₹1,440
+              - generic [ref=f4e141]:
+                - paragraph [ref=f4e142]: ITC available
+                - paragraph [ref=f4e143]: ₹1,440
+              - generic [ref=f4e148]:
+                - paragraph [ref=f4e149]: Balance due
+                - paragraph [ref=f4e150]: ₹9,440
+            - generic [ref=f4e151]:
+              - generic [ref=f4e152]:
+                - paragraph [ref=f4e153]: ITC Summary — 2026-11
+                - generic [ref=f4e157]: For GSTR-3B filing
+              - generic [ref=f4e158]:
+                - generic [ref=f4e159]:
+                  - paragraph [ref=f4e160]: Eligible CGST
+                  - paragraph [ref=f4e161]: ₹720
+                - generic [ref=f4e162]:
+                  - paragraph [ref=f4e163]: Eligible SGST
+                  - paragraph [ref=f4e164]: ₹720
+                - generic [ref=f4e165]:
+                  - paragraph [ref=f4e166]: Eligible IGST
+                  - paragraph [ref=f4e167]: ₹0
+                - generic [ref=f4e168]:
+                  - paragraph [ref=f4e169]: Total ITC
+                  - paragraph [ref=f4e170]: ₹1,440
+            - generic [ref=f4e171]:
+              - textbox "Search by invoice no., supplier, GSTIN…" [ref=f4e176]
+              - combobox [ref=f4e177]:
+                - option "All statuses" [selected]
+                - option "Pending payment"
+                - option "Paid"
+                - option "Overdue"
+                - option "Draft"
+                - option "Cancelled"
+              - generic [ref=f4e178]: 2 invoices
+            - generic [ref=f4e179]:
+              - generic [ref=f4e180]:
+                - generic [ref=f4e181]: Invoice / Supplier
+                - generic [ref=f4e182]: Date
+                - generic [ref=f4e183]: Total
+                - generic [ref=f4e184]: CGST/IGST
+                - generic [ref=f4e185]: SGST
+                - generic [ref=f4e186]: ITC / Status
+              - generic [ref=f4e188]:
+                - generic [ref=f4e190] [cursor=pointer]:
+                  - generic [ref=f4e191]:
+                    - paragraph [ref=f4e192]: E2E-PO-001
+                    - paragraph [ref=f4e193]: E2E Test Supplier
+                  - paragraph [ref=f4e195]: 20 Nov 2026
+                  - paragraph [ref=f4e196]: ₹9,440
+                  - paragraph [ref=f4e197]: ₹720
+                  - paragraph [ref=f4e198]: ₹720
+                  - generic [ref=f4e199]:
+                    - generic [ref=f4e200]: ITC
+                    - generic [ref=f4e201]: pending
+                  - button [ref=f4e202]
+                - generic [ref=f4e206] [cursor=pointer]:
+                  - generic [ref=f4e207]:
+                    - paragraph [ref=f4e208]: E2E-PO-002
+                    - paragraph [ref=f4e209]: E2E Test Supplier
+                  - paragraph [ref=f4e211]: 20 Nov 2026
+                  - paragraph [ref=f4e212]: ₹0
+                  - paragraph [ref=f4e213]: ₹0
+                  - paragraph [ref=f4e214]: ₹0
+                  - generic [ref=f4e215]:
+                    - generic [ref=f4e216]: ITC
+                    - generic [ref=f4e217]: pending
+                  - button [ref=f4e218]
+            - generic [ref=f4e221]:
+              - paragraph [ref=f4e223]: ITC History by Period
+              - table [ref=f4e225]:
+                - rowgroup [ref=f4e226]:
+                  - row [ref=f4e227]:
+                    - columnheader "Period" [ref=f4e228]
+                    - columnheader "Invoices" [ref=f4e229]
+                    - columnheader "Purchases" [ref=f4e230]
+                    - columnheader "CGST" [ref=f4e231]
+                    - columnheader "SGST" [ref=f4e232]
+                    - columnheader "IGST" [ref=f4e233]
+                    - columnheader "Total ITC" [ref=f4e234]
+                    - columnheader "Claimed" [ref=f4e235]
+                - rowgroup [ref=f4e236]:
+                  - row [ref=f4e237]:
+                    - cell "2026-11" [ref=f4e238]
+                    - cell "2" [ref=f4e239]
+                    - cell "₹9,440" [ref=f4e240]
+                    - cell "₹720" [ref=f4e241]
+                    - cell "₹720" [ref=f4e242]
+                    - cell "₹0" [ref=f4e243]
+                    - cell "₹1,440" [ref=f4e244]
+                    - cell "₹0" [ref=f4e245]
+  - alert [ref=f4e246]

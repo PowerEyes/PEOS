@@ -14,9 +14,9 @@ export async function getGSTR1Data(year: number, month: number) {
 
   // All invoices for the period
   const { data: sales } = await sb.from("sales")
-    .select(`id,code,created_at,grand_total,taxable_value,cgst_total,sgst_total,igst_total,supply_type,
-      customers(full_name,gstin,state_code,city,state),
-      sale_lines(description,qty,line_total,taxable_value,cgst_rate,sgst_rate,igst_rate,cgst_amount,sgst_amount,igst_amount,products(hsn,name))`)
+    .select(`id,code,created_at,grand_total,taxable_total,cgst_total,sgst_total,igst_total,supply_type,
+      customers!sales_customer_id_fkey(full_name,gstin,state_code,city,state),
+      sale_lines(description,qty,line_total,taxable_value,cgst_pct,sgst_pct,igst_pct,cgst_amt,sgst_amt,igst_amt,products(hsn,model))`)
     .gte("created_at", from+"T00:00:00").lte("created_at", to+"T23:59:59")
     .eq("kind","order").neq("status","cancelled").order("created_at");
 
@@ -29,7 +29,7 @@ export async function getGSTR1Data(year: number, month: number) {
   for (const sale of sales) {
     const c   = (sale.customers as any);
     const lines = (sale.sale_lines as any[]) ?? [];
-    const taxable = Number(sale.taxable_value ?? sale.grand_total);
+    const taxable = Number(sale.taxable_total ?? sale.grand_total);
     const cgst    = Number(sale.cgst_total ?? 0);
     const sgst    = Number(sale.sgst_total ?? 0);
     const igst    = Number(sale.igst_total ?? 0);
@@ -103,7 +103,7 @@ export async function getGSTR1Data(year: number, month: number) {
   for (const sale of sales) {
     for (const line of ((sale.sale_lines as any[]) ?? [])) {
       const hsn  = (line.products as any)?.hsn ?? "9004";
-      const desc = (line.products as any)?.name ?? line.description ?? "";
+      const desc = (line.products as any)?.model ?? line.description ?? "";
       const key  = hsn;
       if (!hsnMap[key]) {
         hsnMap[key] = { "HSN Code":hsn, "Description":desc, "UOM":"NOS", "Total Quantity":0, "Total Value":0, "Taxable Value":0, "Integrated Tax Amount":0, "Central Tax Amount":0, "State/UT Tax Amount":0, "Cess Amount":0 };
@@ -111,9 +111,9 @@ export async function getGSTR1Data(year: number, month: number) {
       hsnMap[key]["Total Quantity"]         += Number(line.qty ?? 1);
       hsnMap[key]["Total Value"]            += Number(line.line_total ?? 0);
       hsnMap[key]["Taxable Value"]          += Number(line.taxable_value ?? line.line_total ?? 0);
-      hsnMap[key]["Integrated Tax Amount"]  += Number(line.igst_amount ?? 0);
-      hsnMap[key]["Central Tax Amount"]     += Number(line.cgst_amount ?? 0);
-      hsnMap[key]["State/UT Tax Amount"]    += Number(line.sgst_amount ?? 0);
+      hsnMap[key]["Integrated Tax Amount"]  += Number(line.igst_amt ?? 0);
+      hsnMap[key]["Central Tax Amount"]     += Number(line.cgst_amt ?? 0);
+      hsnMap[key]["State/UT Tax Amount"]    += Number(line.sgst_amt ?? 0);
     }
   }
   const hsn = Object.values(hsnMap).map(r => ({

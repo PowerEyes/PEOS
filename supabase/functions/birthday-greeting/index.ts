@@ -38,8 +38,9 @@ Deno.serve(async (req: Request) => {
 
     // Find customers whose birthday is today (match MM-DD portion of dob)
     const { data: customers } = await sb.from("customers")
-      .select("id,full_name,phone,dob,referral_code")
+      .select("id,full_name,phone,dob,referral_code,whatsapp_opt_in")
       .eq("org_id", ORG)
+      .eq("whatsapp_opt_in", true)
       .like("dob", `%-${mm}-${dd}`)
       .not("phone","is",null);
 

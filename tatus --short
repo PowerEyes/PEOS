@@ -1,0 +1,114 @@
+warning: in the working copy of 'apps/erp/src/app/(app)/appointments/examination-form.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/appointments/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/customers/actions.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/customers/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/finance/gstr1/actions.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/finance/reports/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/inventory/actions.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/inventory/packages.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/inventory/product-drawer.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/prescriptions/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/purchase-invoices/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/purchase-invoices/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/repairs/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/sales/actions.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/sales/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/sales/rx-drawer.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/sales/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/settings/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/staff/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/website/view.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/(app)/workshop/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/print/lab/[id]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/print/repair/[id]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/print/rx/[id]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/app/print/sale/[id]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/components/ImageField.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/components/Shell.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/lib/types.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/erp/src/lib/upload.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/api/customer-link/route.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/cart/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/checkout/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/compare/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/eye-test/booking.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/eyeglasses/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/globals.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/lenses/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/login/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/my/eyewear/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/my/layout.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/my/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/my/prescriptions/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/product/[id]/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/app/sunglasses/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/components/Header.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/components/LensConfigurator.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/components/ProductCard.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/components/ProductFilters.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/web/src/lib/customer.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'packages/ui/src/overlays.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'packages/ui/src/rx-input.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'packages/ui/src/toast.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'supabase/functions/abandoned-cart/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'supabase/functions/birthday-greeting/index.ts', LF will be replaced by CRLF the next time Git touches it
+ .../app/(app)/appointments/examination-actions.ts  |  11 [32m+[m[31m-[m
+ .../app/(app)/appointments/examination-form.tsx    |  48 [32m++++[m[31m---[m
+ apps/erp/src/app/(app)/appointments/page.tsx       | 160 [32m++++++++++++++++++[m[31m---[m
+ apps/erp/src/app/(app)/customers/actions.ts        |  25 [32m+++[m[31m-[m
+ apps/erp/src/app/(app)/customers/view.tsx          |  43 [32m+++[m[31m---[m
+ apps/erp/src/app/(app)/finance/gstr1/actions.ts    |  16 [32m+[m[31m--[m
+ apps/erp/src/app/(app)/finance/reports/page.tsx    |   4 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/inventory/actions.ts        |   4 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/inventory/packages.tsx      |  49 [32m++++++[m[31m-[m
+ .../erp/src/app/(app)/inventory/product-drawer.tsx |  43 [32m++++[m[31m--[m
+ apps/erp/src/app/(app)/prescriptions/view.tsx      |  14 [32m+[m[31m-[m
+ .../erp/src/app/(app)/purchase-invoices/actions.ts |  44 [32m++++++[m
+ apps/erp/src/app/(app)/purchase-invoices/page.tsx  |   9 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/purchase-invoices/view.tsx  |  29 [32m++[m[31m--[m
+ apps/erp/src/app/(app)/repairs/view.tsx            |   4 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/sales/actions.ts            |   9 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/sales/page.tsx              |   2 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/sales/pos.tsx               |  24 [32m++[m[31m--[m
+ apps/erp/src/app/(app)/sales/rx-drawer.tsx         |   2 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/sales/view.tsx              |   2 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/settings/view.tsx           |  10 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/staff/view.tsx              | 115 [32m++++++++[m[31m-------[m
+ apps/erp/src/app/(app)/website/view.tsx            |  12 [32m+[m[31m-[m
+ apps/erp/src/app/(app)/workshop/page.tsx           |   2 [32m+[m[31m-[m
+ apps/erp/src/app/print/lab/[id]/page.tsx           |   2 [32m+[m[31m-[m
+ apps/erp/src/app/print/repair/[id]/page.tsx        |  44 [32m+++[m[31m---[m
+ apps/erp/src/app/print/rx/[id]/page.tsx            |   5 [32m+[m[31m-[m
+ apps/erp/src/app/print/sale/[id]/page.tsx          |   9 [32m+[m[31m-[m
+ apps/erp/src/components/ImageField.tsx             |  35 [32m+++[m[31m--[m
+ apps/erp/src/components/Shell.tsx                  |  51 [32m++++[m[31m---[m
+ apps/erp/src/lib/types.ts                          |   2 [32m+[m[31m-[m
+ apps/erp/src/lib/upload.ts                         |   5 [32m+[m[31m-[m
+ apps/web/src/app/api/customer-link/route.ts        |  17 [32m++[m[31m-[m
+ apps/web/src/app/cart/page.tsx                     |  24 [32m++[m[31m--[m
+ apps/web/src/app/checkout/page.tsx                 |  18 [32m+[m[31m--[m
+ apps/web/src/app/compare/page.tsx                  |   4 [32m+[m[31m-[m
+ apps/web/src/app/eye-test/booking.tsx              |   2 [32m+[m[31m-[m
+ apps/web/src/app/eyeglasses/page.tsx               |   6 [32m+[m[31m-[m
+ apps/web/src/app/globals.css                       |   3 [32m+[m[31m-[m
+ apps/web/src/app/lenses/page.tsx                   |  35 [32m++[m[31m---[m
+ apps/web/src/app/login/page.tsx                    |  37 [32m+++[m[31m--[m
+ apps/web/src/app/my/eyewear/page.tsx               |   4 [32m+[m[31m-[m
+ apps/web/src/app/my/layout.tsx                     |  13 [32m+[m[31m-[m
+ apps/web/src/app/my/page.tsx                       |  16 [32m++[m[31m-[m
+ apps/web/src/app/my/prescriptions/page.tsx         |   2 [32m+[m[31m-[m
+ apps/web/src/app/page.tsx                          |  63 [32m+++++++[m[31m-[m
+ apps/web/src/app/product/[id]/page.tsx             |  16 [32m+[m[31m--[m
+ apps/web/src/app/sunglasses/page.tsx               |   4 [32m+[m[31m-[m
+ apps/web/src/components/Header.tsx                 |  59 [32m++++++[m[31m--[m
+ apps/web/src/components/LensConfigurator.tsx       |  88 [32m++++++++[m[31m----[m
+ apps/web/src/components/ProductCard.tsx            |  15 [32m+[m[31m-[m
+ apps/web/src/components/ProductFilters.tsx         | 123 [32m++++++++++++[m[31m----[m
+ apps/web/src/lib/customer.ts                       |  39 [32m++++[m[31m-[m
+ packages/ui/src/overlays.tsx                       |  28 [32m++[m[31m--[m
+ packages/ui/src/rx-input.tsx                       |  16 [32m+[m[31m--[m
+ packages/ui/src/toast.tsx                          |   2 [32m+[m[31m-[m
+ supabase/functions/abandoned-cart/index.ts         |   4 [32m+[m[31m-[m
+ supabase/functions/birthday-greeting/index.ts      |   3 [32m+[m[31m-[m
+ 58 files changed, 1042 insertions(+), 433 deletions(-)

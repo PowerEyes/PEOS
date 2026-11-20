@@ -178,21 +178,21 @@ export default function CheckoutPage() {
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <div className="space-y-5">
             {/* Delivery method */}
-            <div className="card p-5">
-              <p className="font-semibold mb-3">How do you want to receive your order?</p>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="card p-4 sm:p-5">
+              <p className="font-semibold mb-3 text-sm sm:text-base">How do you want to receive your order?</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {([["pickup","Store Pickup",MapPin,"Free, ready in 3–5 days"],["delivery","Home Delivery",Package,"₹99, 5–7 days"]] as const).map(([v,l,I,sub]) => (
-                  <button key={v} onClick={() => setDelivery(v)} className={`flex items-start gap-3 rounded-2xl border-2 p-4 text-left transition ${delivery===v?"border-gold-500 bg-amber-50":"border-slate-100 hover:border-slate-300"}`}>
+                  <button key={v} onClick={() => setDelivery(v)} className={`flex items-start gap-3 rounded-2xl border-2 p-3.5 sm:p-4 text-left transition ${delivery===v?"border-gold-500 bg-amber-50":"border-slate-100 hover:border-slate-300"}`}>
                     <I size={20} className={delivery===v?"text-gold-600":"text-slate-400"}/><div><p className="font-semibold text-sm">{l}</p><p className="text-xs text-slate-500">{sub}</p></div>
                   </button>))}
               </div>
               {delivery === "pickup" && (
-                <div className="mt-3 grid grid-cols-2 gap-2">{["Mogappair East","Mogappair West"].map(b => (
-                  <button key={b} onClick={() => setBranch(b)} className={`rounded-xl border-2 py-2.5 text-sm font-medium transition ${branch===b?"border-navy-800 bg-navy-50":"border-slate-100"}`}>{b}</button>))}</div>)}
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">{["Mogappair East","Mogappair West"].map(b => (
+                  <button key={b} onClick={() => setBranch(b)} className={`rounded-xl border-2 py-2.5 px-3 text-sm font-medium transition ${branch===b?"border-navy-800 bg-navy-50 text-navy-900 font-semibold":"border-slate-100 text-slate-600 hover:border-slate-300"}`}>{b}</button>))}</div>)}
             </div>
             {/* Customer details */}
-            <div className="card p-5">
-              <p className="font-semibold mb-4">Your details</p>
+            <div className="card p-4 sm:p-5">
+              <p className="font-semibold mb-4 text-sm sm:text-base">Your details</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 {[["Name *","name","text","Full name"],["Phone *","phone","tel","10-digit mobile"],["Email","email","email","you@example.com"]].map(([l,k,t,ph]) => (
                   <label key={k} className={k==="email"?"sm:col-span-2":""}>
@@ -204,7 +204,7 @@ export default function CheckoutPage() {
                 <div className="mt-4 space-y-3">
                   <p className="text-sm font-semibold text-slate-700">Delivery address</p>
                   <input value={addr.line1} onChange={e => setAddr({...addr,line1:e.target.value})} placeholder="Street address, area" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <input value={addr.city} onChange={e => setAddr({...addr,city:e.target.value})} placeholder="City" className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/>
                     <select value={addr.state} onChange={e => setAddr({...addr,state:e.target.value})} className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700">{STATES.map(s=><option key={s}>{s}</option>)}</select>
                     <input value={addr.pincode} onChange={e => setAddr({...addr,pincode:e.target.value})} placeholder="Pincode" className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/>

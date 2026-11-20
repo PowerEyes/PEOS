@@ -1,0 +1,246 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - complementary [ref=f10e3]:
+      - generic [ref=f10e5]:
+        - generic [ref=f10e6]: 👁
+        - generic [ref=f10e7]:
+          - paragraph [ref=f10e8]: PowerOS
+          - paragraph [ref=f10e9]: Power Eyes Opticals
+      - navigation [ref=f10e10]:
+        - link "Dashboard" [ref=f10e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f10e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f10e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f10e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f10e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f10e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f10e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f10e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f10e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - button "Finance" [ref=f10e61] [cursor=pointer]
+        - link "CRM Automation" [ref=f10e67] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f10e71] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f10e78] [cursor=pointer]
+        - link "Settings" [ref=f10e85] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f10e92] [cursor=pointer]
+    - generic [ref=f10e96]:
+      - banner [ref=f10e97]:
+        - generic [ref=f10e98]: Power Eyes Opticals
+        - generic [ref=f10e101]:
+          - generic "2 branches" [ref=f10e102]:
+            - generic [ref=f10e103]: P
+            - generic [ref=f10e104]: Power Eyes Owner
+            - generic [ref=f10e105]: owner
+          - link "← Website" [ref=f10e106] [cursor=pointer]:
+            - /url: /
+      - main [ref=f10e107]:
+        - generic [ref=f10e108]:
+          - generic [ref=f10e110]:
+            - heading "Inventory" [level=1] [ref=f10e111]
+            - paragraph [ref=f10e112]: 4 products
+          - generic [ref=f10e115]:
+            - button "Frames 3" [ref=f10e116] [cursor=pointer]
+            - button "Sunglasses 1" [ref=f10e119] [cursor=pointer]
+            - button "Contact lenses 0" [ref=f10e121] [cursor=pointer]
+            - button "Accessories 0" [ref=f10e123] [cursor=pointer]
+            - button "Lens packages 9" [ref=f10e125] [cursor=pointer]
+            - button "Lens options 19" [ref=f10e127] [cursor=pointer]
+            - button "Display & Shelf 4" [ref=f10e129] [cursor=pointer]
+          - generic [ref=f10e361]:
+            - generic [ref=f10e362]:
+              - paragraph [ref=f10e363]: These appear in the POS lens picker and the website lens wizard. Draft items stay hidden.
+              - button "Add option" [ref=f10e364] [cursor=pointer]
+            - generic [ref=f10e489]:
+              - heading "Lens index" [level=3] [ref=f10e490]
+              - generic [ref=f10e491]:
+                - button "1.56 Standard Index Great balance of clarity and value Included active" [ref=f10e492] [cursor=pointer]:
+                  - generic [ref=f10e493]:
+                    - generic [ref=f10e494]: 1.56 Standard Index
+                    - generic [ref=f10e495]: Great balance of clarity and value
+                  - generic [ref=f10e496]: Included
+                  - generic [ref=f10e497]: active
+                - button "1.60 Mid Index Thinner and lighter than 1.56 +₹1,500 active" [ref=f10e498] [cursor=pointer]:
+                  - generic [ref=f10e499]:
+                    - generic [ref=f10e500]: 1.60 Mid Index
+                    - generic [ref=f10e501]: Thinner and lighter than 1.56
+                  - generic [ref=f10e502]: +₹1,500
+                  - generic [ref=f10e503]: active
+                - button "1.67 High Index Up to 30% thinner than 1.56 Included draft" [ref=f10e504] [cursor=pointer]:
+                  - generic [ref=f10e505]:
+                    - generic [ref=f10e506]: 1.67 High Index
+                    - generic [ref=f10e507]: Up to 30% thinner than 1.56
+                  - generic [ref=f10e508]: Included
+                  - generic [ref=f10e509]: draft
+                - button "1.74 Ultra High Index Up to 40% thinner than 1.56 Included draft" [ref=f10e510] [cursor=pointer]:
+                  - generic [ref=f10e511]:
+                    - generic [ref=f10e512]: 1.74 Ultra High Index
+                    - generic [ref=f10e513]: Up to 40% thinner than 1.56
+                  - generic [ref=f10e514]: Included
+                  - generic [ref=f10e515]: draft
+            - generic [ref=f10e516]:
+              - heading "Add-ons and coatings" [level=3] [ref=f10e517]
+              - generic [ref=f10e518]:
+                - button "Anti-Reflective Coating (HMC) Most Popular Reduces glare and improves clarity +₹1,500 active" [ref=f10e519] [cursor=pointer]:
+                  - generic [ref=f10e520]:
+                    - generic [ref=f10e521]:
+                      - text: Anti-Reflective Coating (HMC)
+                      - generic [ref=f10e522]: Most Popular
+                    - generic [ref=f10e523]: Reduces glare and improves clarity
+                  - generic [ref=f10e524]: +₹1,500
+                  - generic [ref=f10e525]: active
+                - button "Anti-Reflective Coating Included Eliminates glare from screens, headlights and indoor lighting. Essential for all lenses. Included active" [ref=f10e526] [cursor=pointer]:
+                  - generic [ref=f10e527]:
+                    - generic [ref=f10e528]:
+                      - text: Anti-Reflective Coating
+                      - generic [ref=f10e529]: Included
+                    - generic [ref=f10e530]: Eliminates glare from screens, headlights and indoor lighting. Essential for all lenses.
+                  - generic [ref=f10e531]: Included
+                  - generic [ref=f10e532]: active
+                - button "Blue Light Filter Most Popular Filters high-energy visible blue light. Recommended for 4+ hours daily screen use. +₹600 active" [ref=f10e533] [cursor=pointer]:
+                  - generic [ref=f10e534]:
+                    - generic [ref=f10e535]:
+                      - text: Blue Light Filter
+                      - generic [ref=f10e536]: Most Popular
+                    - generic [ref=f10e537]: Filters high-energy visible blue light. Recommended for 4+ hours daily screen use.
+                  - generic [ref=f10e538]: +₹600
+                  - generic [ref=f10e539]: active
+                - button "Scratch Resistant Coating Protects lenses from daily wear and tear +₹800 active" [ref=f10e540] [cursor=pointer]:
+                  - generic [ref=f10e541]:
+                    - generic [ref=f10e542]: Scratch Resistant Coating
+                    - generic [ref=f10e543]: Protects lenses from daily wear and tear
+                  - generic [ref=f10e544]: +₹800
+                  - generic [ref=f10e545]: active
+                - button "Photochromic (Transitions) Lens darkens automatically outdoors. Replaces the need for prescription sunglasses. +₹1,800 active" [ref=f10e546] [cursor=pointer]:
+                  - generic [ref=f10e547]:
+                    - generic [ref=f10e548]: Photochromic (Transitions)
+                    - generic [ref=f10e549]: Lens darkens automatically outdoors. Replaces the need for prescription sunglasses.
+                  - generic [ref=f10e550]: +₹1,800
+                  - generic [ref=f10e551]: active
+                - button "Water Resistant Coating Repels water, dust and smudges +₹800 active" [ref=f10e552] [cursor=pointer]:
+                  - generic [ref=f10e553]:
+                    - generic [ref=f10e554]: Water Resistant Coating
+                    - generic [ref=f10e555]: Repels water, dust and smudges
+                  - generic [ref=f10e556]: +₹800
+                  - generic [ref=f10e557]: active
+                - button "UV400 Protection Blocks 100% of UVA and UVB rays. Important for outdoor use and plus-power prescriptions. +₹400 active" [ref=f10e558] [cursor=pointer]:
+                  - generic [ref=f10e559]:
+                    - generic [ref=f10e560]: UV400 Protection
+                    - generic [ref=f10e561]: Blocks 100% of UVA and UVB rays. Important for outdoor use and plus-power prescriptions.
+                  - generic [ref=f10e562]: +₹400
+                  - generic [ref=f10e563]: active
+                - button "UV Protection Blocks 100% harmful UV rays +₹600 active" [ref=f10e564] [cursor=pointer]:
+                  - generic [ref=f10e565]:
+                    - generic [ref=f10e566]: UV Protection
+                    - generic [ref=f10e567]: Blocks 100% harmful UV rays
+                  - generic [ref=f10e568]: +₹600
+                  - generic [ref=f10e569]: active
+                - button "Easy Clean Coating Makes lenses easier to clean +₹700 active" [ref=f10e570] [cursor=pointer]:
+                  - generic [ref=f10e571]:
+                    - generic [ref=f10e572]: Easy Clean Coating
+                    - generic [ref=f10e573]: Makes lenses easier to clean
+                  - generic [ref=f10e574]: +₹700
+                  - generic [ref=f10e575]: active
+                - button "Scratch Resistant Coat Hard coating that protects lens surface from everyday micro-scratches. +₹400 active" [ref=f10e576] [cursor=pointer]:
+                  - generic [ref=f10e577]:
+                    - generic [ref=f10e578]: Scratch Resistant Coat
+                    - generic [ref=f10e579]: Hard coating that protects lens surface from everyday micro-scratches.
+                  - generic [ref=f10e580]: +₹400
+                  - generic [ref=f10e581]: active
+                - button "Easy Clean Coating Hydrophobic and oleophobic coating — water and fingerprints slide right off. +₹600 active" [ref=f10e582] [cursor=pointer]:
+                  - generic [ref=f10e583]:
+                    - generic [ref=f10e584]: Easy Clean Coating
+                    - generic [ref=f10e585]: Hydrophobic and oleophobic coating — water and fingerprints slide right off.
+                  - generic [ref=f10e586]: +₹600
+                  - generic [ref=f10e587]: active
+                - button "Tint (Sunglasses) Choose from multiple colours +₹1,200 active" [ref=f10e588] [cursor=pointer]:
+                  - generic [ref=f10e589]:
+                    - generic [ref=f10e590]: Tint (Sunglasses)
+                    - generic [ref=f10e591]: Choose from multiple colours
+                  - generic [ref=f10e592]: +₹1,200
+                  - generic [ref=f10e593]: active
+                - button "Mirror Coating Stylish and enhanced glare reduction +₹1,500 active" [ref=f10e594] [cursor=pointer]:
+                  - generic [ref=f10e595]:
+                    - generic [ref=f10e596]: Mirror Coating
+                    - generic [ref=f10e597]: Stylish and enhanced glare reduction
+                  - generic [ref=f10e598]: +₹1,500
+                  - generic [ref=f10e599]: active
+                - button "Tint (Sunglasses) Fixed tint for prescription sunglasses. Choose from grey, brown or green. +₹800 active" [ref=f10e600] [cursor=pointer]:
+                  - generic [ref=f10e601]:
+                    - generic [ref=f10e602]: Tint (Sunglasses)
+                    - generic [ref=f10e603]: Fixed tint for prescription sunglasses. Choose from grey, brown or green.
+                  - generic [ref=f10e604]: +₹800
+                  - generic [ref=f10e605]: active
+                - button "Engraving Add a personal touch to your glasses +₹1,000 active" [ref=f10e606] [cursor=pointer]:
+                  - generic [ref=f10e607]:
+                    - generic [ref=f10e608]: Engraving
+                    - generic [ref=f10e609]: Add a personal touch to your glasses
+                  - generic [ref=f10e610]: +₹1,000
+                  - generic [ref=f10e611]: active
+            - dialog "1.60 Mid Index" [ref=f10e614]:
+              - generic [ref=f10e615]:
+                - heading "1.60 Mid Index" [level=2] [ref=f10e617]
+                - button "Close" [ref=f10e618] [cursor=pointer]
+              - generic [ref=f10e623]:
+                - generic [ref=f10e624]:
+                  - generic [ref=f10e625]:
+                    - generic [ref=f10e626]: Type
+                    - combobox "Type" [ref=f10e627]:
+                      - option "Add-on or coating"
+                      - option "Lens index" [selected]
+                  - generic [ref=f10e628]:
+                    - generic [ref=f10e629]: Code *
+                    - textbox "Code *" [ref=f10e630]: IDX-160
+                - generic [ref=f10e631]:
+                  - generic [ref=f10e632]: Name *
+                  - textbox "Name *" [ref=f10e633]: 1.60 Mid Index
+                - generic [ref=f10e634]:
+                  - generic [ref=f10e635]: Description (29/150)
+                  - textbox "Description (29/150)" [ref=f10e636]: Thinner and lighter than 1.56
+                - generic [ref=f10e637]:
+                  - generic [ref=f10e638]:
+                    - generic [ref=f10e639]: Extra price *
+                    - textbox "Extra price *" [ref=f10e640]: "1500"
+                  - generic [ref=f10e641]:
+                    - generic [ref=f10e642]: GST %
+                    - combobox "GST %" [ref=f10e643]:
+                      - option "0"
+                      - option "5" [selected]
+                      - option "12"
+                      - option "18"
+                  - generic [ref=f10e644]:
+                    - generic [ref=f10e645]: Badge
+                    - textbox "Badge" [ref=f10e646]:
+                      - /placeholder: Most Popular
+                - generic [ref=f10e647]:
+                  - generic [ref=f10e648]: Offered with (none selected = every lens design)
+                  - generic [ref=f10e649]:
+                    - button "single vision" [ref=f10e650] [cursor=pointer]
+                    - button "progressive" [ref=f10e651] [cursor=pointer]
+                    - button "bifocal" [ref=f10e652] [cursor=pointer]
+                    - button "reading" [ref=f10e653] [cursor=pointer]
+                    - button "non prescription" [ref=f10e654] [cursor=pointer]
+                - generic [ref=f10e655]:
+                  - generic [ref=f10e656]:
+                    - generic [ref=f10e657]: Status
+                    - combobox "Status" [ref=f10e658]:
+                      - option "active" [selected]
+                      - option "draft"
+                      - option "inactive"
+                  - generic [ref=f10e659]:
+                    - generic [ref=f10e660]: Display order
+                    - spinbutton "Display order" [ref=f10e661]: "2"
+              - generic [ref=f10e662]:
+                - button "Cancel" [ref=f10e663] [cursor=pointer]
+                - button "Save option" [ref=f10e664] [cursor=pointer]
+  - alert [ref=f10e281]

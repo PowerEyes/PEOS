@@ -39,71 +39,78 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
 
   function StaffRow({ s }: { s: any }) {
     return (
-      <div className="flex flex-wrap items-center gap-3 px-4 py-3.5 hover:bg-slate-50 transition">
-        <Avatar name={s.full_name}/>
-        <div className="min-w-0 flex-1 space-y-0.5">
-          <p className="font-semibold text-sm">{s.full_name || <span className="text-slate-400 italic">Name not set</span>}</p>
-          <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
-            <span className="flex items-center gap-1"><Building2 size={11}/>{branchName(s.branch_id)}</span>
-            <span>Joined {new Date(s.created_at).toLocaleDateString("en-IN",{dateStyle:"medium"})}</span>
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3.5 hover:bg-slate-50 transition">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          <Avatar name={s.full_name}/>
+          <div className="min-w-0 flex-1 space-y-0.5">
+            <p className="font-semibold text-sm truncate">{s.full_name || <span className="text-slate-400 italic">Name not set</span>}</p>
+            <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
+              <span className="flex items-center gap-1"><Building2 size={11}/>{branchName(s.branch_id)}</span>
+              <span>Joined {new Date(s.created_at).toLocaleDateString("en-IN",{dateStyle:"medium"})}</span>
+            </div>
           </div>
+          <Pill tone={s.deactivated?"red":s.is_approved?"green":"gold"} className="shrink-0 sm:hidden">
+            {s.deactivated?"Deactivated":s.is_approved?s.role_key:"Pending"}
+          </Pill>
         </div>
 
-        {/* Role selector for approved staff */}
-        {s.is_approved && !s.deactivated && (
-          <select value={s.role_key} disabled={busy===s.id}
-            onChange={e=>run(s.id, ()=>updateStaff(s.id,{role_key:e.target.value}))}
-            className="field w-auto py-1.5 text-sm capitalize">
-            {ROLES.map(r=><option key={r} value={r} className="capitalize">{r}</option>)}
-          </select>)}
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+          {/* Role selector for approved staff */}
+          {s.is_approved && !s.deactivated && (
+            <select value={s.role_key} disabled={busy===s.id}
+              onChange={e=>run(s.id, ()=>updateStaff(s.id,{role_key:e.target.value}))}
+              className="field w-auto py-1.5 text-xs sm:text-sm capitalize">
+              {ROLES.map(r=><option key={r} value={r} className="capitalize">{r}</option>)}
+            </select>)}
 
-        {/* Branch selector for approved staff */}
-        {s.is_approved && !s.deactivated && (
-          <select value={s.branch_id??""} disabled={busy===s.id}
-            onChange={e=>run(s.id, ()=>updateStaff(s.id,{branch_id:e.target.value||null}))}
-            className="field w-auto py-1.5 text-sm">
-            <option value="">All branches</option>
-            {branches.map(b=><option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>)}
+          {/* Branch selector for approved staff */}
+          {s.is_approved && !s.deactivated && (
+            <select value={s.branch_id??""} disabled={busy===s.id}
+              onChange={e=>run(s.id, ()=>updateStaff(s.id,{branch_id:e.target.value||null}))}
+              className="field w-auto py-1.5 text-xs sm:text-sm">
+              <option value="">All branches</option>
+              {branches.map(b=><option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>)}
 
-        {/* Pending — approve / reject buttons */}
-        {!s.is_approved && !s.deactivated && (
-          <div className="flex flex-wrap gap-2">
-            <button disabled={busy===s.id} onClick={()=>run(s.id, ()=>approveStaff(s.id,"staff"))}
-              className="btn btn-primary !py-1.5 text-xs gap-1"><CheckCircle2 size={13}/>Approve as Staff</button>
-            <button disabled={busy===s.id} onClick={()=>run(s.id, ()=>approveStaff(s.id,"admin"))}
-              className="btn btn-ghost !py-1.5 text-xs gap-1"><Shield size={13}/>Approve as Admin</button>
-            <button disabled={busy===s.id} onClick={()=>run(s.id, ()=>updateStaff(s.id,{deactivated:true}))}
-              className="btn btn-ghost !py-1.5 text-xs text-rose-600 gap-1"><UserX size={13}/>Reject</button>
-          </div>)}
+          {/* Pending — approve / reject buttons */}
+          {!s.is_approved && !s.deactivated && (
+            <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+              <button disabled={busy===s.id} onClick={()=>run(s.id, ()=>approveStaff(s.id,"staff"))}
+                className="btn btn-primary !py-1.5 text-xs gap-1 flex-1 sm:flex-initial"><CheckCircle2 size={13}/>Staff</button>
+              <button disabled={busy===s.id} onClick={()=>run(s.id, ()=>approveStaff(s.id,"admin"))}
+                className="btn btn-ghost !py-1.5 text-xs gap-1 flex-1 sm:flex-initial"><Shield size={13}/>Admin</button>
+              <button disabled={busy===s.id} onClick={()=>run(s.id, ()=>updateStaff(s.id,{deactivated:true}))}
+                className="btn btn-ghost !py-1.5 text-xs text-rose-600 gap-1"><UserX size={13}/>Reject</button>
+            </div>)}
 
-        {/* Active — deactivate button */}
-        {s.is_approved && !s.deactivated && (
-          <button disabled={busy===s.id}
-            onClick={()=>{ if(confirm(`Deactivate ${s.full_name}? They will lose access immediately.`)) run(s.id, ()=>updateStaff(s.id,{deactivated:true})); }}
-            className="btn btn-ghost !py-1.5 text-xs text-rose-600 gap-1"><UserX size={13}/>Deactivate</button>)}
+          {/* Active — deactivate button */}
+          {s.is_approved && !s.deactivated && (
+            <button disabled={busy===s.id}
+              onClick={()=>{ if(confirm(`Deactivate ${s.full_name}? They will lose access immediately.`)) run(s.id, ()=>updateStaff(s.id,{deactivated:true})); }}
+              className="btn btn-ghost !py-1.5 text-xs text-rose-600 gap-1"><UserX size={13}/>Deactivate</button>)}
 
-        {/* Deactivated — reactivate */}
-        {s.deactivated && (
-          <button disabled={busy===s.id}
-            onClick={()=>run(s.id, ()=>updateStaff(s.id,{deactivated:false, is_approved:true}))}
-            className="btn btn-ghost !py-1.5 text-xs gap-1"><CheckCircle2 size={13}/>Reactivate</button>)}
+          {/* Deactivated — reactivate */}
+          {s.deactivated && (
+            <button disabled={busy===s.id}
+              onClick={()=>run(s.id, ()=>updateStaff(s.id,{deactivated:false, is_approved:true}))}
+              className="btn btn-ghost !py-1.5 text-xs gap-1"><CheckCircle2 size={13}/>Reactivate</button>)}
 
-        <Pill tone={s.deactivated?"red":s.is_approved?"green":"gold"} className="shrink-0">
-          {s.deactivated?"Deactivated":s.is_approved?s.role_key:"Pending"}
-        </Pill>
+          <Pill tone={s.deactivated?"red":s.is_approved?"green":"gold"} className="shrink-0 hidden sm:inline-flex">
+            {s.deactivated?"Deactivated":s.is_approved?s.role_key:"Pending"}
+          </Pill>
+        </div>
       </div>);
   }
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       {/* Header */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl font-semibold">Staff & Users</h1>
-          <p className="text-slate-500 mt-0.5">{active.length} active · {pending.length} pending · {deactivated.length} deactivated</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-semibold">Staff & Users</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">{active.length} active · {pending.length} pending · {deactivated.length} deactivated</p>
         </div>
-        <button onClick={()=>setInviteOpen(true)} className="btn btn-primary gap-2"><UserPlus size={16}/>Invite staff</button>
+        <button onClick={()=>setInviteOpen(true)} className="btn btn-primary gap-2 self-start sm:self-auto"><UserPlus size={16}/>Invite staff</button>
       </div>
 
       {/* Pending */}

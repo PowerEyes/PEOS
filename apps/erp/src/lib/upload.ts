@@ -10,7 +10,10 @@ import { dbError } from "@poweros/business-rules";
  * writing to a guessed folder would be worse than failing.
  */
 export async function orgFolder(): Promise<string> {
-  const { data, error } = await supabaseBrowser().from("profiles").select("org_id").single();
+  const sb = supabaseBrowser();
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) throw new Error("Not signed in — can't choose a folder.");
+  const { data, error } = await sb.from("profiles").select("org_id").eq("id", user.id).single();
   const org = data?.org_id;
   if (!org) throw new Error(error?.message ?? "No organisation on your profile — can't choose a folder.");
   return org;

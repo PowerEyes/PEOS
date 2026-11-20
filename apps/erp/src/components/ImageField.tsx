@@ -51,7 +51,7 @@ export function ImageField({
   crop = false,
 }: Props) {
   const toast = useToast();
-  const fileRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null); const cameraRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [drag, setDrag] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -139,18 +139,33 @@ export function ImageField({
             )}
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className={`grid w-full place-items-center gap-1.5 px-4 py-7 text-center ${aspect} ${busy ? "opacity-60" : ""}`}
-          >
-            {busy ? <Loader2 className="animate-spin text-slate-400" /> : <UploadCloud size={20} className="text-slate-400" />}
-            <span className="text-xs font-medium text-slate-500">{busy ? "Uploading…" : "Drop an image, or click to browse"}</span>
-            <span className="text-[11px] text-slate-400">{fallbackIcon} Shown until you add one</span>
-          </button>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className={`grid place-items-center gap-1.5 px-4 py-7 text-center ${aspect} ${busy ? "opacity-60" : ""}`}
+            >
+              {busy ? <Loader2 className="animate-spin text-slate-400" /> : <UploadCloud size={20} className="text-slate-400" />}
+              <span className="text-xs font-medium text-slate-500">{busy ? "Uploading…" : "Browse / drop image"}</span>
+              <span className="text-[11px] text-slate-400">{fallbackIcon} JPG/PNG · auto-resized</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => cameraRef.current?.click()}
+              className={`grid place-items-center gap-1.5 px-4 py-7 text-center ${aspect} ${busy ? "opacity-60" : ""}`}
+            >
+              {busy ? <Loader2 className="animate-spin text-slate-400" /> : <UploadCloud size={20} className="text-slate-400" />}
+              <span className="text-xs font-medium text-slate-500">Take a photo</span>
+              <span className="text-[11px] text-slate-400">uses device camera</span>
+            </button>
+          </div>
         )}
         <input
           ref={fileRef} type="file" accept="image/*" hidden
+          onChange={(e) => { void accept(e.target.files?.[0]); e.target.value = ""; }}
+        />
+        <input
+          ref={cameraRef} type="file" accept="image/*" capture="environment" hidden
           onChange={(e) => { void accept(e.target.files?.[0]); e.target.value = ""; }}
         />
       </div>

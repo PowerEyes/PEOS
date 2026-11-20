@@ -7,11 +7,14 @@ const done = () => { revalidatePath("/sales"); revalidatePath("/inventory"); rev
 export async function placeSale(payload: unknown): Promise<R> {
   const { rx_consent, ...p } = (payload ?? {}) as Record<string, any>;
   const { data, error } = await supabaseServer().rpc("place_sale", { p }); if (error) return { error: dbError(error.message) };
+  if (!data) return { error: "Sale could not be created (no response from server)" };
   // Hard-copy consent is recorded after the sale exists (the RPC is not rewritten).
   if (rx_consent === true) {
-    await supabaseServer().from("sales")
-      .update({ rx_consent: true, rx_consent_at: new Date().toISOString() })
-      .eq("id", data.id).eq("rx_consent", false);
+    try {
+      await supabaseServer().from("sales")
+        .update({ rx_consent: true, rx_consent_at: new Date().toISOString() })
+        .eq("id", data.id).eq("rx_consent", false);
+    } catch { /* non-fatal: consent can be recorded later */ }
   }
   done(); return { ok: data.code, id: data.id };
 }

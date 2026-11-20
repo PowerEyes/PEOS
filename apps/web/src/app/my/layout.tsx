@@ -30,7 +30,18 @@ export default async function Layout({ children }: { children: React.ReactNode }
           <div className="rounded-2xl bg-gradient-to-br from-navy-900 to-navy-800 p-4 text-white"><p className="font-display text-sm font-bold">Your Family's<br/>Vision Partner</p><p className="mt-1 text-slate-400 text-[10px]">Since 1998</p></div>
         </div>
       </aside>
-      <main className="flex-1 p-4 sm:p-6 min-w-0">{children}</main>
+      <main className="flex-1 p-4 sm:p-6 min-w-0">
+        {/* Mobile & Tablet Secondary Portal Navigation Bar (< lg) */}
+        <div className="lg:hidden -mx-4 -mt-4 mb-4 sm:-mx-6 sm:-mt-6 sm:mb-6 border-b border-slate-200 bg-white px-3 sm:px-4 py-2.5 flex gap-2 overflow-x-auto shadow-sm print:hidden">
+          {PORTAL_NAV.map(({ href, label, icon: I }) => (
+            <Link key={href} href={href} className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-navy-700 hover:bg-navy-50 hover:text-navy-900 transition active:scale-95">
+              <I size={13} className="text-slate-500 shrink-0" />
+              <span>{label}</span>
+            </Link>
+          ))}
+        </div>
+        {children}
+      </main>
     </div>
   </div>);
 }

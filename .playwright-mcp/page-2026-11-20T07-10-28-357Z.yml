@@ -1,0 +1,115 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e2]:
+    - complementary [ref=f8e3]:
+      - generic [ref=f8e5]:
+        - generic [ref=f8e6]: 👁
+        - generic [ref=f8e7]:
+          - paragraph [ref=f8e8]: PowerOS
+          - paragraph [ref=f8e9]: Power Eyes Opticals
+      - navigation [ref=f8e10]:
+        - link "Dashboard" [ref=f8e11] [cursor=pointer]:
+          - /url: /
+        - link "Customers" [ref=f8e18] [cursor=pointer]:
+          - /url: /customers
+        - link "Prescriptions" [ref=f8e25] [cursor=pointer]:
+          - /url: /prescriptions
+        - link "Appointments" [ref=f8e30] [cursor=pointer]:
+          - /url: /appointments
+        - link "POS & Orders" [ref=f8e34] [cursor=pointer]:
+          - /url: /sales
+        - link "Workshop & Lab" [ref=f8e40] [cursor=pointer]:
+          - /url: /workshop
+        - link "Repairs" [ref=f8e44] [cursor=pointer]:
+          - /url: /repairs
+        - link "Inventory" [ref=f8e50] [cursor=pointer]:
+          - /url: /inventory
+        - link "Purchase Invoices" [ref=f8e56] [cursor=pointer]:
+          - /url: /purchase-invoices
+        - button "Finance" [ref=f8e61] [cursor=pointer]
+        - link "CRM Automation" [ref=f8e67] [cursor=pointer]:
+          - /url: /crm
+        - link "Staff" [ref=f8e71] [cursor=pointer]:
+          - /url: /staff
+        - button "Website" [ref=f8e78] [cursor=pointer]
+        - link "Settings" [ref=f8e85] [cursor=pointer]:
+          - /url: /settings
+      - button "Sign out" [ref=f8e92] [cursor=pointer]
+    - generic [ref=f8e96]:
+      - banner [ref=f8e97]:
+        - generic [ref=f8e98]: Power Eyes Opticals
+        - generic [ref=f8e101]:
+          - generic "2 branches" [ref=f8e102]:
+            - generic [ref=f8e103]: P
+            - generic [ref=f8e104]: Power Eyes Owner
+            - generic [ref=f8e105]: owner
+          - link "← Website" [ref=f8e106] [cursor=pointer]:
+            - /url: /
+      - main [ref=f8e107]:
+        - generic [ref=f8e108]:
+          - generic [ref=f8e109]:
+            - generic [ref=f8e110]:
+              - heading "Inventory" [level=1] [ref=f8e111]
+              - paragraph [ref=f8e112]: 4 products
+            - button "Add product" [ref=f8e113] [cursor=pointer]
+          - generic [ref=f8e115]:
+            - button "Frames 3" [ref=f8e116] [cursor=pointer]
+            - button "Sunglasses 1" [ref=f8e119] [cursor=pointer]
+            - button "Contact lenses 0" [ref=f8e121] [cursor=pointer]
+            - button "Accessories 0" [ref=f8e123] [cursor=pointer]
+            - button "Lens packages 9" [ref=f8e125] [cursor=pointer]
+            - button "Lens options 19" [ref=f8e127] [cursor=pointer]
+            - button "Display & Shelf 4" [ref=f8e129] [cursor=pointer]
+          - generic [ref=f8e131]:
+            - generic [ref=f8e132]:
+              - textbox "Search, or scan a barcode and press Enter" [ref=f8e138]
+              - button "Scan with camera" [ref=f8e139] [cursor=pointer]
+            - combobox [ref=f8e143]:
+              - option "All brands" [selected]
+              - option "Alcon"
+              - option "Essilor"
+              - option "Johnson & Johnson"
+              - option "London Horse"
+              - option "Oakley"
+              - option "Persol"
+              - option "Polaroid"
+              - option "RAY BAN"
+              - option "Ray-Ban"
+              - option "ROCKERS"
+              - option "Titan"
+              - option "Vogue"
+              - option "Zeiss"
+            - combobox [ref=f8e144]:
+              - option "All stock" [selected]
+              - option "Needs attention"
+              - option "Out of stock"
+            - button "Select & print" [ref=f8e145] [cursor=pointer]
+          - generic [ref=f8e150]:
+            - 'button "25% OFF Ray-Ban | FRM-0004 E2E-TEST-FRAME ₹1,500 ₹2,000 In stock: 23 Add to Bag" [ref=f8e315] [cursor=pointer]':
+              - generic [ref=f8e152]: 25% OFF
+              - generic [ref=f8e160]:
+                - paragraph [ref=f8e161]: Ray-Ban | FRM-0004
+                - paragraph [ref=f8e162]: E2E-TEST-FRAME
+                - paragraph [ref=f8e163]: ₹1,500 ₹2,000
+                - generic [ref=f8e164]:
+                  - generic [ref=f8e165]: "In stock: 23"
+                  - generic [ref=f8e166]: Add to Bag
+            - 'button "10% OFF ROCKERS | FRM-0003 178561 ₹1,350 ₹1,500 In stock: 10 Choose Lens" [ref=f8e167] [cursor=pointer]':
+              - generic [ref=f8e168]: 10% OFF
+              - generic [ref=f8e179]:
+                - paragraph [ref=f8e180]: ROCKERS | FRM-0003
+                - paragraph [ref=f8e181]: "178561"
+                - paragraph [ref=f8e182]: ₹1,350 ₹1,500
+                - generic [ref=f8e183]:
+                  - generic [ref=f8e184]: "In stock: 10"
+                  - generic [ref=f8e185]: Choose Lens
+            - 'button "14% OFF No brand | FRM-0002 173 ₹1,250 ₹1,450 In stock: 10 Choose Lens" [ref=f8e186] [cursor=pointer]':
+              - generic [ref=f8e187]: 14% OFF
+              - generic [ref=f8e198]:
+                - paragraph [ref=f8e199]: No brand | FRM-0002
+                - paragraph [ref=f8e200]: "173"
+                - paragraph [ref=f8e201]: ₹1,250 ₹1,450
+                - generic [ref=f8e202]:
+                  - generic [ref=f8e203]: "In stock: 10"
+                  - generic [ref=f8e204]: Choose Lens
+  - generic: Product saved
+  - alert [ref=f8e271]
