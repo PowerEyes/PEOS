@@ -5,7 +5,7 @@ import { Pill, Drawer, useToast } from "@poweros/ui";
 import { CheckCircle2, UserX, Shield, UserPlus, Pencil, Mail, Phone, Building2 } from "lucide-react";
 import { approveStaff, updateStaff, inviteByEmail } from "./actions";
 
-const ROLES = ["staff","admin","owner"] as const;
+const ROLES = ["staff","branch_manager","admin","owner"] as const;
 type Role = typeof ROLES[number];
 
 function Avatar({ name }: { name?: string }) {
@@ -19,7 +19,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
   const router = useRouter(); const toast = useToast();
   const [busy, setBusy] = useState<string|null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState(""); const [inviteRole, setInviteRole] = useState<Role>("staff");
+  const [inviteEmail, setInviteEmail] = useState(""); const [inviteRole, setInviteRole] = useState<Role>("staff"); const [inviteBranch, setInviteBranch] = useState("");
 
   const pending     = staff.filter(s => !s.is_approved && !s.deactivated);
   const active      = staff.filter(s =>  s.is_approved && !s.deactivated);
@@ -31,17 +31,19 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
   }
 
   async function sendInvite() {
-    setBusy("invite"); const r = await inviteByEmail(inviteEmail, inviteRole); setBusy(null);
+    setBusy("invite"); const r = await inviteByEmail(inviteEmail, inviteRole, inviteBranch || branches[0]?.id || null); setBusy(null);
     r.error ? toast(r.error, "err") : (toast(r.ok!), setInviteOpen(false), setInviteEmail(""));
   }
 
+  const needReview = staff.filter(s => s.is_approved && !s.deactivated && s.branch_reviewed === false);
   const branchName = (id: string | null) => branches.find(b => b.id === id)?.name ?? "All branches";
 
   function StaffRow({ s }: { s: any }) {
+    const review = s.is_approved && !s.deactivated && s.branch_reviewed === false;
     return (
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3.5 hover:bg-slate-50 transition">
         <div className="flex items-center gap-3 min-w-0 flex-1">
-          <Avatar name={s.full_name}/>
+          <Avatar name={s.full_name}/>{review && <button title="Branch was auto-assigned. Click to confirm." disabled={busy===s.id} onClick={()=>run(s.id, ()=>updateStaff(s.id,{branch_id:s.branch_id}))} className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Confirm branch</button>}
           <div className="min-w-0 flex-1 space-y-0.5">
             <p className="font-semibold text-sm truncate">{s.full_name || <span className="text-slate-400 italic">Name not set</span>}</p>
             <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500">
@@ -104,6 +106,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
+      {needReview.length > 0 && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">{needReview.length} staff were automatically assigned to a branch during the upgrade. Use “Confirm branch” (or change their branch) — branch access depends on it.</div>}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
@@ -169,6 +172,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
             <select value={inviteRole} onChange={e=>setInviteRole(e.target.value as Role)} className="field capitalize">
               {ROLES.map(r=><option key={r} value={r} className="capitalize">{r}</option>)}
             </select>
+            <select value={inviteBranch} onChange={e=>setInviteBranch(e.target.value)} className="field"><option value="">{branches[0]?.name ?? "Branch"}</option>{branches.slice(1).map(b=><option key={b.id} value={b.id}>{b.name}</option>)}</select>
           </label>
           <div className="rounded-xl bg-slate-50 border border-slate-100 p-3 text-xs text-slate-600 space-y-1">
             <p><b>Staff</b> — Can serve customers, create sales and manage lab orders</p>

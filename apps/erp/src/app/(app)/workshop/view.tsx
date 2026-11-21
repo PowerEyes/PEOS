@@ -39,7 +39,7 @@ function Detail({ lab, onClose, suppliers }: { lab: any | null; onClose: () => v
           <button disabled={busy || !checks.every(Boolean)} onClick={() => go("ready")} className="btn btn-gold w-full">Pass QC and mark ready</button>
           <textarea className="field" rows={2} placeholder="If it fails, describe the rework needed" value={note} onChange={(e) => setNote(e.target.value)} /><button disabled={busy} onClick={() => go("fitting", note)} className="btn btn-ghost w-full text-rose-600">Send back for rework</button></>}
         {nx && <button disabled={busy} onClick={() => go(nx[0])} className="btn btn-primary w-full">{nx[1]}</button>}
-        {lab.status === "ready" && <><WhatsAppSend phone={c.whatsapp || c.phone}
+        {lab.status === "ready" && <><WhatsAppSend phone={c.whatsapp || c.phone} doc={lab.sale_id ? { type: "sale", id: lab.sale_id } : undefined}
           keys={["order_ready", "order_in_progress", "order_qc", "balance_due"]}
           vars={{ Name: c.full_name, Item: lab.frame_desc ?? lab.lens_desc ?? "your glasses", Code: lab.sales?.code ?? "", Balance: inr(bal) }}
           defaultKey="order_ready" label="Tell customer it is ready" /><a href="/sales" className="text-center text-sm text-navy-700 underline">Collect payment and deliver in POS & Orders</a></>}

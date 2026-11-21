@@ -5,7 +5,6 @@ import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 import { z } from "zod";
 
-const ORG = "00000000-0000-0000-0000-000000000001";
 
 const Schema = z.object({
   code:        z.string().min(3).max(20).toUpperCase().trim(),
@@ -37,7 +36,7 @@ export async function upsertCoupon(prev: any, fd: FormData) {
   const parsed = Schema.safeParse(raw);
   if (!parsed.success) return { error: parsed.error.errors[0]?.message };
 
-  const payload = { ...parsed.data, org_id: ORG };
+  const payload = { ...parsed.data };
 
   if (id) {
     const { error } = await sb.from("coupons").update(payload).eq("id", id);

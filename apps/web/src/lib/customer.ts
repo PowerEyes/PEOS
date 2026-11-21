@@ -1,3 +1,4 @@
+import { getOrgId } from "./tenant";
 import { supabaseServer } from "./supabase/server";
 export type CustomerProfile = { id: string; full_name: string; customer_code: string; vision_id: string; phone: string; email: string | null; dob: string | null; gender: string | null; };
 export async function getCustomer(): Promise<CustomerProfile | null> {
@@ -37,9 +38,8 @@ export async function getCustomerOrCreate(user: { id: string; email?: string; us
   // 3. Create a new customer row.
   const { data } = await sb.from("customers").insert({
     full_name: name, phone, email, auth_user_id: user.id,
-    org_id: "00000000-0000-0000-0000-000000000001",
-    city: "Chennai", state: "Tamil Nadu", pincode: "600037",
-    gender, dob,
+    org_id: await getOrgId(),
+        gender, dob,
     whatsapp_opt_in: user.user_metadata?.whatsapp_opt_in ?? true,
     whatsapp_opt_in_at: (user.user_metadata?.whatsapp_opt_in ?? true) ? new Date().toISOString() : null,
   }).select("id,full_name,customer_code,vision_id,phone,email,dob,gender").single();

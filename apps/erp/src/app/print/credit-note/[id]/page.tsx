@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
-import { supabaseServer } from "@/lib/supabase/server";
+import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
-export default async function CNPrint({ params }: { params: { id: string } }) {
-  const { data: cn } = await supabaseServer().from("credit_notes").select("*, customers(*), credit_note_lines(*), branches(*)").eq("id", params.id).single();
+export default async function CNPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
+  const sb = await printSb("credit_note", params.id, searchParams?.dt);
+  const { data: cn } = await sb.from("credit_notes").select("*, customers(*), credit_note_lines(*), branches(*)").eq("id", params.id).single();
   if (!cn) notFound();
-  const { data: org } = await supabaseServer().from("organizations").select("name").single();
+  const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const lines = cn.credit_note_lines; const d = (x: string) => new Date(x).toLocaleDateString("en-IN"); const th = "border border-slate-300 px-1.5 py-1";
   return (<div className="min-h-screen bg-slate-200 py-6 print:bg-white print:py-0">
     <style>{`@page{size:A5 portrait;margin:0}@media print{html,body{background:#fff}}`}</style>

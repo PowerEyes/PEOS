@@ -3,7 +3,7 @@
 // Supports Meta Cloud API (official) and Interakt (popular in India)
 // Set WA_PROVIDER=meta|interakt in Edge Function secrets
 
-const ORG_ID = "00000000-0000-0000-0000-000000000001";
+import { tenant } from "./tenant.ts";
 
 export type WAResult = { success: boolean; messageId?: string; error?: string };
 
@@ -109,7 +109,7 @@ export async function logWA(
   metadata: Record<string, any> = {},
 ) {
   await sb.from("whatsapp_log").insert({
-    org_id: ORG_ID,
+    org_id: tenant.org,
     customer_id: customerId,
     phone,
     template,

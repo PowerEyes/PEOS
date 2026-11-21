@@ -1,48 +1,58 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
+import { serviceClient, linkBase } from "@/lib/doclinks";
 type R = { error?: string; ok?: string };
 
-async function caller() {
-  const sb = supabaseServer();
-  const { data:{ user }, error } = await sb.auth.getUser();
-  if (error || !user) return { sb, profile: null as any, orgId: null as string|null };
-  const { data: profile } = await sb.from("profiles").select("role_key, org_id").eq("id", user.id).single();
-  return { sb, profile, orgId: profile?.org_id ?? null };
-}
-
+// Every mutation is a SECURITY DEFINER RPC that re-checks the caller's role, org and branch in the database.
 export async function approveStaff(id: string, role: string): Promise<R> {
-  const { sb, profile, orgId } = await caller();
-  if (!["owner","admin"].includes(profile?.role_key ?? ""))
-    return { error: "Only owners and admins can approve staff." };
-  if (!orgId) return { error: "Your account is not linked to an organisation." };
-  const { error } = await sb.from("profiles")
-    .update({ is_approved: true, role_key: role, org_id: orgId, deactivated: false })
-    .eq("id", id);
+  const { error } = await supabaseServer().rpc("admin_update_staff", { p_id: id, p_role: role, p_deactivated: false });
   if (error) return { error: dbError(error.message) };
-  revalidatePath("/staff");
-  return { ok: `Staff approved as ${role}.` };
+  revalidatePath("/staff"); return { ok: `Access restored as ${role}.` };
 }
 
-export async function updateStaff(id: string, patch: {
-  role_key?: string; branch_id?: string | null;
-  deactivated?: boolean; is_approved?: boolean;
-}): Promise<R> {
-  const { sb, profile } = await caller();
-  if (!["owner","admin"].includes(profile?.role_key ?? ""))
-    return { error: "Only owners and admins can edit staff." };
-  if (patch.deactivated === true)  patch.is_approved = false;
-  if (patch.deactivated === false) patch.is_approved = true;
-  const { error } = await sb.from("profiles").update(patch).eq("id", id);
+export async function updateStaff(id: string, patch: { role_key?: string; branch_id?: string | null; deactivated?: boolean; is_approved?: boolean }): Promise<R> {
+  const { error } = await supabaseServer().rpc("admin_update_staff", {
+    p_id: id, p_role: patch.role_key ?? null, p_branch: patch.branch_id ?? null,
+    p_set_branch: "branch_id" in patch, p_deactivated: patch.deactivated ?? null });
   if (error) return { error: dbError(error.message) };
-  revalidatePath("/staff");
-  return { ok: "Updated successfully." };
+  revalidatePath("/staff"); return { ok: "Updated successfully." };
 }
 
-export async function inviteByEmail(_email: string, _role: string): Promise<R> {
-  const { profile } = await caller();
-  if (!["owner","admin"].includes(profile?.role_key ?? ""))
-    return { error: "Only owners and admins can invite staff." };
-  return { ok: `Share the PowerOS URL with ${_email}. Once they sign up they appear here as Pending for approval.` };
+export async function inviteByEmail(email: string, role: string, branchId?: string | null): Promise<R> {
+  const sb = supabaseServer();
+  const { data: inv, error } = await sb.rpc("invite_staff", { p_email: email, p_role: role, p_branch: branchId ?? null });
+  if (error) return { error: dbError(error.message) };
+  try {
+    const { error: mail } = await serviceClient().auth.admin.inviteUserByEmail(email.trim().toLowerCase(), {
+      data: { is_staff: "true", invitation_id: inv }, redirectTo: `${linkBase(headers())}/` });
+    // Existing auth users cannot be re-invited by email: the invitation stays open and is claimed at their next sign-in.
+    if (mail && !/already|registered|exists/i.test(mail.message)) return { error: "Invitation saved but the email could not be sent. Ask them to sign up with that address." };
+  } catch { return { error: "Invitation saved but email delivery is not configured (SUPABASE_SERVICE_ROLE_KEY)." }; }
+  revalidatePath("/staff"); return { ok: `Invitation sent to ${email}. Access is granted when they confirm their email.` };
+}
+
+export async function revokeInvitation(id: string): Promise<R> {
+  const { error } = await supabaseServer().rpc("revoke_invitation", { p_id: id });
+  if (error) return { error: dbError(error.message) };
+  revalidatePath("/staff"); return { ok: "Invitation revoked." };
+}
+
+export async function assignTempBranch(profileId: string, branchId: string, endsAt: string, reason: string): Promise<R> {
+  const { error } = await supabaseServer().rpc("assign_temp_branch", { p_profile: profileId, p_branch: branchId, p_ends: new Date(endsAt).toISOString(), p_reason: reason });
+  if (error) return { error: dbError(error.message) };
+  revalidatePath("/staff"); return { ok: "Temporary access granted." };
+}
+export async function revokeTempAssignment(id: string): Promise<R> {
+  const { error } = await supabaseServer().rpc("revoke_temp_assignment", { p_id: id });
+  if (error) return { error: dbError(error.message) };
+  revalidatePath("/staff"); return { ok: "Temporary access revoked." };
+}
+
+export async function setRolePermission(role: string, perm: string, allowed: boolean): Promise<R> {
+  const { error } = await supabaseServer().rpc("set_role_permission", { p_role: role, p_perm: perm, p_allowed: allowed });
+  if (error) return { error: dbError(error.message) };
+  revalidatePath("/staff"); return { ok: "Permission updated." };
 }

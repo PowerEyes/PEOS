@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { dbError, fixAxis, rxRangeError, type RxValues } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 
-const ORG = "00000000-0000-0000-0000-000000000001";
 
 export async function saveExamination(fd: FormData) {
   const sb = supabaseServer();
@@ -20,7 +19,6 @@ export async function saveExamination(fd: FormData) {
 
   // Build the examination record
   const rec = {
-    org_id:        ORG,
     branch_id:     profile?.branch_id ?? null,
     customer_id:   customerId,
     appointment_id:appointmentId,
@@ -84,7 +82,7 @@ export async function saveExamination(fd: FormData) {
     const reviewMonths = rec.next_review_months ?? 24;
     const validTill = new Date(); validTill.setMonth(validTill.getMonth() + reviewMonths);
     const { data: rx, error: rxErr } = await sb.from("prescriptions").insert({
-      org_id:      ORG, customer_id: customerId,
+      customer_id: customerId,
       rx_type:     rec.rx_type ?? "single_vision",
       od_sph: rec.od_sph, od_cyl: rec.od_cyl, od_axis: rec.od_axis, od_add: rec.od_add,
       os_sph: rec.os_sph, os_cyl: rec.os_cyl, os_axis: rec.os_axis, os_add: rec.os_add,

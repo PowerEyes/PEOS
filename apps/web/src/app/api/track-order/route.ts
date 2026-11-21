@@ -10,7 +10,10 @@ import { createClient } from "@supabase/supabase-js";
  * Only status + totals + line descriptions come back — no PII beyond what the
  * caller already supplied.
  */
+import { rateLimited, tooMany } from "@/lib/ratelimit";
+
 export async function GET(req: Request) {
+  if (await rateLimited(req, "track-ip", 20, 600)) return tooMany();
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code")?.trim().toUpperCase();
   const phone = searchParams.get("phone")?.trim().replace(/\D/g,"");
@@ -18,6 +21,8 @@ export async function GET(req: Request) {
   if (!code || !phone) return NextResponse.json({ error:"Order number and phone number are required." }, { status:400 });
   if (phone.length < 10) return NextResponse.json({ error:"Enter a valid 10-digit phone number." }, { status:400 });
 
+  // Per-order limiter stops distributed guessing of phone numbers for one order code.
+  if (await rateLimited(req, "track-code", 8, 3600, code)) return tooMany();
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
   // Look up customer by phone

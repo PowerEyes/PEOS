@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
-import { supabaseServer } from "@/lib/supabase/server";
+import { printSb } from "@/lib/doclinks";
 import { fmt } from "@poweros/business-rules";
 import { ageFrom } from "@/lib/types";
 import { PrintBar } from "./print-bar";
-export default async function RxPrint({ params }: { params: { id: string } }) {
-  const sb = supabaseServer();
+export default async function RxPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
+  const sb = await printSb("rx", params.id, searchParams?.dt);
   const { data: r } = await sb.from("prescriptions").select("*, customers(*)").eq("id", params.id).single();
   if (!r) notFound();
   const bq = sb.from("branches").select("*");
   const { data: b } = r.branch_id ? await bq.eq("id", r.branch_id).single() : await bq.order("code").limit(1).single();
-  const { data: org } = await sb.from("organizations").select("name").single();
+  const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const c = r.customers; const d = (x: string) => new Date(x).toLocaleDateString("en-IN");
   const row = (label: string, k: "sph" | "cyl" | "axis" | "va_dist") => [label, ...(["od", "os"] as const).map((s) => r[`${s}_${k}`])];
   const cell = "border border-slate-300 px-2 py-1 text-center";

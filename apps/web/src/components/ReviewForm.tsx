@@ -1,6 +1,7 @@
 
 "use client";
 import { useState } from "react";
+import { getTenantOrg } from "@/lib/tenant-client";
 import { Star, X, Check, Camera } from "lucide-react";
 import { useToast } from "@poweros/ui";
 import { dbError } from "@poweros/business-rules";
@@ -35,7 +36,7 @@ export function ReviewForm({ productId, productName, onClose }: {
     }
     const { error } = await sb.from("product_reviews").insert({
       product_id: productId,
-      org_id: "00000000-0000-0000-0000-000000000001",
+      org_id: await getTenantOrg(),
       reviewer_name: name.trim() || (user?.user_metadata?.full_name ?? "Customer"),
       reviewer_email: email.trim() || user?.email || null,
       customer_id: customerId,

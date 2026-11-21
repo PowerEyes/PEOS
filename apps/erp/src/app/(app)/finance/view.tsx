@@ -307,7 +307,7 @@ export function FinanceView({ settings, salesMonth, salesToday, outstanding, exp
           <div key={s.id} className="flex items-center gap-3 px-4 py-3 hover:bg-navy-50">
             <span className="min-w-0 flex-1 text-sm"><b>{s.customers?.full_name}</b> {s.code}</span>
             <span className="text-sm font-semibold text-rose-600">{inr(bal)}</span>
-            <WhatsAppSend phone={ph} keys={["balance_due"]} defaultKey="balance_due" label="" className="btn btn-ghost !p-1.5 text-emerald-600"
+            <WhatsAppSend phone={ph} doc={{ type: "sale", id: s.id }} keys={["balance_due"]} defaultKey="balance_due" label="" className="btn btn-ghost !p-1.5 text-emerald-600"
               vars={{ Name: s.customers?.full_name ?? "", Code: s.code, Balance: inr(bal) }} />
           </div>); })}</div></div>);
 

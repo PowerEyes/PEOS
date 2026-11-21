@@ -7,7 +7,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendWhatsApp, logWA } from "../_shared/whatsapp.ts";
 import { resolveTemplateName } from "../_shared/templates.ts";
 
-const ORG = "00000000-0000-0000-0000-000000000001";
+import { tenant } from "../_shared/tenant.ts";
+let ORG = tenant.org;
 
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return new Response("Method not allowed", { status:405 });
@@ -21,6 +22,7 @@ Deno.serve(async (req: Request) => {
   try { body = await req.json(); } catch { return new Response("Invalid JSON", { status:400 }); }
 
   const { orderId, status } = body;
+  { const { data: so } = await sb.from("sales").select("org_id").eq("id", orderId).maybeSingle(); if (so?.org_id) { ORG = so.org_id; tenant.org = so.org_id; } }
   if (!orderId || !status) return new Response("orderId and status required", { status:400 });
 
   // Check if order updates are enabled

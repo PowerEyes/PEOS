@@ -4,6 +4,7 @@ const erpOrigins = (process.env.ERP_ORIGIN || "http://localhost:3001")
   .split(",").map((s) => s.trim()).filter(Boolean).join(" ");
 
 export default {
+  poweredByHeader: false,
   transpilePackages: ["@poweros/ui", "@poweros/business-rules"],
   images: { remotePatterns: [{ protocol:"https", hostname:"*.supabase.co" }] },
   async headers() {
@@ -16,6 +17,7 @@ export default {
       // ignore frame-ancestors. ERP_ORIGIN may be comma separated so the dev
       // and production ERP origins can be allowed together.
       { key:"Content-Security-Policy", value:`frame-ancestors 'self' ${erpOrigins}` },
+      { key:"Strict-Transport-Security", value:"max-age=63072000; includeSubDomains" },
       { key:"Referrer-Policy", value:"strict-origin-when-cross-origin" },
     ] },
       { source:"/manifest.json", headers:[{ key:"Content-Type", value:"application/manifest+json" }] }];

@@ -46,7 +46,7 @@ export function ApptsView({ appts, customers, branches }:any) {
             <div className="min-w-0 flex-1"><p className="font-semibold">{a.customers?.full_name}</p><p className="text-xs text-slate-500">{a.appt_type}{a.optometrist?` | ${a.optometrist}`:""}{a.notes?` | ${a.notes}`:""}</p></div>
             <select value={a.status} onChange={e=>updStatus(a.id,e.target.value)} className="field w-auto py-1.5 text-xs">{STATUSES.map(s=><option key={s}>{s}</option>)}</select>
             <Pill tone={TONE[a.status]}>{a.status}</Pill>
-            <WhatsAppSend phone={ph} keys={["appointment_reminder","appointment_confirmed","welcome"]} defaultKey="appointment_reminder"
+            <WhatsAppSend phone={ph} doc={{ type: "appointment", id: a.id }} keys={["appointment_reminder","appointment_confirmed","welcome"]} defaultKey="appointment_reminder"
               label="" className="btn btn-ghost !p-2 text-emerald-600"
               vars={{ Name: a.customers?.full_name ?? "", Type: a.appt_type, Date: apptDate, Time: a.appt_time }} />
           </div>);})}

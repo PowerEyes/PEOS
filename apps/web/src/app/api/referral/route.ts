@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
-const ORG = "00000000-0000-0000-0000-000000000001";
+import { getOrgId } from "@/lib/tenant";
 
 // GET: check if referral code is valid, return discount amount
 export async function GET(req: Request) {
@@ -24,7 +24,7 @@ export async function POST() {
   if (!c) return NextResponse.json({ error:"Customer not found" },{status:404});
   // Create a referral record
   const { data:ref } = await sb.from("referrals").insert({
-    org_id:ORG, referrer_id:c.id,
+    org_id:await getOrgId(), referrer_id:c.id,
     referral_code: c.referral_code ?? `PE${Math.random().toString(36).slice(2,8).toUpperCase()}`,
     referrer_points:200, referee_discount:100
   }).select().single();

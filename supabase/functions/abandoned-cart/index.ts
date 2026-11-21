@@ -7,10 +7,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { sendWhatsApp, logWA } from "../_shared/whatsapp.ts";
 import { resolveTemplateName } from "../_shared/templates.ts";
 
-const ORG = "00000000-0000-0000-0000-000000000001";
+import { tenant } from "../_shared/tenant.ts";
+let ORG = "";
 const CART_LINK = "https://powereyes.in/cart";
 
-Deno.serve(async (req: Request) => {
+async function handle(req: Request): Promise<Response> {
   const sb = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -107,4 +108,15 @@ Deno.serve(async (req: Request) => {
     await sb.from("cron_runs").update({ status:"failed", error:e.message, finished_at:new Date() }).eq("id",runId);
     return new Response(JSON.stringify({ error:e.message }), { status:500 });
   }
+}
+
+// Fan-out: run the job once per organisation so every tenant is served by the same schedule.
+Deno.serve(async (req: Request) => {
+  const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+  const { data: orgs } = await sb.from("organizations").select("id");
+  const results: unknown[] = [];
+  for (const o of orgs ?? []) { ORG = o.id; tenant.org = o.id;
+    try { const r = await handle(req.clone()); results.push({ org: o.id, status: r.status }); }
+    catch (e) { console.error("[job]", o.id, e); results.push({ org: o.id, error: String(e) }); } }
+  return new Response(JSON.stringify({ results }), { status: 200, headers: { "Content-Type": "application/json" } });
 });

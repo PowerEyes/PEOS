@@ -1,9 +1,9 @@
 
+import { getOrgId } from "@/lib/tenant";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 
-const ORG_ID = "00000000-0000-0000-0000-000000000001";
 
 export async function POST(req: Request) {
   // Read raw body — essential for HMAC verification
@@ -11,24 +11,22 @@ export async function POST(req: Request) {
   const signature = req.headers.get("x-razorpay-signature") ?? "";
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET ?? process.env.RAZORPAY_KEY_SECRET ?? "";
 
-  // Verify signature
-  if (webhookSecret) {
-    const expected = crypto
-      .createHmac("sha256", webhookSecret)
-      .update(rawBody)
-      .digest("hex");
-    if (expected !== signature) {
-      console.error("[rzp-webhook] signature mismatch");
-      return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-    }
+  // Verify signature — fail closed: never process unsigned or unverifiable events.
+  if (!webhookSecret || !signature) return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  const expected = crypto.createHmac("sha256", webhookSecret).update(rawBody).digest("hex");
+  const ea = Buffer.from(expected), sa = Buffer.from(signature);
+  if (ea.length !== sa.length || !crypto.timingSafeEqual(ea, sa)) {
+    console.error("[rzp-webhook] signature mismatch");
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  const orgId = await getOrgId();
   let event: any;
   try { event = JSON.parse(rawBody); }
   catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
 
   const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!svcKey) return NextResponse.json({ ok: true }); // silently accept if not configured
+  if (!svcKey) return NextResponse.json({ error: "Not configured" }, { status: 503 }); // 5xx so Razorpay retries
 
   const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, svcKey);
 
@@ -69,7 +67,7 @@ export async function POST(req: Request) {
     }
     if (!customerId) {
       const { data } = await sb.from("customers").insert({
-        org_id: ORG_ID, full_name: customerName,
+        org_id: orgId, full_name: customerName,
         phone: customerPhone.replace(/\D/g,""), email: customerEmail || null,
         city: "Chennai", state: "Tamil Nadu", pincode: "600037",
       }).select("id").single();
@@ -83,7 +81,7 @@ export async function POST(req: Request) {
 
     // Record the online payment
     await sb.from("online_payments").insert({
-      org_id: ORG_ID, customer_id: customerId, sale_id: null,
+      org_id: orgId, customer_id: customerId, sale_id: null,
       razorpay_order_id, razorpay_payment_id,
       amount: amount / 100, status: "paid",
     });

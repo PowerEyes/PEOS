@@ -3,10 +3,14 @@ export const maxDuration = 60;
 const PROMPT = `This is a spectacle (eyeglass) prescription. Reply with ONLY this JSON, no other text:
 {"od":{"sph":0,"cyl":0,"axis":0,"add":null},"os":{"sph":0,"cyl":0,"axis":0,"add":null},"pd_far":0,"pd_near":null}
 OD is right eye, OS is left eye. Use null for anything not visible. Never guess.`;
+import { rateLimited, tooMany } from "@/lib/ratelimit";
+
 export async function POST(req: Request) {
+  if (await rateLimited(req, "ocr", 10, 600)) return tooMany();
   const token = process.env.HF_TOKEN;
   if (!token) return NextResponse.json({ error: "OCR is not configured. Add HF_TOKEN to .env.local." }, { status: 503 });
   const file = (await req.formData()).get("file") as File | null;
+  if (file && (!file.type.startsWith("image/") || file.size > 8_000_000)) return new Response(JSON.stringify({ error: "Upload an image under 8 MB." }), { status: 400 });
   if (!file || file.size > 8_000_000) return NextResponse.json({ error: "Upload an image under 8 MB." }, { status: 400 });
   const b64 = Buffer.from(await file.arrayBuffer()).toString("base64");
   const res = await fetch("https://router.huggingface.co/v1/chat/completions", {

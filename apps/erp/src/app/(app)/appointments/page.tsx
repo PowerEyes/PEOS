@@ -6,7 +6,6 @@ import { ExaminationForm } from "./examination-form";
 import { Drawer } from "@poweros/ui";
 import { dbError } from "@poweros/business-rules";
 
-const ORG = "00000000-0000-0000-0000-000000000001";
 const dStr  = (d:string)  => d ? new Date(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"}) : "—";
 const tStr  = (t:string)  => t ? t.slice(0,5) : "—";
 
@@ -54,7 +53,7 @@ export default function AppointmentsPage() {
     const sb = supabaseBrowser();
     const { data } = await sb.from("appointments")
       .select("id,appt_date,appt_time,appt_type,status,optometrist,notes,duration_mins,customers(id,full_name,phone,customer_code),branches(name)")
-      .eq("org_id", ORG).eq("appt_date", date)
+      .eq("appt_date", date)
       .order("appt_time");
     setAppts((data ?? []) as unknown as Appt[]); setLoading(false);
   }
@@ -115,7 +114,7 @@ export default function AppointmentsPage() {
     if (!bookCustId) return alert("Choose a customer");
     setBookBusy(true);
     const sb = supabaseBrowser();
-    const { error } = await sb.from("appointments").insert({ ...bookF, customer_id: bookCustId, duration_mins: Number(bookF.duration_mins), org_id: ORG });
+    const { error } = await sb.from("appointments").insert({ ...bookF, customer_id: bookCustId, duration_mins: Number(bookF.duration_mins) });
     setBookBusy(false);
     if (error) return alert(dbError(error.message));
     setBookOpen(false); setBookCustId(""); setBookCq("");

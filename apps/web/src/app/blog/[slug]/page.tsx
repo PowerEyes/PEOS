@@ -92,7 +92,7 @@ export default async function BlogPostPage({ params }: Params) {
         {/* Body */}
         <article
           className="prose prose-slate prose-headings:font-bold prose-headings:text-navy-900 prose-a:text-navy-700 prose-a:underline prose-img:rounded-xl prose-blockquote:border-l-gold-500 max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.body ?? "" }}/>
+          dangerouslySetInnerHTML={{ __html: cleanHtml(post.body ?? "") }}/>
 
         {/* CTA banner */}
         <div className="mt-10 rounded-2xl bg-gradient-to-r from-navy-900 to-navy-700 text-white p-7 text-center">
@@ -131,3 +131,12 @@ export default async function BlogPostPage({ params }: Params) {
     </div>);
 }
 
+
+// Minimal allow-nothing-dangerous sanitizer for CMS HTML (no dependency).
+function cleanHtml(h: string) {
+  return h
+    .replace(/<(script|style|iframe|object|embed|form)[\s\S]*?<\/\1\s*>/gi, "")
+    .replace(/<(script|style|iframe|object|embed|form|link|meta)[^>]*>/gi, "")
+    .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/(href|src)\s*=\s*("|')?\s*javascript:[^"'>\s]*("|')?/gi, "$1=\"#\"");
+}

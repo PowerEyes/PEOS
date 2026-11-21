@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { getTenantOrg } from "@/lib/tenant-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, Glasses } from "lucide-react";
@@ -26,7 +27,7 @@ export default function LoginPage() {
     }
     const { data, error } = mode === "in"
       ? await sb.auth.signInWithPassword({ email: f.email, password: f.password })
-      : await sb.auth.signUp({ email: f.email, password: f.password, options: { data: { full_name: f.name, phone: f.phone, gender: f.gender, dob: f.dob, whatsapp_opt_in: waOptIn } } });
+      : await sb.auth.signUp({ email: f.email, password: f.password, options: { data: { org_id: await getTenantOrg().catch(() => undefined), full_name: f.name, phone: f.phone, gender: f.gender, dob: f.dob, whatsapp_opt_in: waOptIn } } });
     setBusy(false);
     if (error) {
       // Supabase returns "User already registered" for duplicate emails.

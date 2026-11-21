@@ -1,3 +1,4 @@
+import { tenant } from "./tenant.ts";
 
 // WhatsApp template name constants
 // These must match the approved template names in your Meta Business Manager / Interakt account
@@ -56,7 +57,7 @@ export async function resolveTemplateName(sb: any, key: string): Promise<string>
     const { data, error } = await sb
       .from("message_templates")
       .select("meta_template")
-      .eq("org_id", "00000000-0000-0000-0000-000000000001")
+      .eq("org_id", tenant.org)
       .eq("key", key)
       .maybeSingle();
     if (!error) {

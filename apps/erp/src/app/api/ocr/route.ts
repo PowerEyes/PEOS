@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { serviceClient } from "@/lib/doclinks";
 import { supabaseServer } from "@/lib/supabase/server";
 import { normalizeRx } from "@poweros/business-rules";
 export const maxDuration = 60;
@@ -8,6 +9,7 @@ OD is the right eye and OS is the left eye. Use null for anything that is not vi
 export async function POST(req: Request) {
   const { data: { user } } = await supabaseServer().auth.getUser();
   if (!user) return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  try { const { data: ok } = await serviceClient().rpc("rate_limit_hit", { p_key: `erp-ocr:${user.id}`, p_limit: 30, p_window_secs: 600 }); if (ok === false) return NextResponse.json({ error: "Too many scans. Wait a few minutes." }, { status: 429 }); } catch {}
   const token = process.env.HF_TOKEN;
   if (!token) return NextResponse.json({ error: "OCR is not set up yet. Add HF_TOKEN to .env.local." }, { status: 503 });
   const file = (await req.formData()).get("file") as File | null;

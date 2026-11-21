@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
-import { supabaseServer } from "@/lib/supabase/server";
+import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { BarcodeSvg } from "@/components/BarcodeSvg";
 import { PrintButton } from "@/components/PrintButton";
-export default async function RepairPrint({ params }: { params: { id: string } }) {
-  const { data: r } = await supabaseServer().from("repairs").select("*, customers(*), branches(name, address, phone)").eq("id", params.id).single();
+export default async function RepairPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
+  const sb = await printSb("repair", params.id, searchParams?.dt);
+  const { data: r } = await sb.from("repairs").select("*, customers(*), branches(name, address, phone)").eq("id", params.id).single();
   if (!r) notFound();
-  const { data: org } = await supabaseServer().from("organizations").select("name").single();
+  const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const d = (x: string) => new Date(x).toLocaleDateString("en-IN"); const c = r.customers;
   return (<div className="min-h-screen bg-slate-200 py-6 print:bg-white print:py-0">
     <style>{`@page{size:A5 portrait;margin:0}@media print{html,body{background:#fff}}`}</style>

@@ -199,7 +199,7 @@ function Detail({ r,onClose }:{r:any|null;onClose:()=>void}) {
           <div className="space-y-3">
             <div className="card p-4 text-sm space-y-1"><p><b>Priority:</b> <span className={TONE_C[r.priority]}>{r.priority}</span></p><p><b>Assigned:</b> {r.assigned_to||"—"}</p><p><b>Due:</b> {r.due_date?new Date(r.due_date).toLocaleDateString("en-IN"):"—"}</p><p><b>Status:</b> <Pill tone={TONE[r.status]}>{r.status.replace("_"," ")}</Pill></p></div>
             <a href={`/print/repair/${r.id}`} target="_blank" className="btn btn-ghost w-full"><Printer size={16}/>Print repair card (A5)</a>
-            {["pending","in_progress","ready"].includes(r.status)&&<WhatsAppSend phone={phone}
+            {["pending","in_progress","ready"].includes(r.status)&&<WhatsAppSend phone={phone} doc={{ type: "repair", id: r.id }}
               keys={["repair_received", "repair_in_progress", "repair_ready"]}
               vars={{ Name: c?.full_name ?? "", Item: [r.item_brand, r.item_model].filter(Boolean).join(" ") || "your eyewear" }}
               defaultKey={r.status === "pending" ? "repair_received" : r.status === "in_progress" ? "repair_in_progress" : "repair_ready"}

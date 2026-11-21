@@ -154,7 +154,7 @@ function Detail({ r, onClose }: { r: any | null; onClose: () => void }) {
       <p className="text-sm text-slate-600">PD far {r.pd_far ?? "-"} mm | PD near {r.pd_near ?? "-"} mm | Examined by {r.examined_by || "-"} | Valid till {new Date(r.valid_till).toLocaleDateString("en-IN")}</p>
       {r.remarks && <p className="text-sm">{r.remarks}</p>}{img && <img src={img} alt="Original" className="max-h-56 rounded-xl border" />}
       <div className="flex flex-wrap gap-2"><a href={`/print/rx/${r.id}`} target="_blank" className="btn btn-primary"><Printer size={16} />Print A5</a>
-        <WhatsAppSend phone={num} keys={["rx_share"]} defaultKey="rx_share" className="btn btn-ghost text-emerald-700"
+        <WhatsAppSend phone={num} doc={{ type: "rx", id: r.id }} keys={["rx_share"]} defaultKey="rx_share" className="btn btn-ghost text-emerald-700"
           vars={{ Name: r.customers?.full_name ?? "", "Rx Code": r.rx_code, "Valid Till": new Date(r.valid_till).toLocaleDateString("en-IN"), Link: `${site}/my/prescriptions` }} /></div></div></Modal>);
 }
 

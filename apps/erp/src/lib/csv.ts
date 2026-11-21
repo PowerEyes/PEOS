@@ -1,3 +1,4 @@
+import { logExport } from "@/app/(app)/export-actions";
 
 export function toCSV(rows: Record<string, any>[], columns?: string[]): string {
   if (!rows.length) return "";
@@ -10,6 +11,7 @@ export function toCSV(rows: Record<string, any>[], columns?: string[]): string {
 }
 
 export function downloadCSV(csv: string, filename: string) {
+  void logExport(filename, Math.max(csv.split("\n").length - 1, 0)); // audit trail: who exported what, when
   const blob = new Blob(["\uFEFF" + csv], { type:"text/csv;charset=utf-8;" }); // BOM for Excel
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement("a");

@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useReducer, useCallback, useRef, 
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 const KEY = "pe_cart_v3";
-const ORG = "00000000-0000-0000-0000-000000000001";
 
 export type CartItem = {
   id: string;           // local UUID
@@ -126,13 +125,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const sb = supabaseBrowser();
       const { data:{ user } } = await sb.auth.getUser();
       if (!user) return;
-      const { data: c } = await sb.from("customers").select("id").eq("auth_user_id", user.id).maybeSingle();
+      const { data: c } = await sb.from("customers").select("id, org_id").eq("auth_user_id", user.id).maybeSingle();
       if (!c) return;
       // Clear existing cart then insert current items
       await sb.from("cart_items").delete().eq("customer_id", c.id).is("notified_at", null);
       if (!items.length) return;
       const rows = items.map(item => ({
-        org_id:       ORG,
+        org_id:       c.org_id,
         customer_id:  c.id,
         product_id:   item.productId ?? null,
         product_name: item.productName ?? item.name ?? "",

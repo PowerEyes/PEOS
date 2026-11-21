@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
-const ORG = "00000000-0000-0000-0000-000000000001";
 
 export async function updateCRMSettings(fd: FormData) {
   const sb = supabaseServer();
@@ -19,13 +18,14 @@ export async function updateCRMSettings(fd: FormData) {
     cart_recovery_hours:     num("cart_recovery_hours"),
     wa_provider:             fd.get("wa_provider")?.toString() ?? "meta",
     updated_at:              new Date(),
-  }).eq("org_id", ORG);
+  });
   if (error) return { error: dbError(error.message) };
   revalidatePath("/crm");
   return { ok: true };
 }
 
 export async function triggerFunction(fnName: string) {
+  { const { data: ok } = await supabaseServer().rpc("is_admin"); if (!ok) return { error: "Only owners and admins can do this." }; }
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/${fnName}`;
   const key  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   try {
@@ -37,6 +37,7 @@ export async function triggerFunction(fnName: string) {
 }
 
 export async function sendTestMessage(phone: string, template: string) {
+  { const { data: ok } = await supabaseServer().rpc("is_admin"); if (!ok) return { error: "Only owners and admins can do this." }; }
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/order-whatsapp`;
   const key  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   try {

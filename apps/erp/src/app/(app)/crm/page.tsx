@@ -2,12 +2,11 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { CRMView } from "./view";
 export const dynamic = "force-dynamic";
-const ORG = "00000000-0000-0000-0000-000000000001";
 
 export default async function CRMPage() {
   const sb = supabaseServer();
   const [settings, recentLogs, cronRuns, stats, tpls] = await Promise.all([
-    sb.from("crm_settings").select("*").eq("org_id",ORG).single().then(r=>r.data),
+    sb.from("crm_settings").select("*").single().then(r=>r.data),
     sb.from("whatsapp_log").select("id,phone,template,category,status,sent_at,error,customers(full_name)")
       .order("sent_at",{ascending:false}).limit(50).then(r=>r.data??[]),
     sb.from("cron_runs").select("*").order("started_at",{ascending:false}).limit(20).then(r=>r.data??[]),

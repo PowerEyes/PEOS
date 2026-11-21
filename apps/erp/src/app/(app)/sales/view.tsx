@@ -69,7 +69,7 @@ function Detail({ id, onClose, onConvert }: { id: string | null; onClose: () => 
                 </div>))}
             </div>
           </div>)}
-        {d.payments?.length > 0 && <div><p className="mb-1 text-sm font-semibold">Payments</p>{d.payments.map((p: any) => <p key={p.id} className="flex justify-between text-sm"><span className="capitalize">{p.method}{p.reference ? ` | ${p.reference}` : ""} <span className="text-slate-400">{new Date(p.created_at).toLocaleDateString("en-IN")}</span></span><span>{inr(p.amount)}</span></p>)}</div>}
+        {d.payments?.length > 0 && <div><p className="mb-1 text-sm font-semibold">Payments</p>{d.payments.map((p: any) => <p key={p.id} className="flex justify-between text-sm"><span className="capitalize">{p.method}{p.reference ? ` | ${p.reference}` : ""} <span className="text-slate-400">{new Date(p.created_at).toLocaleDateString("en-IN")}</span></span><span className="flex items-center gap-1">{inr(p.amount)}<WhatsAppSend phone={phone} doc={{ type: "receipt", id: p.id }} keys={["payment_receipt"]} defaultKey="payment_receipt" label="" className="btn btn-ghost !p-1 text-emerald-600" vars={{ Name: c.full_name, Amount: inr(p.amount), Code: d.code, Store: d.branches?.name ?? "" }} /></span></p>)}</div>}
         {d.notes && <p className="text-sm text-slate-600">Note: {d.notes}</p>}
       </div>
       <div className="space-y-3"><div className="card space-y-1 p-4 text-sm"><p className="flex justify-between"><span className="text-slate-500">Subtotal</span>{inr(d.subtotal)}</p>{Number(d.discount_total) > 0 && <p className="flex justify-between text-rose-600"><span>Discount</span>-{inr(d.discount_total)}</p>}
@@ -91,6 +91,7 @@ function Detail({ id, onClose, onConvert }: { id: string | null; onClose: () => 
             Balance: inr(bal),
             Store: d.branches?.name ?? "",
           }}
+          doc={{ type: "sale", id: d.id }}
           defaultKey={d.kind === "quotation" ? "quotation_share" : WA_DEFAULT[status] ?? "order_confirmed"}
           onSent={() => { if (d.kind === "quotation") markSent(d.id); }} />
         {d.kind === "order" && bal > 0 && d.status !== "cancelled" && <button onClick={() => { setPay({ amount: String(bal), method: "cash", reference: "" }); setPayOpen(true); }} className="btn btn-gold w-full"><Wallet size={16} />Add payment</button>}

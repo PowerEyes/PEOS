@@ -2,7 +2,6 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase/server";
 
-const ORG = "00000000-0000-0000-0000-000000000001";
 
 export async function getGSTR1Data(year: number, month: number) {
   const sb   = supabaseServer();
@@ -10,7 +9,7 @@ export async function getGSTR1Data(year: number, month: number) {
   const to   = new Date(year, month, 0).toISOString().slice(0,10);
 
   // Org GSTIN
-  const { data: org } = await sb.from("organizations").select("gstin,name,state_code").eq("id",ORG).single();
+  const { data: org } = await sb.from("organizations").select("gstin,name,state_code").single();
 
   // All invoices for the period
   const { data: sales } = await sb.from("sales")

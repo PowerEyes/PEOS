@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
-import { supabaseServer } from "@/lib/supabase/server";
+import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
-export default async function SalePrint({ params }: { params: { id: string } }) {
-  const sb = supabaseServer();
+export default async function SalePrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
+  const sb = await printSb("sale", params.id, searchParams?.dt);
   const { data: s } = await sb.from("sales").select("*, customers!sales_customer_id_fkey(*), sale_lines(*), payments(*), branches(*)").eq("id", params.id).single();
   if (!s) notFound();
-  const { data: org } = await sb.from("organizations").select("name").single();
+  const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const { data: g } = await sb.from("org_settings").select("value").eq("key","gstin").maybeSingle();
   const { data: f } = await sb.from("org_settings").select("value").eq("key","invoice_footer").maybeSingle();
   const gstin = s.gst_applied ? (g?.value as string) : null;

@@ -5,7 +5,6 @@ import { Star, Plus, Minus, Gift, ChevronDown, ChevronUp, AlertCircle } from "lu
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { dbError } from "@poweros/business-rules";
 
-const ORG = "00000000-0000-0000-0000-000000000001";
 const inr  = (n:any) => `₹${Number(n||0).toLocaleString("en-IN")}`;
 
 type Props = {
@@ -39,7 +38,7 @@ export function LoyaltyPOSPanel({ customerId, billAmount, onRedeemChange }: Prop
     const sb = supabaseBrowser();
     Promise.all([
       sb.from("loyalty_ledger").select("delta").eq("customer_id", customerId),
-      sb.from("loyalty_rules").select("*").eq("org_id", ORG).single(),
+      sb.from("loyalty_rules").select("*").single(),
     ]).then(([ledger, rulesRes]) => {
       const total = (ledger.data ?? []).reduce((a:number,r:any)=>a+Number(r.delta),0);
       setPoints(Math.max(0, total));
@@ -66,7 +65,7 @@ export function LoyaltyPOSPanel({ customerId, billAmount, onRedeemChange }: Prop
     const delta = Number(manualAward);
     const sb = supabaseBrowser();
     const { error } = await sb.from("loyalty_ledger").insert({
-      org_id: ORG, customer_id: customerId,
+      customer_id: customerId,
       delta, reason: "manual",
       staff_note: manualNote || `Manual ${delta>0?"credit":"debit"} by staff`,
     });

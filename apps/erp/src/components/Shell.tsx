@@ -1,6 +1,7 @@
 
 "use client";
 import Link from "next/link";
+import { routeAllowed } from "@/lib/rbac";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
@@ -15,6 +16,11 @@ type NavItem = {
   badge?: string; children?: { label:string; href:string; icon:any }[];
 };
 
+const ok = (href: string | undefined, u?: { role: string; perms?: string[] }) => !href || routeAllowed(u?.role, href.split("?")[0], u?.perms ?? []);
+function visible(item: NavItem, u?: { role: string; perms?: string[] }): NavItem | null {
+  if (item.children) { const ch = item.children.filter(c => ok(c.href, u)); return ch.length ? { ...item, children: ch } : null; }
+  return ok(item.href, u) ? item : null;
+}
 const NAV: NavItem[] = [
   { label:"Dashboard",        href:"/",                  icon:LayoutDashboard },
   { label:"Customers",        href:"/customers",         icon:Users },
@@ -24,6 +30,7 @@ const NAV: NavItem[] = [
   { label:"Workshop & Lab",   href:"/workshop",          icon:Wrench },
   { label:"Repairs",          href:"/repairs",           icon:Hammer },
   { label:"Inventory",        href:"/inventory",         icon:Package },
+  { label:"Stock Transfers",  href:"/transfers",         icon:Package },
   { label:"Purchase Invoices",href:"/purchase-invoices", icon:ReceiptText },
   {
     label:"Finance", icon:DollarSign,
@@ -44,6 +51,7 @@ const NAV: NavItem[] = [
     ],
   },
   { label:"Settings",         href:"/settings",          icon:Settings },
+  { label:"Store Domains",    href:"/settings/domains",  icon:Globe },
 ];
 
 function NavLink({ item, depth=0, onNavigate }: { item:NavItem; depth?:number; onNavigate?: () => void }) {
@@ -79,7 +87,7 @@ function NavLink({ item, depth=0, onNavigate }: { item:NavItem; depth?:number; o
 
 export function Shell({ children, user, branches, settings }: {
   children: React.ReactNode;
-  user?: { name: string; role: string };
+  user?: { name: string; role: string; perms?: string[] };
   branches?: { id: string; name: string }[];
   settings?: any;
 }) {
@@ -110,7 +118,7 @@ export function Shell({ children, user, branches, settings }: {
         </div>
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
-          {NAV.map(item => <NavLink key={item.label} item={item} onNavigate={() => setSidebarOpen(false)}/>)}
+          {NAV.map(item => visible(item, user)).filter(Boolean).map(item => <NavLink key={item!.label} item={item!} onNavigate={() => setSidebarOpen(false)}/>)}
         </nav>
         {/* Footer */}
         <div className="border-t border-slate-200 p-3">
