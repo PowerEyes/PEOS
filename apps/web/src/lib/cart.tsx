@@ -19,6 +19,7 @@ export type CartItem = {
   lensPackageName?: string;
   lensIndex?: string;
   addons?: string[];
+  optionIds?: string[];
   total: number;
   qty: number;
   power_eligible?: boolean;

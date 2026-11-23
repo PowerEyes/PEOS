@@ -23,6 +23,9 @@ export async function middleware(req: NextRequest) {
   const open = pth === "/" || pth.startsWith("/onboarding"); // the layout shows the pending / onboarding screens
   if (!active) return open ? res : NextResponse.redirect(new URL("/", req.url));
   const { data: perms } = await sb.rpc("my_permissions");
+  // Platform Super Admin is a separate authorization scope; the /platform layout
+  // enforces platform_users. Do not apply tenant RBAC route rules there.
+  if (pth === "/platform" || pth.startsWith("/platform/")) return res;
   if (!routeAllowed(p!.role_key, pth, (perms as string[]) ?? [])) return NextResponse.redirect(new URL("/?denied=1", req.url));
   return res;
 }

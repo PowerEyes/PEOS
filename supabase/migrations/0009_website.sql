@@ -36,6 +36,11 @@ create view product_review_summary as
   from product_reviews where status='approved' group by product_id;
 grant select on product_review_summary to anon, authenticated;
 
+-- Customer needs an auth_user_id link for portal (column must exist before the
+-- policies below reference it)
+alter table customers add column if not exists auth_user_id uuid references auth.users(id);
+create index if not exists customers_auth_uid on customers (auth_user_id);
+
 -- ── Wishlist (per customer, persisted) ──────────────────────────────────────
 create table customer_wishlist (
   id uuid primary key default gen_random_uuid(),
@@ -45,10 +50,6 @@ create table customer_wishlist (
 alter table customer_wishlist enable row level security;
 create policy wishlist_own on customer_wishlist for all using (
   customer_id = (select id from customers where auth_user_id = auth.uid() limit 1));
-
--- Customer needs an auth_user_id link for portal
-alter table customers add column if not exists auth_user_id uuid references auth.users(id);
-create index if not exists customers_auth_uid on customers (auth_user_id);
 
 -- ── Website CMS content ──────────────────────────────────────────────────────
 create table website_content (

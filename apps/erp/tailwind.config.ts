@@ -6,6 +6,6 @@ export default {
       navy: { 50: "#EEF3F8", 700: "#123659", 800: "#0E2B4A", 900: "#0A2240" },
       gold: { 400: "#D9A25E", 500: "#C48A3F", 600: "#A8722F" },
       canvas: "#F6F8FB" },
-    fontFamily: { sans: ["var(--font-inter)", "system-ui", "sans-serif"], display: ["var(--font-display)", "Georgia", "serif"] } } },
+    fontFamily: { sans: ["var(--font-general-sans)", "system-ui", "sans-serif"], display: ["var(--font-general-sans)", "system-ui", "sans-serif"] } } },
   plugins: [],
 } satisfies Config;

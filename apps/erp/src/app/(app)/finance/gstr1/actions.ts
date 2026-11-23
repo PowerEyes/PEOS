@@ -1,5 +1,6 @@
 
 "use server";
+import { getScopeCtx } from "@/lib/branch-scope";
 import { supabaseServer } from "@/lib/supabase/server";
 
 
@@ -11,11 +12,13 @@ export async function getGSTR1Data(year: number, month: number) {
   // Org GSTIN
   const { data: org } = await sb.from("organizations").select("gstin,name,state_code").single();
 
-  // All invoices for the period
+  // All invoices for the period (honours the branch switcher)
+  const { scope } = await getScopeCtx();
   const { data: sales } = await sb.from("sales")
     .select(`id,code,created_at,grand_total,taxable_total,cgst_total,sgst_total,igst_total,supply_type,
       customers!sales_customer_id_fkey(full_name,gstin,state_code,city,state),
       sale_lines(description,qty,line_total,taxable_value,cgst_pct,sgst_pct,igst_pct,cgst_amt,sgst_amt,igst_amt,products(hsn,model))`)
+    .match(scope ? { branch_id: scope } : {})
     .gte("created_at", from+"T00:00:00").lte("created_at", to+"T23:59:59")
     .eq("kind","order").neq("status","cancelled").order("created_at");
 

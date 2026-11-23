@@ -78,3 +78,11 @@ create policy audit_read on audit_log for select using (org_id = public.current_
 create function handle_new_user() returns trigger language plpgsql security definer set search_path = public as $$
 begin insert into profiles(id, full_name) values (new.id, coalesce(new.raw_user_meta_data->>'full_name', new.email)); return new; end $$;
 create trigger on_auth_user_created after insert on auth.users for each row execute function handle_new_user();
+
+-- Demo tenant: every seeded row in the migrations below belongs to this fixed
+-- organisation, so it has to exist before them. Idempotent — a database that
+-- already has it (the live deployment) is untouched.
+insert into organizations (id, name) values ('00000000-0000-0000-0000-000000000001', 'Power Eyes Opticals')
+on conflict (id) do nothing;
+insert into branches (org_id, code, name) values ('00000000-0000-0000-0000-000000000001', 'MAIN', 'Mogappair East')
+on conflict (org_id, code) do nothing;

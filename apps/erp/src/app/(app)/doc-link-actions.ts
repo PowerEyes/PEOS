@@ -1,4 +1,5 @@
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { headers } from "next/headers";
 import { supabaseServer } from "@/lib/supabase/server";
 import { DOCS, linkBase, makeToken, type DocType } from "@/lib/doclinks";
@@ -56,6 +57,7 @@ export async function logDocSend(linkId: string, template: string, phone: string
 }
 
 export async function revokeDocLink(linkId: string) {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const { error } = await supabaseServer().from("document_links").update({ revoked_at: new Date().toISOString() }).eq("id", linkId);
   return error ? { error: "Could not revoke link" } : { ok: true };
 }

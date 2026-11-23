@@ -42,7 +42,7 @@ export function QuickView({ productId, onClose }: Props) {
               <p className="font-bold text-navy-900">Quick View</p>
               <div className="flex items-center gap-2">
                 {product && (
-                  <a href={`/product/${product.id}`} target="_blank" rel="noopener"
+                  <a href={`/product/${product.id}`} rel="noopener"
                     className="flex items-center gap-1.5 text-xs text-navy-700 font-semibold hover:underline">
                     Full details <ExternalLink size={12}/>
                   </a>)}
@@ -120,7 +120,7 @@ export function QuickView({ productId, onClose }: Props) {
                         }} className="w-full rounded-xl bg-navy-800 py-4 text-sm font-bold text-white hover:bg-navy-700 transition">
                           Add to Bag
                         </button>}
-                    <a href={`/product/${product.id}`} target="_blank" rel="noopener"
+                    <a href={`/product/${product.id}`} rel="noopener"
                       className="flex items-center justify-center gap-2 w-full rounded-xl border border-slate-200 py-3 text-sm font-medium text-slate-600 hover:border-navy-700 hover:text-navy-800 transition">
                       View Full Details <ChevronRight size={15}/>
                     </a>

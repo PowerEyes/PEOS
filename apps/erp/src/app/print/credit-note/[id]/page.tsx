@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function CNPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("credit_note", params.id, searchParams?.dt);
-  const { data: cn } = await sb.from("credit_notes").select("*, customers(*), credit_note_lines(*), branches(*)").eq("id", params.id).single();
+  const { scope } = await getScopeCtx(); let q=sb.from("credit_notes").select("*, customers(*), credit_note_lines(*), branches(*)").eq("id", params.id); if(scope)q=q.eq("branch_id",scope);
+  const { data: cn } = await q.single();
   if (!cn) notFound();
   const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const lines = cn.credit_note_lines; const d = (x: string) => new Date(x).toLocaleDateString("en-IN"); const th = "border border-slate-300 px-1.5 py-1";

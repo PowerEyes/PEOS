@@ -1,0 +1,31 @@
+services:
+  ocr:
+    build: .
+    restart: unless-stopped
+    environment:
+      OCR_SERVICE_TOKEN: ${OCR_SERVICE_TOKEN:?set OCR_SERVICE_TOKEN}
+      OCR_MODEL_DIR: /models/paddleocr
+      OCR_DEVICE: ${OCR_DEVICE:-cpu}
+      OCR_MAX_UPLOAD_BYTES: ${OCR_MAX_UPLOAD_BYTES:-8388608}
+    volumes:
+      - ./models:/models:ro
+    expose:
+      - "8000"
+    networks:
+      - poweros-internal
+    read_only: true
+    init: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+networks:
+  poweros-internal:
+    name: poweros-internal

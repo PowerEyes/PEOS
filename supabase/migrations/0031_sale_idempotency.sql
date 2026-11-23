@@ -25,7 +25,7 @@ begin
   insert into sales (branch_id, kind, customer_id, prescription_id, rx_snapshot, source_quotation_id, status, notes, valid_until, idempotency_key)
   values (v_branch, v_kind, v_cust, v_rx_id, v_rx, v_qid, case when v_kind = 'quotation' then 'draft' else 'ready' end, nullif(p->>'notes',''),
     case when v_kind = 'quotation' then coalesce((p->>'valid_until')::date,
-      current_date + coalesce((select (value #>> '{}')::int from org_settings where org_id = v_org and key = 'quotation_valid_days'), 14)) end), v_idem)
+      current_date + coalesce((select (value #>> '{}')::int from org_settings where org_id = v_org and key = 'quotation_valid_days'), 14)) end, v_idem)
   returning id, code into v_id, v_code;
 
   for l in select * from jsonb_array_elements(p->'lines') loop

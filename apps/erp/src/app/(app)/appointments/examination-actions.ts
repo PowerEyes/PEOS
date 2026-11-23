@@ -1,11 +1,14 @@
 
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { revalidatePath } from "next/cache";
 import { dbError, fixAxis, rxRangeError, type RxValues } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
+import { getScopeCtx } from "@/lib/branch-scope";
 
 
 export async function saveExamination(fd: FormData) {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { data:{ user } } = await sb.auth.getUser();
   if (!user) return { error:"Not logged in" };
@@ -76,41 +79,17 @@ export async function saveExamination(fd: FormData) {
   // behind while the confirmation screen claimed a prescription existed.
   // Writing it first means a bad value aborts before anything is saved, and a
   // retry cannot leave a duplicate examination.
-  const hasRx = rec.od_sph !== null || rec.os_sph !== null;
-  let prescriptionId: string | null = null;
-  if (hasRx) {
-    const reviewMonths = rec.next_review_months ?? 24;
-    const validTill = new Date(); validTill.setMonth(validTill.getMonth() + reviewMonths);
-    const { data: rx, error: rxErr } = await sb.from("prescriptions").insert({
-      customer_id: customerId,
-      rx_type:     rec.rx_type ?? "single_vision",
-      od_sph: rec.od_sph, od_cyl: rec.od_cyl, od_axis: rec.od_axis, od_add: rec.od_add,
-      os_sph: rec.os_sph, os_cyl: rec.os_cyl, os_axis: rec.os_axis, os_add: rec.os_add,
-      pd_far:  rec.pd_far, pd_near: rec.pd_near,
-      rx_date: new Date().toISOString().slice(0,10),
-      valid_till: validTill.toISOString().slice(0,10),
-      examined_by: rec.examiner_name,
-      // prescriptions stores this as `remarks` — there is no `notes` column, so
-      // this failed on every examination and the error was discarded.
-      remarks: rec.notes,
-    }).select("id").single();
-    if (rxErr) return { error: dbError(rxErr.message) };
-    prescriptionId = rx?.id ?? null;
-  }
-
-  const { data: exam, error } = await sb.from("eye_examinations").insert({ ...rec, prescription_id: prescriptionId }).select("id").single();
+  const { data: examId, error } = await sb.rpc("save_eye_examination", { p_data: { ...rec, customer_id: customerId, appointment_id: appointmentId, branch_id: profile?.branch_id ?? null } });
   if (error) return { error: dbError(error.message) };
 
-  if (hasRx && appointmentId) {
-    await sb.from("appointments").update({ status:"completed" }).eq("id", appointmentId);
-  }
-
   revalidatePath("/appointments");
-  return { ok: true, examId: exam.id };
+  return { ok: true, examId };
 }
 
 export async function getExamination(appointmentId: string) {
-  const { data } = await supabaseServer().from("eye_examinations")
-    .select("*").eq("appointment_id", appointmentId).maybeSingle();
+  const { scope } = await getScopeCtx(); const sb = supabaseServer();
+  let q = sb.from("eye_examinations").select("*").eq("appointment_id", appointmentId);
+  if (scope) q = q.eq("branch_id", scope);
+  const { data } = await q.maybeSingle();
   return data;
 }

@@ -1,10 +1,12 @@
 "use client";
+import { useScope } from "@/components/ScopeContext";
 import { useEffect, useState } from "react";
 import { Calendar, Plus, Stethoscope, Check, X, Clock, User, ChevronRight, Eye, Pencil } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ExaminationForm } from "./examination-form";
 import { Drawer } from "@poweros/ui";
 import { dbError } from "@poweros/business-rules";
+import { createAppointment, editAppointment, setAppointmentStatus } from "./actions";
 
 const dStr  = (d:string)  => d ? new Date(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"}) : "—";
 const tStr  = (t:string)  => t ? t.slice(0,5) : "—";
@@ -30,9 +32,11 @@ type Cust = { id:string; full_name:string; phone:string; vision_id:string };
 type Branch = { id:string; name:string };
 
 export default function AppointmentsPage() {
+  const scope = useScope();
   const [date,       setDate]       = useState(new Date().toISOString().slice(0,10));
   const [appts,      setAppts]      = useState<Appt[]>([]);
   const [loading,    setLoading]    = useState(true);
+  const [loadError,  setLoadError]  = useState("");
   const [examAppt,   setExamAppt]   = useState<Appt|null>(null);
   const [editAppt,   setEditAppt]   = useState<Appt|null>(null);
   const [editBusy,   setEditBusy]   = useState(false);
@@ -51,13 +55,12 @@ export default function AppointmentsPage() {
   async function load() {
     setLoading(true);
     const sb = supabaseBrowser();
-    const { data } = await sb.from("appointments")
-      .select("id,appt_date,appt_time,appt_type,status,optometrist,notes,duration_mins,customers(id,full_name,phone,customer_code),branches(name)")
-      .eq("appt_date", date)
-      .order("appt_time");
-    setAppts((data ?? []) as unknown as Appt[]); setLoading(false);
+    let q = sb.from("appointments").select("id,appt_date,appt_time,appt_type,status,optometrist,notes,duration_mins,customers(id,full_name,phone,customer_code),branches(name)");
+    if (scope) q = q.eq("branch_id", scope);
+    const { data, error } = await q.eq("appt_date", date).order("appt_time");
+    setAppts((data ?? []) as unknown as Appt[]); setLoadError(error ? dbError(error.message) : ""); setLoading(false);
   }
-  useEffect(() => { load(); }, [date]);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [date, scope]);
 
   useEffect(() => {
     if (!editAppt) return;
@@ -85,14 +88,14 @@ export default function AppointmentsPage() {
 
   async function updateStatus(id:string, status:string) {
     setUpdating(id);
-    await supabaseBrowser().from("appointments").update({status}).eq("id",id);
-    setUpdating(null); load();
+    const result = await setAppointmentStatus(id,status);
+    setUpdating(null); if ("error" in result && result.error) alert(result.error); load();
   }
 
   async function saveEdit() {
     if (!editAppt) return;
     setEditBusy(true);
-    const { error } = await supabaseBrowser().from("appointments").update({
+    const result = await editAppointment(editAppt.id, {
       appt_type: editF.appt_type,
       appt_date: editF.appt_date,
       appt_time: editF.appt_time,
@@ -101,9 +104,9 @@ export default function AppointmentsPage() {
       notes: editF.notes || null,
       status: editF.status,
       updated_at: new Date().toISOString(),
-    }).eq("id", editAppt.id);
+    });
     setEditBusy(false);
-    if (error) return alert(dbError(error.message));
+    if ("error" in result && result.error) return alert(result.error);
     setEditAppt(null); load();
   }
 
@@ -113,10 +116,9 @@ export default function AppointmentsPage() {
   async function bookSave() {
     if (!bookCustId) return alert("Choose a customer");
     setBookBusy(true);
-    const sb = supabaseBrowser();
-    const { error } = await sb.from("appointments").insert({ ...bookF, customer_id: bookCustId, duration_mins: Number(bookF.duration_mins) });
+    const result = await createAppointment({ ...bookF, customer_id: bookCustId, duration_mins: Number(bookF.duration_mins), optometrist: bookF.optometrist || null, notes: bookF.notes || null });
     setBookBusy(false);
-    if (error) return alert(dbError(error.message));
+    if ("error" in result && result.error) return alert(result.error);
     setBookOpen(false); setBookCustId(""); setBookCq("");
     setBookF({ appt_type:"Eye Test", appt_date: new Date().toISOString().slice(0,10), appt_time:"10:00", duration_mins:"30", optometrist:"", notes:"", status:"scheduled", branch_id: branches[0]?.id ?? "" });
     load();
@@ -153,6 +155,7 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Appointments list */}
+      {loadError && <div role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">Could not load appointments: {loadError}</div>}
       {loading
         ? <div className="rounded-2xl bg-white border border-slate-100 p-10 text-center text-slate-400">Loading…</div>
         : appts.length === 0

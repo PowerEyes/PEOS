@@ -2,19 +2,23 @@ import { notFound } from "next/navigation";
 import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function SalePrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("sale", params.id, searchParams?.dt);
-  const { data: s } = await sb.from("sales").select("*, customers!sales_customer_id_fkey(*), sale_lines(*), payments(*), branches(*)").eq("id", params.id).single();
+  const { scope } = await getScopeCtx(); let q=sb.from("sales").select("*, customers!sales_customer_id_fkey(*), sale_lines(*), payments(*), branches(*)").eq("id", params.id); if(scope)q=q.eq("branch_id",scope);
+  const { data: s } = await q.single();
   if (!s) notFound();
-  const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
+  const { data: org } = await sb.from("organizations").select("name,legal_name,business_email,business_phone,billing_address,timezone").limit(1).maybeSingle();
   const { data: g } = await sb.from("org_settings").select("value").eq("key","gstin").maybeSingle();
   const { data: f } = await sb.from("org_settings").select("value").eq("key","invoice_footer").maybeSingle();
-  const gstin = s.gst_applied ? (g?.value as string) : null;
+  const branchGstin=typeof s.branches?.gstin==="string"?s.branches.gstin.trim():"";
+  const gstin = s.gst_applied ? (branchGstin || (g?.value as string)) : null;
+  const issuerName=s.branches?.legal_name||org?.legal_name||org?.name;
   const footerNote = typeof f?.value === "string" && f.value ? f.value : null;
   const b = s.branches, c = s.customers, rx = s.rx_snapshot, isQ = s.kind === "quotation";
   const lines = [...s.sale_lines].sort((a: any, z: any) => a.line_no - z.line_no);
   const bal = Number(s.grand_total) - Number(s.paid_total);
-  const d = (x: string) => new Date(x).toLocaleDateString("en-IN");
+  const d = (x: string) => new Date(x).toLocaleDateString("en-IN",{timeZone:org?.timezone??"Asia/Kolkata"});
   const th = "border border-slate-300 px-1 py-0.5 text-[7.5pt]";
   const hasIGST = Number(s.igst_total) > 0;
   const hasCGST = Number(s.cgst_total) > 0;
@@ -26,10 +30,10 @@ export default async function SalePrint({ params, searchParams }: { params: { id
       <div className="flex min-h-[210mm] w-[148mm] shrink-0 flex-col bg-white p-[7mm] text-[8pt] shadow-xl print:shadow-none">
       {/* Header */}
       <header className="flex items-start justify-between border-b-2 border-gold-500 pb-2">
-        <div><h1 className="font-display text-[14pt] font-bold uppercase leading-none text-navy-900">{org?.name}</h1>
+        <div><h1 className="font-display text-[14pt] font-bold uppercase leading-none text-navy-900">{issuerName}</h1>
           <p className="mt-0.5 text-[7pt] text-gold-600">Since 1998 | Your Family's Vision Partner</p>
-          <p className="mt-0.5 text-[7pt] text-slate-600">{b?.address}</p>
-          <p className="text-[7pt] text-slate-600">Ph: {b?.phone}{b?.email ? ` | ${b.email}` : ""}</p>
+          <p className="mt-0.5 text-[7pt] text-slate-600">{b?.address||org?.billing_address}</p>
+          <p className="text-[7pt] text-slate-600">Ph: {b?.phone||org?.business_phone}{(b?.email||org?.business_email) ? ` | ${b?.email||org?.business_email}` : ""}</p>
           {gstin && <p className="text-[7pt] font-medium">GSTIN: {gstin}</p>}
           {b?.udyam_no && <p className="text-[7pt] text-slate-500">UDYAM: {b.udyam_no}</p>}</div>
         <div className="text-right"><p className="text-[11pt] font-bold text-navy-900">{invoiceType}</p>
@@ -77,5 +81,6 @@ export default async function SalePrint({ params, searchParams }: { params: { id
       <footer className="mt-auto pt-3 text-[7pt] text-slate-600">
         <ul className="list-disc pl-4">{isQ?<><li>Valid for {14} days. Stock subject to availability.</li><li>This is not a tax invoice.</li></>:<><li>Goods once sold can be exchanged only as per store policy.</li><li>Carry this invoice for warranty and service claims.</li>{s.gst_applied&&<li>This is a computer-generated tax invoice.</li>}</>}</ul>
         {footerNote && <p className="mt-1 font-medium text-navy-800">{footerNote}</p>}
-        <div className="mt-4 flex justify-between text-[7.5pt]"><span>Customer signature: ___________</span><span>For {org?.name}</span></div></footer></div></div></div>);
+        {b?.invoice_terms&&<p className="mt-1">{b.invoice_terms}</p>}
+        <div className="mt-4 flex justify-between text-[7.5pt]"><span>Customer signature: ___________</span><span>For {issuerName}</span></div></footer></div></div></div>);
 }

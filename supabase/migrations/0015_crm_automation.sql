@@ -35,6 +35,18 @@ alter table cron_runs enable row level security;
 create policy cron_runs_staff on cron_runs for all using (true);
 
 -- Cart sync — logged-in customers' cart synced to DB for abandoned cart detection
+-- 0010_cart_checkout created a customer-only cart_items with no org_id. The
+-- storefront sync and the abandoned-cart automation both write/read org_id,
+-- notified_at and the price breakdown, so the legacy table is replaced rather
+-- than reused (a database that already has the org-scoped shape is untouched).
+do $$ begin
+  if to_regclass('public.cart_items') is not null
+     and not exists (select 1 from information_schema.columns
+                      where table_schema = 'public' and table_name = 'cart_items'
+                        and column_name = 'org_id') then
+    drop table public.cart_items cascade;
+  end if;
+end $$;
 create table if not exists cart_items (
   id             uuid primary key default gen_random_uuid(),
   org_id         uuid not null references organizations(id),

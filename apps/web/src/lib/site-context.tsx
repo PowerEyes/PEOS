@@ -1,18 +1,21 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
-import { DEFAULT_WA_NUMBER } from "./wa";
 
 // Client-side access to the public site settings (fed by the root layout).
 export type SiteSettings = {
   whatsappNumber: string;
   instagram: string;
   analyticsId: string;
+  phones: string[];
+  hours: string;
 };
 
 const SiteCtx = createContext<SiteSettings>({
-  whatsappNumber: DEFAULT_WA_NUMBER,
+  whatsappNumber: "",
   instagram: "",
   analyticsId: "",
+  phones: [],
+  hours: "",
 });
 
 export function SiteProvider({ value, children }: { value: SiteSettings; children: ReactNode }) {

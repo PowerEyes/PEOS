@@ -54,6 +54,8 @@ create table if not exists prescription_audit_log (
 );
 
 alter table prescription_audit_log enable row level security;
+drop policy if exists pal_select on prescription_audit_log;
+drop policy if exists pal_insert on prescription_audit_log;
 create policy pal_select on prescription_audit_log for select using (org_id = public.current_org());
 create policy pal_insert on prescription_audit_log for insert with check (org_id = public.current_org());
 

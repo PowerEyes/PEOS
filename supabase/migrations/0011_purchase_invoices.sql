@@ -41,6 +41,39 @@ create table if not exists purchase_invoices (
   created_at timestamptz default now(), updated_at timestamptz default now());
 create index if not exists pi_org_date on purchase_invoices(org_id, invoice_date desc);
 create index if not exists pi_org_status on purchase_invoices(org_id, status);
+-- 0006_finance_gst already created purchase_invoices with an older shape, so the
+-- CREATE TABLE above was skipped on an existing database. Bring that table up to
+-- the shape the view and triggers below expect.
+alter table purchase_invoices add column if not exists due_date date;
+alter table purchase_invoices add column if not exists po_ref text;
+alter table purchase_invoices add column if not exists lines jsonb not null default '[]';
+alter table purchase_invoices add column if not exists taxable_value numeric(12,2) not null default 0;
+alter table purchase_invoices add column if not exists cgst_amount numeric(12,2) not null default 0;
+alter table purchase_invoices add column if not exists sgst_amount numeric(12,2) not null default 0;
+alter table purchase_invoices add column if not exists igst_amount numeric(12,2) not null default 0;
+alter table purchase_invoices add column if not exists paid_amount numeric(12,2) not null default 0;
+alter table purchase_invoices add column if not exists payment_date date;
+alter table purchase_invoices add column if not exists payment_mode text;
+alter table purchase_invoices add column if not exists payment_ref text;
+alter table purchase_invoices add column if not exists itc_eligible boolean not null default true;
+alter table purchase_invoices add column if not exists itc_claimed boolean not null default false;
+alter table purchase_invoices add column if not exists itc_claim_period text;
+alter table purchase_invoices add column if not exists gstr2a_matched boolean not null default false;
+alter table purchase_invoices add column if not exists attachment_path text;
+alter table purchase_invoices add column if not exists created_by uuid references profiles(id);
+alter table purchase_invoices add column if not exists updated_at timestamptz not null default now();
+-- widen the legacy status check ('unpaid','paid') to the full lifecycle
+do $$
+declare c text;
+begin
+  select conname into c from pg_constraint
+   where conrelid = 'purchase_invoices'::regclass and contype = 'c'
+     and pg_get_constraintdef(oid) like '%status%';
+  if c is not null then execute format('alter table purchase_invoices drop constraint %I', c); end if;
+end $$;
+alter table purchase_invoices
+  add constraint purchase_invoices_status_check
+  check (status in ('unpaid','paid','draft','pending','overdue','cancelled'));
 alter table purchase_invoices enable row level security;
 do $$ begin
   if not exists(select 1 from pg_policies where tablename='purchase_invoices' and policyname='pi_staff') then

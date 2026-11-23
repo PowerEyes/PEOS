@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import { printSb } from "@/lib/doclinks";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function ApptPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("appointment", params.id, searchParams?.dt);
-  const { data: a } = await sb.from("appointments").select("*, customers(full_name), branches(name, address, phone)").eq("id", params.id).single();
+  const { scope } = await getScopeCtx(); let q=sb.from("appointments").select("*, customers(full_name), branches(name, address, phone)").eq("id", params.id); if(scope)q=q.eq("branch_id",scope);
+  const { data: a } = await q.single();
   if (!a) notFound();
   const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const b = a.branches;

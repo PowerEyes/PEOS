@@ -16,7 +16,7 @@ const total = (p: any) => (p.stock ?? []).reduce((a: number, s: any) => a + s.qt
 const state = (p: any) => { const rows = p.stock ?? []; if (total(p) <= 0) return "out"; return rows.some((s: any) => stockState(s.qty, s.reorder_level) === "low") ? "low" : "in"; };
 const TONE = { in: "green", low: "gold", out: "red" } as const; const LBL = { in: "In stock", low: "Low stock", out: "Out of stock" } as const;
 
-export function InventoryView({ products, brands, branches, packages, options, gst }: { products: any[]; brands: any[]; branches: any[]; packages: any[]; options: any[]; gst: boolean }) {
+export function InventoryView({ products, brands, branches, packages, options, gst, canSeeCost }: { canSeeCost: boolean; products: any[]; brands: any[]; branches: any[]; packages: any[]; options: any[]; gst: boolean }) {
   const sp = useSearchParams(); const [tab, setTab] = useState<Kind | "packages" | "options" | "display">("frame"); const [q, setQ] = useState(""); const [brand, setBrand] = useState(""); const [sf, setSf] = useState(sp.get("stock") ?? "");
   const [editId, setEditId] = useState<string | "new" | null>(null);
   const [selMode, setSelMode] = useState(false); const [sel, setSel] = useState<string[]>([]);
@@ -60,6 +60,6 @@ export function InventoryView({ products, brands, branches, packages, options, g
         <button onClick={() => { setSelMode(false); setSel([]); }} aria-label="Exit select mode" className="rounded p-1 text-slate-400 hover:bg-white/10 hover:text-white"><X size={16} /></button>
       </div>)}
     <CameraScanner open={cam} onClose={() => setCam(false)} onResult={open} />
-    <ProductDrawer open={editId !== null} onClose={() => setEditId(null)} product={cur} kind={kind} brands={brands} branches={branches} gst={gst} />
+    <ProductDrawer canSeeCost={canSeeCost} open={editId !== null} onClose={() => setEditId(null)} product={cur} kind={kind} brands={brands} branches={branches} gst={gst} />
   </div>);
 }

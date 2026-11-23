@@ -2,4 +2,5 @@
   "tasks": {
     "dev":   { "cache": false, "persistent": true },
     "build": { "dependsOn": ["^build"], "outputs": [".next/**"] },
-    "lint":  {} } }
+    "lint":  {},
+    "typecheck": {} } }

@@ -1,27 +1,96 @@
 import { NextResponse } from "next/server";
 import { serviceClient } from "@/lib/doclinks";
 import { supabaseServer } from "@/lib/supabase/server";
-import { normalizeRx } from "@poweros/business-rules";
+export const runtime = "nodejs";
 export const maxDuration = 60;
-const PROMPT = `This is a spectacle (eyeglass) prescription. Read it and reply with ONLY this JSON, no other text:
-{"od":{"sph":0,"cyl":0,"axis":0,"add":0,"va_dist":"6/6","va_near":"N6"},"os":{"sph":0,"cyl":0,"axis":0,"add":0,"va_dist":"6/6","va_near":"N6"},"pd_far":0,"pd_near":0}
-OD is the right eye and OS is the left eye. Use null for anything that is not visible. Never guess a value.`;
 export async function POST(req: Request) {
-  const { data: { user } } = await supabaseServer().auth.getUser();
-  if (!user) return NextResponse.json({ error: "Sign in required" }, { status: 401 });
-  try { const { data: ok } = await serviceClient().rpc("rate_limit_hit", { p_key: `erp-ocr:${user.id}`, p_limit: 30, p_window_secs: 600 }); if (ok === false) return NextResponse.json({ error: "Too many scans. Wait a few minutes." }, { status: 429 }); } catch {}
-  const token = process.env.HF_TOKEN;
-  if (!token) return NextResponse.json({ error: "OCR is not set up yet. Add HF_TOKEN to .env.local." }, { status: 503 });
-  const file = (await req.formData()).get("file") as File | null;
-  if (!file || file.size > 8_000_000) return NextResponse.json({ error: "Upload an image under 8 MB." }, { status: 400 });
-  const b64 = Buffer.from(await file.arrayBuffer()).toString("base64");
-  const res = await fetch("https://router.huggingface.co/v1/chat/completions", {
-    method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ model: process.env.HF_OCR_MODEL || "Qwen/Qwen2.5-VL-7B-Instruct", max_tokens: 500, temperature: 0,
-      messages: [{ role: "user", content: [{ type: "image_url", image_url: { url: `data:${file.type || "image/jpeg"};base64,${b64}` } }, { type: "text", text: PROMPT }] }] }) });
-  if (!res.ok) return NextResponse.json({ error: `The OCR service replied ${res.status}. Fill the values manually.` }, { status: 502 });
-  const text: string = (await res.json())?.choices?.[0]?.message?.content ?? "";
-  let raw: any = null; try { raw = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] ?? ""); } catch {}
-  if (!raw) return NextResponse.json({ error: "Could not read this photo. Try a clearer one or fill manually." }, { status: 422 });
-  return NextResponse.json(normalizeRx(raw));
+  const {
+    data: { user },
+  } = await supabaseServer().auth.getUser();
+  if (!user)
+    return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+  try {
+    const { data: ok } = await serviceClient().rpc("rate_limit_hit", {
+      p_key: `erp-ocr:${user.id}`,
+      p_limit: 30,
+      p_window_secs: 600,
+    });
+    if (ok === false)
+      return NextResponse.json(
+        { error: "Too many scans. Wait a few minutes." },
+        { status: 429 },
+      );
+  } catch {}
+  const token = process.env.OCR_SERVICE_TOKEN?.trim();
+  const endpoint = process.env.OCR_SERVICE_URL?.trim();
+  if (!token || !endpoint)
+    return NextResponse.json(
+      {
+        error:
+          "Self-hosted OCR is not configured. Enter values manually or contact an administrator.",
+      },
+      { status: 503 },
+    );
+  let file: File | null = null;
+  try {
+    file = (await req.formData()).get("file") as File | null;
+  } catch {}
+  if (!file || file.size > 8_000_000)
+    return NextResponse.json(
+      { error: "Upload an image under 8 MB." },
+      { status: 400 },
+    );
+  if (!file.type.startsWith("image/"))
+    return NextResponse.json(
+      { error: "Upload a supported image file." },
+      { status: 400 },
+    );
+  const form = new FormData();
+  form.set("file", file, file.name || "prescription.jpg");
+  let upstream: Response;
+  try {
+    upstream = await fetch(
+      `${endpoint.replace(/\/$/, "")}/v1/ocr/prescription`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+        signal: AbortSignal.timeout(55_000),
+        cache: "no-store",
+      },
+    );
+  } catch {
+    return NextResponse.json(
+      {
+        error:
+          "The internal OCR service could not be reached. Enter values manually or contact an administrator.",
+      },
+      { status: 503 },
+    );
+  }
+  if (!upstream.ok)
+    return NextResponse.json(
+      {
+        error:
+          upstream.status === 401
+            ? "The internal OCR service rejected its configured credentials."
+            : "OCR could not process this image. Enter values manually or try a clearer scan.",
+      },
+      {
+        status:
+          upstream.status === 401
+            ? 502
+            : upstream.status === 413
+              ? 413
+              : upstream.status >= 500
+                ? 503
+                : 422,
+      },
+    );
+  const result = await upstream.json();
+  const flags = [...(result.field_warnings ?? []), ...(result.warnings ?? [])];
+  return NextResponse.json(
+    { ...result, flags },
+    { headers: { "Cache-Control": "no-store" } },
+  );
 }

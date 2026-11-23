@@ -18,7 +18,7 @@ export function ProductCard({ p }: { p: Product }) {
   const views = typeof p.today_views === "number" ? p.today_views : null;
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ type:"spring",damping:20,stiffness:300 }} className="group relative flex flex-col bg-white rounded-2xl shadow-[0_2px_8px_rgba(10,34,64,.08)] overflow-hidden">
-      <a href={`/product/${p.id}`} target="_blank" rel="noopener" className="block" aria-label={`${p.brand} ${p.model} – opens in new tab`}>
+      <a href={`/product/${p.id}`} rel="noopener" className="block" aria-label={`${p.brand} ${p.model}`}>
         <div className="relative bg-gradient-to-br from-slate-50 to-white aspect-[4/3] overflow-hidden">
           {url ? <img src={url} alt={`${p.brand} ${p.model}`} className="h-full w-full object-contain p-4 transition duration-300 group-hover:scale-105" loading="lazy" />
             : <div className="flex h-full items-center justify-center"><span className="text-slate-300 text-4xl">👓</span></div>}
@@ -41,9 +41,9 @@ export function ProductCard({ p }: { p: Product }) {
         {!p.in_stock&&<p className="mt-1 text-xs text-rose-500 font-medium">Out of stock</p>}
         {p.in_stock && stock !== null && stock <= 3 && <p className="mt-1 text-xs font-semibold text-amber-600">⚡ Only {stock} left in stock</p>}
         {views !== null && views >= 3 && <p className="mt-1 text-[11px] text-slate-500">👁 {views} people viewed this today</p>}
-                <SizeGuide label="Size guide" className="mt-1.5 self-start text-[11px] text-slate-400 underline decoration-slate-300 underline-offset-2 transition hover:text-navy-700 py-0.5 min-h-[44px] flex items-center" />
+                {p.kind==="frame"&&<SizeGuide label="Size guide" className="mt-1.5 self-start text-[11px] text-slate-400 underline decoration-slate-300 underline-offset-2 transition hover:text-navy-700 py-0.5 min-h-[44px] flex items-center" />}
         {p.power_eligible
-          ? <a href={`/product/${p.id}`} target="_blank" rel="noopener" className="mt-3 w-full rounded-full bg-gold-500 py-2.5 px-3 text-center text-xs font-semibold text-white hover:bg-gold-600 transition min-h-[44px] flex items-center justify-center">Choose Lenses →</a>
+          ? <a href={`/product/${p.id}`} rel="noopener" className="mt-3 w-full rounded-full bg-gold-500 py-2.5 px-3 text-center text-xs font-semibold text-white hover:bg-gold-600 transition min-h-[44px] flex items-center justify-center">Choose Lenses →</a>
           : <button onClick={(e)=>{ e.preventDefault(); const cart=JSON.parse(localStorage.getItem("pe_cart_v3")??"[]"); const ex=cart.find((c:any)=>c.productId===p.id); if(ex){ex.qty=(ex.qty??1)+1;localStorage.setItem("pe_cart_v3",JSON.stringify(cart));} else { cart.push({id:Math.random().toString(36).slice(2),productId:p.id,productName:`${p.brand??""} ${p.model}`.trim(),brand:p.brand,image:p.images?.[0],framePrice:Number(p.selling_price),lensTotal:0,total:Number(p.selling_price),qty:1,power_eligible:false}); localStorage.setItem("pe_cart_v3",JSON.stringify(cart)); } window.dispatchEvent(new Event("pe_cart_update")); toast("Added to bag"); }} className="mt-3 w-full rounded-full border border-navy-800 py-2.5 px-3 text-center text-xs font-semibold text-navy-800 hover:bg-navy-800 hover:text-white transition min-h-[38px] flex items-center justify-center">Add to Bag</button>}
       </div>
     </motion.div>);

@@ -1,4 +1,5 @@
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
@@ -15,6 +16,7 @@ const schema = z.object({
 });
 export type FormState = { error?: string; ok?: string; id?: string; vision_id?: string };
 export async function createCustomer(_: FormState, fd: FormData): Promise<FormState> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const parsed = schema.safeParse(Object.fromEntries(fd));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const phone = (parsed.data.phone || "").replace(/\D/g, "");
@@ -57,6 +59,7 @@ const editSchema = z.object({
   whatsapp_opt_in: z.string().optional().transform(v => v === "on" || v === "true"),
 });
 export async function updateCustomer(id: string, fd: FormData): Promise<FormState> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const parsed = editSchema.safeParse(Object.fromEntries(fd));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { whatsapp_opt_in, ...rest } = parsed.data as any;

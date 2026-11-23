@@ -1,4 +1,5 @@
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -26,6 +27,7 @@ function calcTotals(lines: Line[], supplyType: string) {
 }
 
 export async function createSupplier(fd: FormData): Promise<R & { supplier?: any }> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { error: "Not authenticated" };
@@ -52,6 +54,7 @@ export async function upsertInvoice(invoiceId: string | null, payload: {
   supply_type: string; lines: Line[]; itc_eligible: boolean; notes: string;
   branch_id: string | null; status: string;
 }): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { error: "Not authenticated" };
@@ -95,6 +98,7 @@ export async function upsertInvoice(invoiceId: string | null, payload: {
 export async function markPaid(id: string, payment: {
   paid_amount: number; payment_date: string; payment_mode: string; payment_ref: string;
 }): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { error: "Not authenticated" };
@@ -114,6 +118,7 @@ export async function markPaid(id: string, payment: {
 }
 
 export async function receiveStock(invoiceId: string): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { error: "Not authenticated" };
@@ -158,6 +163,7 @@ export async function receiveStock(invoiceId: string): Promise<R> {
   return { ok: `Stock received for ${posted} line(s)` };
 }
 export async function claimITC(id: string, period: string): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { error } = await sb.from("purchase_invoices").update({ itc_claimed: true, itc_claim_period: period }).eq("id", id);
   if (error) return { error: dbError(error.message) };
@@ -166,6 +172,7 @@ export async function claimITC(id: string, period: string): Promise<R> {
 }
 
 export async function deleteInvoice(id: string): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return { error: "Not authenticated" };
@@ -178,6 +185,7 @@ export async function deleteInvoice(id: string): Promise<R> {
 }
 
 export async function updateSupplier(id: string, fd: FormData): Promise<R & { supplier?: any }> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { error } = await sb.from("suppliers").update({
     name: fd.get("name"), gstin: (fd.get("gstin") as string)?.toUpperCase() || null,

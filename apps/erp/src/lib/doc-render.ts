@@ -1,5 +1,5 @@
 // Server-side PDF layouts built ONLY from trusted database rows (service client or the caller's RLS client).
-import { Pdf, textWidth } from "./pdf-lite";
+import { Pdf, textWidth } from "./pdf-lite.ts";
 import type { DocType } from "./doclinks";
 
 const inr = (n: unknown) => "Rs. " + Number(n ?? 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

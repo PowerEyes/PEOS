@@ -1,12 +1,13 @@
 
 "use client";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Calendar, Download } from "lucide-react";
+import { supabaseBrowser } from "@/lib/supabase/client";
 
 type Preset = { label:string; from:string; to:string };
 
-function getPresets(): Preset[] {
+function getPresets(fyMonth:number): Preset[] {
   const now  = new Date();
   const y    = now.getFullYear();
   const m    = now.getMonth(); // 0-indexed
@@ -20,6 +21,9 @@ function getPresets(): Preset[] {
   const qtr = Math.floor(m/3);
   const qtrStart = [0,3,6,9][qtr];
 
+  const fyStartYear=m>=fyMonth-1?y:y-1;
+  const fyStart=monthStart(fyStartYear,fyMonth-1),fyEnd=monthEnd(fyStartYear+1,fyMonth-2);
+  const lastFyStart=monthStart(fyStartYear-1,fyMonth-1),lastFyEnd=monthEnd(fyStartYear,fyMonth-2);
   return [
     { label:"Today",         from:fy(now),                        to:fy(now) },
     { label:"This Week",     from:fy(new Date(now.getFullYear(),now.getMonth(),now.getDate()-now.getDay())), to:fy(now) },
@@ -27,8 +31,8 @@ function getPresets(): Preset[] {
     { label:"Last Month",    from:monthStart(y,m-1),              to:monthEnd(y,m-1) },
     { label:"This Quarter",  from:monthStart(y,qtrStart),         to:monthEnd(y,qtrStart+2) },
     { label:"Last Quarter",  from:monthStart(y,qtrStart-3),       to:monthEnd(y,qtrStart-1) },
-    { label:"This Year",     from:`${y}-04-01`,                   to:`${y+1}-03-31` }, // Indian FY
-    { label:"Last Year",     from:`${y-1}-04-01`,                 to:`${y}-03-31` },
+    { label:"This Financial Year", from:fyStart, to:fyEnd },
+    { label:"Last Financial Year", from:lastFyStart, to:lastFyEnd },
   ];
 }
 
@@ -43,8 +47,9 @@ export function DateRangeFilter({ exportLabel="Export CSV", onExport, exportLoad
   const path   = usePathname();
   const sp     = useSearchParams();
   const [,start] = useTransition();
-
-  const presets    = getPresets();
+  const [fyMonth,setFyMonth]=useState(4);
+  useEffect(()=>{supabaseBrowser().from("organizations").select("financial_year_start_month").maybeSingle().then(({data})=>{if(data?.financial_year_start_month)setFyMonth(Number(data.financial_year_start_month));});},[]);
+  const presets    = getPresets(fyMonth);
   const thisMonth  = presets[2];
   const activeFrom = sp.get("from") ?? thisMonth.from;
   const activeTo   = sp.get("to")   ?? thisMonth.to;

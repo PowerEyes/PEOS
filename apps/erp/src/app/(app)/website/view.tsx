@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { Drawer, Modal, Pill, useToast } from "@poweros/ui";
@@ -321,6 +322,7 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
       </div>
     </div>
     <div className="flex gap-1 rounded-2xl bg-white p-1 shadow-sm overflow-x-auto">
+      <Link href="/website/pages" className="whitespace-nowrap rounded-xl border border-gold-500 px-4 py-2 text-sm font-semibold text-gold-700">Pages &amp; Guides</Link>
       {TABS.map(t=><button key={t} onClick={()=>setTab(t)} className={`relative whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium ${tab===t?"text-white":"text-slate-600"}`}>
         {tab===t&&<motion.span layoutId="wtab" className="absolute inset-0 rounded-xl bg-navy-800"/>}<span className="relative">{t}</span></button>)}</div>
 

@@ -1,4 +1,5 @@
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
@@ -12,6 +13,7 @@ const schema = z.object({
   examined_by: z.string().trim().max(80), valid_till: z.string().min(8, "Choose the valid-till date"), remarks: z.string().max(300),
   values: z.object({ od: eye, os: eye, pd_far: n, pd_near: n }) });
 export async function createPrescription(input: unknown): Promise<{ error?: string; ok?: string; id?: string }> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const p = schema.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
   const { values: v, ...rest } = p.data;
   const bad = validateRx(v).find((m) => m.startsWith("Enter at least") || m.includes("add an axis")); if (bad) return { error: bad };

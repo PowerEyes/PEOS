@@ -1,9 +1,9 @@
 
 "use client";
 import { useState } from "react";
+import { useSite } from "@/lib/site-context";
 import Link from "next/link";
 import { Search, Package, Check, Clock, Truck, MapPin, Phone, ChevronRight } from "lucide-react";
-import { useSite } from "@/lib/site-context";
 import { waHref } from "@/lib/wa";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -27,6 +27,7 @@ const STATUS_COLOR: Record<string,string> = {
 const inr = (n:any) => `₹${Number(n||0).toLocaleString("en-IN")}`;
 
 export default function TrackOrderPage() {
+  const site = useSite();
   const { whatsappNumber } = useSite();
   const [code, setCode] = useState("");
   const [phone, setPhone] = useState("");
@@ -162,9 +163,9 @@ export default function TrackOrderPage() {
               <div className="grid grid-cols-2 gap-3">
                 <a href={waHref(whatsappNumber, `Status of order ${order.code}`)} target="_blank"
                   className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white hover:bg-emerald-700 transition">💬 WhatsApp</a>
-                <a href="tel:9840496404" className="flex items-center justify-center gap-2 rounded-xl border border-navy-800 py-3 text-sm font-bold text-navy-800 hover:bg-navy-50 transition"><Phone size={14}/>Call Us</a>
+                <a href={`tel:${site.phones[0] ?? ""}`} className="flex items-center justify-center gap-2 rounded-xl border border-navy-800 py-3 text-sm font-bold text-navy-800 hover:bg-navy-50 transition"><Phone size={14}/>Call Us</a>
               </div>
-              <p className="text-xs text-slate-400 text-center mt-3">Mon–Sun 10 AM – 9 PM · 9840496404 | 6383301802</p>
+              <p className="text-xs text-slate-400 text-center mt-3">{site.hours} · {site.phones.join(" | ")}</p>
             </div>
 
             {/* Sign up prompt */}

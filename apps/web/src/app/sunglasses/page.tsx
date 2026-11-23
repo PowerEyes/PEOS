@@ -1,64 +1,10 @@
-import { Suspense } from "react";
-import { supabasePublic } from "@/lib/supabase/server";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { ProductGrid } from "@/components/ProductGrid";
 import { Breadcrumb } from "@/components/Breadcrumb";
-import { ProductFilters } from "@/components/ProductFilters";
-import { SizeGuide } from "@/components/SizeGuide";
-import type { Product } from "@/lib/types";
+import { CatalogListing } from "@/components/CatalogListing";
 export const revalidate = 60;
-export const metadata = { title: "Sunglasses – Style Meets Protection" };
-
-const uniq = (rows: any[] | null, f: (r: any) => string | undefined) =>
-  [...new Set((rows ?? []).map(f).filter(Boolean) as string[])].sort();
-const boundsOf = (rows: any[] | null) => {
-  const p = (rows ?? []).map((r: any) => Number(r.selling_price)).filter((n) => Number.isFinite(n) && n > 0);
-  if (!p.length) return { min: 0, max: 10000 };
-  return { min: Math.floor(Math.min(...p) / 100) * 100, max: Math.ceil(Math.max(...p) / 100) * 100 };
-};
-
-export default async function Page({ searchParams }: { searchParams: Record<string,string> }) {
-  const sb = supabasePublic();
-  let q = sb.from("public_catalog").select("*").eq("kind","sunglass");
-  // ilike so lowercase links (?shape=aviator) match stored "Aviator" values.
-  // Multi-word shapes use the URL-safe hyphen form, so - and _ map back to a
-  // space before the match (see eyeglasses/page.tsx).
-  if (searchParams.shape) q = q.ilike("attrs->>shape", searchParams.shape.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim());
-  if (searchParams.gender) q = q.eq("gender", searchParams.gender);
-  if (searchParams.brand) q = q.eq("brand", searchParams.brand);
-  if (Number(searchParams.min) > 0) q = q.gte("selling_price", Number(searchParams.min));
-  if (Number(searchParams.max) > 0) q = q.lte("selling_price", Number(searchParams.max));
-  const { data } = await q.limit(100);
-  const { data: all } = await sb.from("public_catalog").select("brand, gender, attrs, selling_price").eq("kind","sunglass").limit(100);
-  const brands  = uniq(all, (r) => r.brand);
-  const shapes  = uniq(all, (r) => r.attrs?.shape);
-  const genders = uniq(all, (r) => r.gender);
-  const bounds  = boundsOf(all);
-
-  const crumbs = [
-    { label: "Sunglasses" },
-    ...(searchParams.brand ? [{ label: String(searchParams.brand) }] : []),
-    ...(searchParams.shape ? [{ label: String(searchParams.shape) }] : []),
-  ];
-
-  return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <Breadcrumb strip items={crumbs} />
-      <div className="bg-gradient-to-r from-slate-900 to-slate-700 py-10 px-4 text-white text-center">
-        <h1 className="font-display text-4xl font-bold">Sunglasses</h1>
-        <p className="mt-2 text-slate-300">Style meets protection – regular &amp; prescription sunglasses</p>
-      </div>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-end pt-4">
-          <SizeGuide />
-        </div>
-        <Suspense fallback={null}>
-          <ProductFilters brands={brands} shapes={shapes} genders={genders} bounds={bounds} />
-        </Suspense>
-        <ProductGrid products={(data ?? []) as Product[]} brands={brands} kind="sunglass"/>
-      </div>
-      <Footer/>
-    </div>);
+export const metadata = { title: "Sunglasses – Regular & Prescription" };
+export default function Page({ searchParams }: { searchParams: Record<string, string> }) {
+  return (<div className="min-h-screen bg-white"><Header /><Breadcrumb strip items={[{ label: "Sunglasses" }]} />
+    <CatalogListing slug="sunglasses" kind="sunglass" sp={searchParams} tone="from-slate-900 to-slate-700" fallback={{ title: "Sunglasses", subtitle: "Style meets protection – regular & prescription sunglasses" }} /><Footer /></div>);
 }

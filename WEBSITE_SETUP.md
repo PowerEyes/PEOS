@@ -7,7 +7,7 @@ Then seed: `supabase/seed/seed_finance.sql` (already done if on Build 6+).
 ## 2. Add environment variables
 Copy `apps/web/.env.example` to `apps/web/.env.local` and fill in:
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` — same as the ERP
-- `HF_TOKEN` — optional, for Rx OCR inside the lens configurator
+- Rx OCR uses the internal service configured on the ERP server; do not expose the OCR service publicly or add hosted OCR API tokens to the storefront.
 - `NEXT_PUBLIC_WEB_URL` — your production website URL (used in Website Controller link)
 
 ## 3. Run

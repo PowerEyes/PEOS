@@ -1,3 +1,4 @@
+import { resolveScope } from "@/lib/branch-scope";
 import { supabaseServer } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";
@@ -12,7 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   await sb.rpc("claim_invitation");
   const { data: perms } = await sb.rpc("my_permissions");
   const [{ data: p }, { data: branches }, { data: tmpls }, settings] = await Promise.all([
-    sb.from("profiles").select("full_name, role_key, is_approved, org_id").eq("id", user.id).single(),
+    sb.from("profiles").select("full_name, role_key, is_approved, org_id, branch_id").eq("id", user.id).single(),
     sb.from("branches").select("id, name").eq("is_active", true).order("name"),
     sb.from("message_templates").select("*").order("sort_order"),
     getSettings(),
@@ -32,7 +33,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
   return (
     <TemplatesProvider templates={tmpls ?? []} storeName={branches?.[0]?.name ?? "our store"}>
-      <Shell user={{ name: p.full_name ?? user.email!, role: p.role_key, perms: perms ?? [] }} branches={branches ?? []} settings={settings}>
+      <Shell user={{ name: p.full_name ?? user.email!, role: p.role_key, perms: perms ?? [] }} branches={branches ?? []} settings={settings} scope={resolveScope(p.role_key, p.branch_id ?? null, (branches ?? []).map((b: any) => b.id))}>
         {children}
       </Shell>
     </TemplatesProvider>

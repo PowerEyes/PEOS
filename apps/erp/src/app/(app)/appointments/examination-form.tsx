@@ -75,7 +75,7 @@ export function ExaminationForm({ customerId, appointmentId, existingExam, onClo
     <div className="p-8 text-center space-y-4">
       <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-50"><Check size={32} className="text-emerald-500"/></div>
       <h3 className="font-bold text-xl text-slate-800">Examination Recorded</h3>
-      <p className="text-slate-500 text-sm">The eye examination has been saved and the prescription has been created automatically.</p>
+      <p className="text-slate-500 text-sm">{f.od_sph !== "" || f.os_sph !== "" ? "The examination and prescription have been saved." : "The examination has been saved without creating a prescription."}</p>
       <div className="flex gap-3 justify-center">
         <button onClick={onClose} className="rounded-xl border border-slate-200 px-6 py-2.5 text-sm font-semibold hover:bg-slate-50">Done</button>
         <button onClick={() => window.print()} className="flex items-center gap-2 rounded-xl bg-navy-800 px-6 py-2.5 text-sm font-semibold text-white hover:bg-navy-700"><Printer size={15}/>Print Report</button>

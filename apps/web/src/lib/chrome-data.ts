@@ -71,7 +71,7 @@ export const DEFAULT_NAV: NavItem[] = [
   { label: "Eyeglasses", href: "/eyeglasses", mega: EYEGASSES_MEGA },
   { label: "Sunglasses", href: "/sunglasses" },
   { label: "Contact Lenses", href: "/contact-lenses" },
-  { label: "Computer Glasses", href: "/eyeglasses?kind=computer" },
+  { label: "Computer Glasses", href: "/computer-glasses" },
   { label: "Kids Eyewear", href: "/eyeglasses?gender=kids" },
   { label: "Lens & Coatings", href: "/lenses" },
   { label: "Offers", href: "/offers" },

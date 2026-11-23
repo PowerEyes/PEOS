@@ -263,7 +263,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
           <div className="rounded-2xl border border-slate-100 bg-white p-4 text-sm text-center">
             <p className="text-slate-500">Need help with this order?</p>
             <div className="flex justify-center gap-3 mt-2">
-              <a href="tel:9840496404" className="flex items-center gap-1 text-navy-700 font-semibold hover:underline"><Phone size={13}/>Call us</a>
+              <a href={`tel:${site.phones[0]}`} className="flex items-center gap-1 text-navy-700 font-semibold hover:underline"><Phone size={13}/>Call us</a>
               <a href={waHref(site.whatsappNumber)} target="_blank" className="flex items-center gap-1 text-emerald-700 font-semibold hover:underline">💬 WhatsApp</a>
             </div>
           </div>

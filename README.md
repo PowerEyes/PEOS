@@ -15,7 +15,7 @@ Not yet built (greyed in the sidebar): prescriptions/OCR, inventory, POS, lab, r
 
 ## Build 2 - Prescriptions + OCR (+ advanced UX)
 1. Run `supabase/migrations/0002_prescriptions.sql`, then `supabase/seed/seed_branches.sql` (edit letterhead details first).
-2. Add `HF_TOKEN` to `apps/erp/.env.local` (free token from huggingface.co/settings/tokens).
+2. Configure the self-hosted OCR service; see [`services/ocr/README.md`](services/ocr/README.md). Set `OCR_SERVICE_URL` and `OCR_SERVICE_TOKEN` in `apps/erp/.env.local`. No hosted OCR account or token is used.
 3. `pnpm install` (new package: business-rules), then `pnpm dev`.
 New: Prescriptions page, photo OCR with confirm step, A5 print (/print/rx/[id]), Ctrl+K command palette, toasts, skeleton loading, count-up KPIs, mobile bottom nav, branch saved in a cookie.
 
@@ -32,7 +32,7 @@ Rules enforced in the database (`place_sale`): prices are read from the DB, lens
 
 ## Build 5 - Lab orders + Workshop, GST switch, inline customer
 1. Run `supabase/migrations/0005_lab_gst.sql`, then `supabase/seed/seed_lab.sql`. (No new npm packages.)
-2. Owners/admins see a gear icon in the top bar: Settings drawer with the global GST switch, GSTIN, discount limit, quotation days and lab lead time.
+2. Owners/admins can manage the database-backed business profile, branch lifecycle and pickup defaults, GST/invoice defaults, staff discount/quotation rules, integrations, templates and settings audit history at `/settings`.
 3. Placing an order with lenses auto-creates one lab order per lens line, carrying the customer's power. /workshop = board + buying list.
 Flow: To buy > Ordered > Received > Edging > Fitting > QC > Ready, then Delivered from POS & Orders. The order status follows its lab orders.
 

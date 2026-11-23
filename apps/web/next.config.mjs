@@ -4,6 +4,7 @@ const erpOrigins = (process.env.ERP_ORIGIN || "http://localhost:3001")
   .split(",").map((s) => s.trim()).filter(Boolean).join(" ");
 
 export default {
+  distDir: process.env.NEXT_BUILD_DIR || ".next",
   poweredByHeader: false,
   transpilePackages: ["@poweros/ui", "@poweros/business-rules"],
   images: { remotePatterns: [{ protocol:"https", hostname:"*.supabase.co" }] },
@@ -19,7 +20,10 @@ export default {
       { key:"Content-Security-Policy", value:`frame-ancestors 'self' ${erpOrigins}` },
       { key:"Strict-Transport-Security", value:"max-age=63072000; includeSubDomains" },
       { key:"Referrer-Policy", value:"strict-origin-when-cross-origin" },
+      { key:"Permissions-Policy", value:"camera=(self), microphone=(), geolocation=(), payment=(self)" },
     ] },
+      // Signed-in pages and money APIs must never be cached by browsers/CDNs/shared proxies.
+      { source:"/:p(my|checkout|login|track-order|api)/:rest*", headers:[{ key:"Cache-Control", value:"private, no-store, max-age=0" }, { key:"X-Robots-Tag", value:"noindex, nofollow" }] },
       { source:"/manifest.json", headers:[{ key:"Content-Type", value:"application/manifest+json" }] }];
   },
 };

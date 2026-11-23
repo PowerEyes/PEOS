@@ -1,104 +1,51 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Ruler } from "lucide-react";
+import { X, Ruler, BookOpen } from "lucide-react";
+import type { GuideBody } from "@/lib/pages";
+
+type G = { title: string; subtitle?: string | null; body: GuideBody };
+const cache = new Map<string, G | null>();
 
 /**
- * Static "Frame Size Guide": how to measure your face width, what the three
- * numbers on the temple arm mean, and a size chart.
- *
- * Self-contained (button + modal) so it can be dropped into listing toolbars
- * and every product card. Portalled to <body> because cards sit inside
- * transformed (framer-motion) containers that would otherwise clip a fixed
- * overlay.
+ * Database-driven guide (ERP > Website > Pages & Guides, slug `guide-<page>`). Each listing page passes its own `page`.
+ * The FRAME size guide is only rendered by the eyeglasses page / frame cards (page="eyeglasses").
+ * Hidden automatically if the operator deactivates the guide.
  */
-export function SizeGuide({
-  label = "Frame Size Guide",
-  className = "",
-}: { label?: string; className?: string }) {
+export function GuideButton({ page, label, className = "" }: { page: string; label?: string; className?: string }) {
+  const slug = `guide-${page}`;
   const [open, setOpen] = useState(false);
-
+  const [g, setG] = useState<G | null | undefined>(cache.get(slug));
+  useEffect(() => {
+    if (cache.has(slug)) return;
+    fetch(`/api/guide?slug=${slug}`).then((r) => (r.ok ? r.json() : null)).then((j) => { cache.set(slug, j); setG(j); }).catch(() => setG(null));
+  }, [slug]);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
+    const k = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", k); const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", k); document.body.style.overflow = prev; };
   }, [open]);
-
-  const btnClass = className ||
-    "inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-navy-700 hover:text-navy-900";
-
-  return (
-    <>
-      <button type="button" onClick={() => setOpen(true)} className={btnClass}>
-        📏 {label}
-      </button>
-      {open && typeof document !== "undefined" && createPortal(
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Frame size guide">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
-          <div className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-2xl">
-            <div className="sticky top-0 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-4">
-              <p className="flex items-center gap-2 font-bold text-navy-900">
-                <Ruler size={16} className="text-gold-500" /> {label}
-              </p>
-              <button onClick={() => setOpen(false)} aria-label="Close size guide"
-                className="rounded-full bg-slate-100 p-1.5 transition hover:bg-slate-200">
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="space-y-5 px-5 py-5 text-sm leading-relaxed text-slate-600">
-              <section>
-                <h3 className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">1 · Measure your face width</h3>
-                <p>
-                  Hold a ruler flat across your cheekbones — the widest part of your
-                  face, just below your eyes — and note the width in centimetres.
-                  That is the frame width that will sit comfortably on you.
-                </p>
-                <div className="mt-3 rounded-xl bg-slate-50 px-3 py-2.5 text-center text-xs text-slate-500">
-                  Cheekbone to cheekbone → <b className="text-navy-900">Small &lt; 13 cm · Medium 13–14.5 cm · Large &gt; 14.5 cm</b>
-                </div>
-              </section>
-
-              <section>
-                <h3 className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">2 · The three numbers on the temple arm</h3>
-                <p>
-                  Every frame prints its size inside the arm, for example{" "}
-                  <b className="font-mono text-navy-900">52 □ 18 – 145</b>:
-                </p>
-                <ul className="mt-2 space-y-1.5">
-                  <li className="rounded-lg bg-slate-50 px-3 py-2"><b className="text-navy-900">52 — Lens width</b> (mm): the width of one lens at its widest point.</li>
-                  <li className="rounded-lg bg-slate-50 px-3 py-2"><b className="text-navy-900">18 — Bridge width</b> (mm): the gap between the lenses that rests on your nose.</li>
-                  <li className="rounded-lg bg-slate-50 px-3 py-2"><b className="text-navy-900">145 — Temple length</b> (mm): the arm length from hinge to tip.</li>
-                </ul>
-              </section>
-
-              <section>
-                <h3 className="mb-1.5 text-xs font-bold uppercase tracking-wider text-slate-400">3 · Size chart</h3>
-                <table className="w-full overflow-hidden rounded-xl border border-slate-100 text-xs">
-                  <thead className="bg-slate-50 text-left text-slate-500">
-                    <tr><th className="px-3 py-2">Size</th><th className="px-2 py-2">Face width</th><th className="px-2 py-2">Lens width</th><th className="px-2 py-2">Temple</th></tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-600">
-                    <tr><td className="px-3 py-2 font-semibold text-navy-900">Small</td><td className="px-2 py-2">&lt; 13 cm</td><td className="px-2 py-2">≤ 48 mm</td><td className="px-2 py-2">135–140 mm</td></tr>
-                    <tr><td className="px-3 py-2 font-semibold text-navy-900">Medium</td><td className="px-2 py-2">13–14.5 cm</td><td className="px-2 py-2">49–53 mm</td><td className="px-2 py-2">140–145 mm</td></tr>
-                    <tr><td className="px-3 py-2 font-semibold text-navy-900">Large</td><td className="px-2 py-2">&gt; 14.5 cm</td><td className="px-2 py-2">≥ 54 mm</td><td className="px-2 py-2">145–150 mm</td></tr>
-                  </tbody>
-                </table>
-                <p className="mt-2 text-xs text-slate-400">
-                  Between sizes? Pick the larger one — our team adjusts nose pads and
-                  temples free of charge in-store.
-                </p>
-              </section>
-            </div>
+  if (g === null) return null; // guide switched off / missing
+  const Icon = page === "eyeglasses" ? Ruler : BookOpen;
+  const btn = className || "inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-navy-700 hover:text-navy-900 active:scale-95";
+  return (<>
+    <button type="button" onClick={() => setOpen(true)} className={btn}><Icon size={14} />{label ?? g?.title ?? "Guide"}</button>
+    {open && g && createPortal(
+      <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={g.title}>
+        <div className="absolute inset-0 bg-navy-900/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
+        <div className="relative flex max-h-[88dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl bg-white shadow-2xl sm:rounded-3xl">
+          <div className="flex items-start justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-navy-900 to-navy-800 px-5 py-4 text-white">
+            <div><h2 className="font-display text-lg font-bold">{g.title}</h2>{g.subtitle && <p className="text-xs text-slate-300">{g.subtitle}</p>}</div>
+            <button onClick={() => setOpen(false)} aria-label="Close" className="rounded-full bg-white/10 p-1.5 hover:bg-white/20"><X size={16} /></button>
           </div>
-        </div>,
-        document.body)}
-    </>
-  );
+          <div className="space-y-5 overflow-y-auto p-5">
+            {(g.body.sections ?? []).map((s, i) => (<div key={i} className="rounded-2xl bg-slate-50 p-4">{s.heading && <p className="font-semibold text-navy-900">{s.icon} {s.heading}</p>}{s.body && <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-slate-600">{s.body}</p>}</div>))}
+            {g.body.table?.headers?.length ? (<div className="overflow-x-auto rounded-2xl border border-slate-100"><table className="w-full text-left text-sm"><thead className="bg-navy-50 text-xs uppercase tracking-wide text-navy-800"><tr>{g.body.table.headers.map((h, i) => <th key={i} className="px-3 py-2.5">{h}</th>)}</tr></thead><tbody>{g.body.table.rows.map((r, i) => <tr key={i} className="border-t border-slate-100">{r.map((c, j) => <td key={j} className="px-3 py-2.5 text-slate-700">{c}</td>)}</tr>)}</tbody></table></div>) : null}
+          </div>
+        </div>
+      </div>, document.body)}
+  </>);
 }
+/** Frame size guide — eyeglasses only. */
+export const SizeGuide = ({ label = "Frame Size Guide", className = "" }: { label?: string; className?: string }) => <GuideButton page="eyeglasses" label={label} className={className} />;

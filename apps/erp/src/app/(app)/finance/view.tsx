@@ -1,4 +1,5 @@
 "use client";
+import { useScope } from "@/components/ScopeContext";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -28,6 +29,7 @@ const csvCell = (v: any) => { const s = String(v ?? ""); return /[",\n]/.test(s)
 
 /** Every rupee in / out, read straight from the `cashbook` ledger. */
 function CashbookTab() {
+  const scope = useScope();
   const toast = useToast();
   const now = new Date();
   const [from, setFrom] = useState(() => isoDate(new Date(now.getFullYear(), now.getMonth(), 1)));
@@ -43,6 +45,7 @@ function CashbookTab() {
     let live = true;
     setLoading(true);
     supabaseBrowser().from("cashbook").select("*")
+      .match(scope ? { branch_id: scope } : {})
       .gte("occurred_on", from).lte("occurred_on", to)
       .order("occurred_on", { ascending: false }).order("occurred_at", { ascending: false })
       .limit(2000)
@@ -53,7 +56,7 @@ function CashbookTab() {
         setRows(data ?? []);
       });
     return () => { live = false; };
-  }, [from, to]);
+  }, [from, to, scope]);
 
   const filtered = useMemo(() => {
     const n = q.trim().toLowerCase();
@@ -169,6 +172,7 @@ function CashbookTab() {
 }
 
 export function FinanceView({ settings, salesMonth, salesToday, outstanding, expenses, purchasesMonth, branches, days30, creditNotes, gstPeriods, cashbookMonth }: any) {
+  const scope = useScope();
   const router = useRouter(); const toast = useToast(); const sp = useSearchParams();
   const [tab, setTab] = useState<(typeof TABS)[number]>("Dashboard");
   const [expOpen, setExpOpen] = useState(false);
@@ -219,6 +223,7 @@ export function FinanceView({ settings, salesMonth, salesToday, outstanding, exp
       setCnSearching(true);
       const { data } = await supabaseBrowser().from("sales").select("*, customers!sales_customer_id_fkey(full_name), sale_lines(*)")
         .eq("kind","order").not("status","eq","cancelled")
+        .match(scope ? { branch_id: scope } : {})
         .or(`code.ilike.%${cnSearch}%,customers.full_name.ilike.%${cnSearch}%`).limit(6);
       setCnResults(data ?? []); setCnSearching(false);
     }, 300);

@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function ReceiptPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("receipt", params.id, searchParams?.dt);
-  const { data: p } = await sb.from("payments").select("*, sales(code, grand_total, paid_total, customers!sales_customer_id_fkey(full_name, phone), branches(name, address, phone))").eq("id", params.id).single();
+  const { scope } = await getScopeCtx(); let q=sb.from("payments").select("*, sales!inner(code, branch_id, grand_total, paid_total, customers!sales_customer_id_fkey(full_name, phone), branches(name, address, phone))").eq("id", params.id); if(scope)q=q.eq("sales.branch_id",scope);
+  const { data: p } = await q.single();
   if (!p) notFound();
   const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const s = p.sales, b = s?.branches, bal = Number(s?.grand_total) - Number(s?.paid_total);

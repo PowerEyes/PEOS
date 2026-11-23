@@ -3,9 +3,11 @@ import { printSb } from "@/lib/doclinks";
 import { fmt } from "@poweros/business-rules";
 import { ageFrom } from "@/lib/types";
 import { PrintBar } from "./print-bar";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function RxPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("rx", params.id, searchParams?.dt);
-  const { data: r } = await sb.from("prescriptions").select("*, customers(*)").eq("id", params.id).single();
+  const { scope } = await getScopeCtx(); let rxq=sb.from("prescriptions").select("*, customers(*)").eq("id", params.id); if(scope)rxq=rxq.eq("branch_id",scope);
+  const { data: r } = await rxq.single();
   if (!r) notFound();
   const bq = sb.from("branches").select("*");
   const { data: b } = r.branch_id ? await bq.eq("id", r.branch_id).single() : await bq.order("code").limit(1).single();

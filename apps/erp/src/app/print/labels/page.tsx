@@ -1,6 +1,7 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { BarcodeSvg } from "@/components/BarcodeSvg";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 import { inr } from "@poweros/business-rules";
 
 // Power Eyes label stock (mm) — thermal transfer printer, 300 DPI preferred.
@@ -55,10 +56,11 @@ function Label({ p }: { p: any }) {
 export default async function Labels({ searchParams }: { searchParams: { ids?: string; copies?: string } }) {
   const ids = (searchParams.ids ?? "").split(",").filter(Boolean);
   const copies = Math.min(50, Math.max(1, Number(searchParams.copies) || 1));
-  const { data } = await supabaseServer().from("products")
-    .select("id, kind, model, sku, barcode, selling_price, attrs, brands(name)")
-    .in("id", ids);
-  const labels = (data ?? []).flatMap((p: any) => Array.from({ length: copies }, (_, i) => ({ ...p, k: `${p.id}${i}` })));
+  const { scope } = await getScopeCtx(); let q=supabaseServer().from("products").select("id, kind, model, sku, barcode, selling_price, attrs, brands(name), stock!inner(branch_id)").in("id", ids);
+  if(scope)q=q.eq("stock.branch_id",scope);
+  const { data } = await q;
+  const uniqueProducts = [...new Map((data ?? []).map((p: any) => [p.id, p])).values()];
+  const labels = uniqueProducts.flatMap((p: any) => Array.from({ length: copies }, (_, i) => ({ ...p, k: `${p.id}${i}` })));
   const kinds = [...new Set(labels.map((p: any) => sizeOf(p)))] as KindKey[];
   const one = kinds.length === 1 ? SIZES[kinds[0]] : null;
   const first = one ?? SIZES.frame;

@@ -116,7 +116,7 @@ export function LensConfigurator({ open, onClose, product }: { open: boolean; on
 
   const cart = typeof window !== "undefined" ? (() => { try { return JSON.parse(localStorage.getItem("pe_cart_v3")??"[]"); } catch { return []; } })() : [];
   function addToCart() {
-    const item = { id: Math.random().toString(36).slice(2), productId: product?.id, productName: `${product?.brand??""} ${product?.model??""}`.trim(), brand: product?.brand, image: product?.images?.[0], framePrice: Number(product?.selling_price??0), lensTotal, total, qty: 1, power_eligible: true, lensPackageId: pkg?.id, lensPackageName: pkg?.name, addons: selAddonObjs.map((o:any)=>o.name), rx: rxValues };
+    const item = { id: Math.random().toString(36).slice(2), productId: product?.id, productName: `${product?.brand??""} ${product?.model??""}`.trim(), brand: product?.brand, image: product?.images?.[0], framePrice: Number(product?.selling_price??0), lensTotal, total, qty: 1, power_eligible: true, lensPackageId: pkg?.id, lensPackageName: pkg?.name, addons: selAddonObjs.map((o:any)=>o.name), optionIds: [...(selIdxObj ? [selIdxObj.id] : []), ...selAddonObjs.map((o:any)=>o.id)], rx: rxValues };
     const updated = [...cart, item];
     try { localStorage.setItem("pe_cart_v3", JSON.stringify(updated)); } catch {}
     window.dispatchEvent(new Event("pe_cart_update"));

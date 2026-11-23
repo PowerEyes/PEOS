@@ -17,7 +17,7 @@ export const Switch = ({ on, set, label, hint }: { on: boolean; set: (v: boolean
     <span className={`relative h-6 w-11 shrink-0 rounded-full transition ${on ? "bg-gold-500" : "bg-slate-300"}`}><span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${on ? "left-[22px]" : "left-0.5"}`} /></span></button>);
 const L = ({ t, children }: { t: string; children: React.ReactNode }) => <label className="block"><span className="mb-1 block text-xs text-slate-500">{t}</span>{children}</label>;
 
-export function ProductDrawer({ open, onClose, product, kind, brands, branches, gst }: { gst: boolean; open: boolean; onClose: () => void; product: any | null; kind: Kind; brands: any[]; branches: any[] }) {
+export function ProductDrawer({ open, onClose, product, kind, brands, branches, gst, canSeeCost }: { canSeeCost: boolean; gst: boolean; open: boolean; onClose: () => void; product: any | null; kind: Kind; brands: any[]; branches: any[] }) {
   const router = useRouter(); const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null); const cameraRef = useRef<HTMLInputElement>(null);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Basic"); const [busy, setBusy] = useState(false); const [f, setF] = useState<any>({});
@@ -32,7 +32,7 @@ export function ProductDrawer({ open, onClose, product, kind, brands, branches, 
   async function save() {
     setBusy(true);
     const r = await saveProduct({ id: product?.id, kind: k, brand_id: f.brand_id || null, model: f.model, collection: f.collection || null, gender: f.gender, status: f.status, barcode: f.barcode || null,
-      cost_price: n(f.cost_price), mrp: n(f.mrp), selling_price: n(f.selling_price), tax_pct: Number(f.tax_pct || 0), power_eligible: !!f.power_eligible, hsn: f.hsn || null, price_mode: f.price_mode || "inclusive",
+      cost_price: canSeeCost ? n(f.cost_price) : undefined, mrp: n(f.mrp), selling_price: n(f.selling_price), tax_pct: Number(f.tax_pct || 0), power_eligible: !!f.power_eligible, hsn: f.hsn || null, price_mode: f.price_mode || "inclusive",
       visible_on_website: f.visible_on_website, featured: f.featured, new_arrival: f.new_arrival, bestseller: f.bestseller, short_desc: f.short_desc || null, description: f.description || null,
       on_display: !!f.on_display, display_section: f.display_section || "shelf", shelf_location: f.shelf_location || null, display_order: Number(f.display_order) || 0,
       images: f.images, attrs: f.attrs, opening: !product && Number(f.opening_qty) > 0 ? { branch_id: f.opening_branch, qty: Number(f.opening_qty) } : undefined });
@@ -52,7 +52,7 @@ export function ProductDrawer({ open, onClose, product, kind, brands, branches, 
   async function apply(branch_id: string) { const a = adj[branch_id]; const r = await adjustStock({ product_id: product.id, branch_id, delta: Number(a?.d), reason: a?.r || "adjustment" });
     if (r.error) return toast(r.error, "err"); toast(r.ok!); setAdj((x) => ({ ...x, [branch_id]: { d: "", r: "adjustment" } })); router.refresh(); }
 
-  const margin = marginPct(n(f.cost_price), n(f.selling_price)), disc = discountPct(n(f.mrp), n(f.selling_price));
+  const margin = canSeeCost ? marginPct(n(f.cost_price), n(f.selling_price)) : null, disc = discountPct(n(f.mrp), n(f.selling_price));
   const title = product ? `${product.brands?.name ?? ""} ${product.model}`.trim() : `Add ${KINDS.find((x) => x.key === k)?.label.toLowerCase()}`;
   return (
     <Drawer open={open} onClose={onClose} title={title} subtitle={product ? `${product.sku} | ${product.barcode}` : "SKU and barcode are generated on save"}
@@ -80,7 +80,7 @@ export function ProductDrawer({ open, onClose, product, kind, brands, branches, 
             return <button key={o} type="button" onClick={() => setA(d.key, on ? f.attrs[d.key].filter((x: string) => x !== o) : [...(f.attrs?.[d.key] ?? []), o])} className={`rounded-full border px-3 py-1 text-sm transition ${on ? "border-gold-500 bg-amber-50 text-gold-600" : "border-slate-200"}`}>{o}</button>; })}</div></div>) : (
           <L key={d.key} t={d.unit ? `${d.label} (${d.unit})` : d.label}>{d.type === "select" ? <select className="field" value={f.attrs?.[d.key] ?? ""} onChange={(e) => setA(d.key, e.target.value)}><option value="">-</option>{d.options!.map((o) => <option key={o}>{o}</option>)}</select>
             : <input className="field" type={d.type} step="any" value={f.attrs?.[d.key] ?? ""} onChange={(e) => setA(d.key, d.type === "number" ? (e.target.value === "" ? "" : Number(e.target.value)) : e.target.value)} />}</L>))}</div>}
-        {tab === "Pricing" && <><div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><L t="Cost price"><input className="field" inputMode="decimal" value={f.cost_price} onChange={(e) => set({ cost_price: e.target.value })} /></L>
+        {tab === "Pricing" && <><div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{canSeeCost && <L t="Cost price (managers only)"><input className="field" inputMode="decimal" value={f.cost_price} onChange={(e) => set({ cost_price: e.target.value })} /></L>}
           <L t="MRP"><input className="field" inputMode="decimal" value={f.mrp} onChange={(e) => set({ mrp: e.target.value })} /></L>
           <L t="Selling price (incl. tax) *"><input className="field" inputMode="decimal" value={f.selling_price} onChange={(e) => set({ selling_price: e.target.value })} /></L>
           <L t={gst ? "GST %" : "GST % (GST is switched off)"}><select disabled={!gst} className="field" value={f.tax_pct} onChange={(e) => set({ tax_pct: e.target.value })}>{["0", "5", "12", "18", "28"].map((t) => <option key={t}>{t}</option>)}</select></L></div>

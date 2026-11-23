@@ -1,3 +1,4 @@
+import { getSiteSettings } from "@/lib/site";
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -22,6 +23,7 @@ const STATUS_UI: Record<string, { label:string; cls:string; icon:any }> = {
 };
 
 export default async function PaymentsPage() {
+  const site = await getSiteSettings();
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/my/login");
@@ -125,7 +127,7 @@ export default async function PaymentsPage() {
         <span className="text-lg shrink-0">🔒</span>
         <div>
           <p className="font-semibold text-slate-600">Secure Payments</p>
-          <p className="mt-0.5">All online payments are processed by Razorpay (PCI-DSS Level 1). We never store your card or UPI details. For payment disputes, contact us on 9840496404.</p>
+          <p className="mt-0.5">All online payments are processed by Razorpay (PCI-DSS Level 1). We never store your card or UPI details. For payment disputes, contact us on {site.phones[0]}.</p>
         </div>
       </div>
     </PortalLayout>);

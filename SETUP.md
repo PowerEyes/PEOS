@@ -82,10 +82,18 @@ Open `apps/erp/.env.local` and fill in:
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 
-# Optional — for prescription OCR (free token from huggingface.co/settings/tokens)
-HF_TOKEN=hf_...
-HF_OCR_MODEL=Qwen/Qwen2.5-VL-7B-Instruct
+# Internal self-hosted OCR. Provision/start it using services/ocr/README.md.
+OCR_SERVICE_URL=http://localhost:8000
+OCR_SERVICE_TOKEN=replace-with-the-same-secret-used-by-the-OCR-service
+
+# ERP integration status bridge (use one strong random token in both apps)
+NEXT_PUBLIC_WEB_URL=http://localhost:3000
+INTEGRATION_HEALTH_TOKEN=replace-with-a-different-strong-random-secret
 ```
+
+For the storefront, copy `apps/web/.env.example` to `apps/web/.env.local` and set Supabase URL/key, `OCR_SERVICE_URL`, `OCR_SERVICE_TOKEN`, the same `INTEGRATION_HEALTH_TOKEN`, and server-only `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` if online payments are enabled. Do not set a `NEXT_PUBLIC_` Razorpay key. In production, put these values in the deployment secret manager and point both apps at the private OCR hostname; restart/redeploy after changing environment values.
+
+Apply `supabase/migrations/20261129000000_settings_configuration.sql` after the existing schema migrations. It adds the organisation/branch settings columns, safe default pickup controls, settings audit triggers, and seeds defaults only where no setting exists.
 
 ---
 
@@ -140,6 +148,31 @@ Role permissions:
 - **owner** — everything including settings, GST toggle, discount override
 - **admin** — everything except cannot change org settings
 - **staff** — POS, customers, prescriptions, inventory (read), workshop; cannot override discount limit
+
+## Guided setup
+
+Owners and admins can continue setup at `/setup`. The wizard links to the existing
+business, tax, catalogue import, staff, website contact and sales settings forms,
+and stores its current step under the organisation's settings. Downloaded sample
+catalogue rows are templates only; review SKUs, prices, tax and costs before
+importing them into a live catalogue.
+
+## End-to-end tests
+
+The Playwright flows that create appointments, sales or stock require a disposable
+Supabase test project. Never point them at the production database. Configure
+`E2E_DATABASE_URL`, `ERP_EMAIL`, `ERP_PASSWORD`, and (if needed) `ERP_URL` for an
+isolated test account, then explicitly opt into mutation with
+`RUN_MUTATING_E2E=1`. Without these values the database-backed test and login setup
+are skipped. Run the appointment flow with:
+
+```bash
+pnpm exec playwright test --project=erp 06-appointments.erp.spec.ts
+```
+
+The E2E account must be allowed to book at the seeded branch. The appointment
+test deletes its marked appointment and examination after the run; use a
+disposable database regardless.
 
 ---
 
@@ -207,7 +240,7 @@ WHERE kind = 'order' AND status != 'cancelled'
 |---|---|
 | White screen on login | Check `.env.local` has the correct Supabase URL and anon key |
 | "Waiting for approval" after login | Run the approve SQL in Step 7 |
-| OCR says "not set up" | Add `HF_TOKEN` to `.env.local` and restart the dev server |
+| OCR says "not configured" | Set `OCR_SERVICE_URL` and `OCR_SERVICE_TOKEN`; make sure the private PaddleOCR service is running |
 | Images not showing | Check the `product-images` bucket exists and is public in Supabase |
 | "Only approved staff can create sales" | Your `current_org()` returned null — run the approve SQL |
 | Camera scan not working | Camera requires HTTPS; use localhost (which counts) or deploy to Vercel |

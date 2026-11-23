@@ -3,9 +3,11 @@ import { printSb } from "@/lib/doclinks";
 import { fmt } from "@poweros/business-rules";
 import { BarcodeSvg } from "@/components/BarcodeSvg";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function LabPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("lab", params.id, searchParams?.dt);
-  const { data: l } = await sb.from("lab_orders").select("*, customers!lab_orders_customer_id_fkey(full_name, vision_id, phone), sales(code), branches(name)").eq("id", params.id).single();
+  const { scope } = await getScopeCtx(); let q=sb.from("lab_orders").select("*, customers!lab_orders_customer_id_fkey(full_name, vision_id, phone), sales(code), branches(name)").eq("id", params.id); if(scope)q=q.eq("branch_id",scope);
+  const { data: l } = await q.single();
   if (!l) notFound(); const th = "border border-slate-400 px-2 py-1 text-center"; const d = (x: string) => new Date(x).toLocaleDateString("en-IN");
   return (<div className="min-h-screen bg-slate-200 py-6 print:bg-white print:py-0"><style>{`@page{size:A5 landscape;margin:0}@media print{html,body{background:#fff}}`}</style>
     <div className="mx-auto mb-4 flex w-[210mm] justify-end print:hidden"><PrintButton label="Print job card" /></div>

@@ -193,7 +193,7 @@ export default function ProductPage({ params }: Params) {
                   <div key={k}><span className="text-slate-400 capitalize">{k.replace("_"," ")}: </span><span className="font-medium capitalize text-navy-900">{String(v)}</span></div>))}
               </div>)}
             {/* Frame size guide */}
-            <div><SizeGuide /></div>
+            {product.kind === "frame" && <div><SizeGuide /></div>}
             {/* CTAs */}
             <div className="space-y-3" ref={ctaRef}>
               {product.power_eligible

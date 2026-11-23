@@ -10,14 +10,24 @@ const RULES: [string, Role[]][] = [
   ["/staff", ADMIN], ["/settings", ADMIN], ["/website", ADMIN],
   ["/reports", MANAGER], ["/crm", MANAGER],
   ["/print/buying-list", MANAGER],
+  ["/subscription", ADMIN],
 ];
 // Routes gated by a configurable permission (Staff → Permissions). Owners/admins always pass.
-const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"]];
+const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"]];
 export const PERMISSIONS = [
   { key: "finance_view", label: "View finance, cashbook & purchase invoices" },
   { key: "expenses", label: "Record expenses" },
   { key: "day_closing", label: "Close the day (cash reconciliation)" },
   { key: "catalogue_edit", label: "Edit products, brands, lenses & suppliers" },
+  { key: "reports_view", label: "View reports" },
+  { key: "crm_manage", label: "Manage CRM automation" },
+  { key: "discount_override", label: "Override staff discount limits" },
+  { key: "stock_adjust", label: "Adjust stock manually" },
+  { key: "purchases_manage", label: "Create and receive purchase orders" },
+  { key: "stock_audit", label: "Count stock and approve cycle counts" },
+  { key: "transfers_approve", label: "Approve branch stock transfers" },
+  { key: "web_orders", label: "Manage online order fulfilment" },
+  { key: "credit_notes.issue", label: "Issue credit notes and refunds" },
 ] as const;
 export function routeAllowed(role: string | null | undefined, path: string, perms: string[] = []): boolean {
   if (!role || !ROLES.includes(role as Role)) return false;

@@ -1,5 +1,5 @@
-
 "use client";
+import { useScope } from "@/components/ScopeContext";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
@@ -18,6 +18,7 @@ type Sale = {
 
 function ReportsContent() {
   const sp   = useSearchParams();
+  const scope = useScope();
   const now  = new Date();
   const defFrom = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-01`;
   const defTo   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(new Date(now.getFullYear(),now.getMonth()+1,0).getDate()).padStart(2,"0")}`;
@@ -36,10 +37,11 @@ function ReportsContent() {
       .gte("created_at", from + "T00:00:00")
       .lte("created_at", to   + "T23:59:59")
       .in("kind",["order","quotation"])
+      .match(scope ? { branch_id: scope } : {})
       .order("created_at",{ascending:false})
       .limit(500)
       .then(({ data }) => { setSales((data ?? []) as unknown as Sale[]); setLoading(false); });
-  }, [from, to]);
+  }, [from, to, scope]);
 
   async function handleExport(f:string, t:string) {
     setExporting(true);
@@ -47,6 +49,7 @@ function ReportsContent() {
       .from("sales")
       .select("code,kind,status,payment_status,grand_total,paid_total,gst_applied,created_at,customers!sales_customer_id_fkey(full_name,phone)")
       .gte("created_at", f+"T00:00:00").lte("created_at", t+"T23:59:59")
+      .match(scope ? { branch_id: scope } : {})
       .order("created_at",{ascending:false}).limit(2000);
     const rows = (data ?? []).map((s:any) => ({
       "Invoice No":        s.code,
@@ -142,5 +145,6 @@ function ReportsContent() {
 }
 
 export default function ReportsPage() {
+  const scope = useScope();
   return <Suspense fallback={<div className="p-10 text-center text-slate-400">Loading…</div>}><ReportsContent/></Suspense>;
 }

@@ -1,10 +1,20 @@
-node_modules
-.next
-.vercel
+# Playwright end-to-end artifacts
+/test-results/
+/playwright-report/
+apps/*/.next-verify/
+**/.next/
+**/.turbo/
+**/node_modules/
+**/*.tsbuildinfo
+/tests/.auth/
+/tests/e2e/.auth/
+/playwright-mcp/
+/.playwright-mcp/
 .env
 .env.*
 !.env.example
 .env.local
-.turbo
-*.tsbuildinfo
 .DS_Store
+/services/ocr/.venv/
+/services/ocr/models/
+/services/ocr/.env

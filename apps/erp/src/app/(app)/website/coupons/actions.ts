@@ -1,5 +1,6 @@
 
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -21,6 +22,7 @@ const Schema = z.object({
 });
 
 export async function upsertCoupon(prev: any, fd: FormData) {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const id = fd.get("id")?.toString() ?? "";
   const raw = {
@@ -50,11 +52,13 @@ export async function upsertCoupon(prev: any, fd: FormData) {
 }
 
 export async function toggleCoupon(id: string, active: boolean) {
+  const gate = await subscriptionGate(); if (gate) return gate;
   await supabaseServer().from("coupons").update({ is_active: active }).eq("id", id);
   revalidatePath("/website/coupons");
 }
 
 export async function deleteCoupon(id: string) {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const sb = supabaseServer();
   const { count } = await sb.from("coupon_uses").select("id",{count:"exact",head:true}).eq("coupon_id",id);
   if ((count ?? 0) > 0) return { error: "Cannot delete a coupon that has already been used. Deactivate it instead." };

@@ -1,6 +1,8 @@
 
 "use client";
 import Link from "next/link";
+import { BranchSwitcher } from "./BranchSwitcher";
+import { ScopeProvider } from "./ScopeContext";
 import { routeAllowed } from "@/lib/rbac";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -8,7 +10,7 @@ import {
   LayoutDashboard, Users, FileText, Calendar, ShoppingCart, Wrench,
   Package, DollarSign, Settings, Globe, LogOut, ChevronDown, ChevronRight,
   Hammer, UserCheck, ReceiptText, MessageCircle, Tag, TrendingUp, FileBarChart,
-  Stethoscope, Wallet,
+  Stethoscope, Wallet, ClipboardCheck,
 } from "lucide-react";
 
 type NavItem = {
@@ -32,6 +34,11 @@ const NAV: NavItem[] = [
   { label:"Inventory",        href:"/inventory",         icon:Package },
   { label:"Stock Transfers",  href:"/transfers",         icon:Package },
   { label:"Purchase Invoices",href:"/purchase-invoices", icon:ReceiptText },
+  { label:"Purchase Orders",  href:"/purchases",         icon:ClipboardCheck },
+  { label:"Stock Audit",      href:"/stock-audits",      icon:Package },
+  { label:"Inbox & Alerts",   href:"/inbox",             icon:MessageCircle },
+  { label:"Website Orders",   href:"/web-orders",        icon:ShoppingCart },
+  { label:"Audit Log",        href:"/audit",             icon:FileText },
   {
     label:"Finance", icon:DollarSign,
     children:[
@@ -39,10 +46,13 @@ const NAV: NavItem[] = [
       { label:"Cashbook",       href:"/finance?tab=Cashbook", icon:Wallet },
       { label:"Sales Report",   href:"/finance/reports",   icon:TrendingUp },
       { label:"GSTR-1 Export",  href:"/finance/gstr1",     icon:FileBarChart },
+      { label:"Accountant Export", href:"/accountant-export", icon:FileBarChart },
     ],
   },
   { label:"CRM Automation",   href:"/crm",               icon:MessageCircle },
   { label:"Staff",            href:"/staff",             icon:UserCheck },
+  { label:"Subscription",     href:"/subscription",      icon:Wallet },
+  { label:"Setup checklist",  href:"/setup",             icon:ClipboardCheck },
   {
     label:"Website", icon:Globe,
     children:[
@@ -85,7 +95,8 @@ function NavLink({ item, depth=0, onNavigate }: { item:NavItem; depth?:number; o
     </Link>);
 }
 
-export function Shell({ children, user, branches, settings }: {
+export function Shell({ children, user, branches, settings, scope = null }: {
+  scope?: string | null;
   children: React.ReactNode;
   user?: { name: string; role: string; perms?: string[] };
   branches?: { id: string; name: string }[];
@@ -143,6 +154,7 @@ export function Shell({ children, user, branches, settings }: {
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-600">
+            {user && <BranchSwitcher branches={branches ?? []} scope={scope} />}
             {user && (
               <span className="hidden sm:flex items-center gap-2 text-xs text-slate-500" title={branches?.length ? `${branches.length} branch${branches.length>1?"es":""}` : undefined}>
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-navy-800 font-bold text-[10px] text-white">{(user.name||"?").slice(0,1).toUpperCase()}</span>
@@ -154,7 +166,7 @@ export function Shell({ children, user, branches, settings }: {
         </header>
         {/* Page content */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          {children}
+          <ScopeProvider value={scope}>{children}</ScopeProvider>
         </main>
       </div>
     </div>);

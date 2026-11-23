@@ -296,7 +296,13 @@ begin
   return jsonb_build_object('id', v_cn_id, 'code', v_cn_code);
 end $$;
 
+-- suppliers_s / suppliers_i are already created by the RLS loop above (§10);
+-- suppliers_u is not, so only that one is new. Guard both so a fresh database
+-- bootstraps cleanly instead of dying with 42710.
 alter table suppliers enable row level security;
+drop policy if exists suppliers_s on suppliers;
 create policy suppliers_s on suppliers for select using (org_id = public.current_org());
+drop policy if exists suppliers_i on suppliers;
 create policy suppliers_i on suppliers for insert with check (org_id = public.current_org());
+drop policy if exists suppliers_u on suppliers;
 create policy suppliers_u on suppliers for update using (org_id = public.current_org());

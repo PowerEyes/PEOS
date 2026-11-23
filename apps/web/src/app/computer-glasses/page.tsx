@@ -1,7 +1,8 @@
 
 import { supabasePublic } from "@/lib/supabase/server";
 import Link from "next/link";
-import { ProductGrid } from "@/components/ProductGrid";
+import { CatalogListing } from "@/components/CatalogListing";
+import { getPage } from "@/lib/pages";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/site";
@@ -29,16 +30,10 @@ const TIPS = [
   "Computer glasses are not the same as reading glasses — the focal distance is different.",
 ];
 
-export default async function ComputerGlassesPage() {
+export default async function ComputerGlassesPage({ searchParams }: { searchParams: Record<string,string> }) {
+  const hero = await getPage("hero-computer-glasses");
   const site = await getSiteSettings();
   const sb = supabasePublic();
-  const { data: products } = await sb.from("public_catalog")
-    .select("id,brand,model,kind,selling_price,mrp,images,in_stock,attrs,bestseller,new_arrival,power_eligible,sku")
-    .or("kind.eq.computer_glasses,attrs->>lens_type.eq.computer,attrs->>usage.eq.computer")
-    .order("bestseller",{ascending:false}).order("selling_price").limit(60);
-
-  const hasProducts = (products?.length ?? 0) > 0;
-
   return (
     <div className="min-h-screen bg-slate-50">
       <Header/>
@@ -50,7 +45,7 @@ export default async function ComputerGlassesPage() {
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/20 border border-blue-400/30 px-4 py-1.5 text-blue-300 text-xs font-semibold mb-4">
             🖥️ Digital Eye Care
           </div>
-          <h1 className="font-extrabold text-4xl sm:text-5xl leading-tight">Computer &amp; Blue Light<br/>Glasses</h1>
+          <h1 className="font-extrabold text-4xl sm:text-5xl leading-tight">{hero?.title ?? <>Computer &amp; Blue Light<br/>Glasses</>}</h1>
           <p className="mt-4 text-slate-300 text-lg max-w-xl">Protect your eyes from digital strain. Prescription or non-prescription, single vision or occupational progressives — with blue light filter and AR coating built in.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="#products" className="rounded-xl bg-gold-500 px-7 py-3.5 font-bold text-sm hover:bg-gold-600 transition">Shop Now →</Link>
@@ -83,24 +78,9 @@ export default async function ComputerGlassesPage() {
           <Link href="/eye-test" className="mt-3 inline-flex rounded-lg bg-navy-800 px-5 py-2.5 text-sm font-bold text-white hover:bg-navy-700 transition">Book Free Eye Test</Link>
         </div>
 
-        {/* Products */}
-        <div id="products">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-bold text-2xl text-navy-900">Computer Frames &amp; Lenses</h2>
-            {!hasProducts && <Link href="/eyeglasses?kind=computer" className="text-sm text-navy-700 hover:underline">See all →</Link>}
-          </div>
-          {hasProducts
-            ? <ProductGrid products={(products ?? []) as any} showRecentlyViewed/>
-            : <div className="rounded-2xl bg-white border border-slate-100 p-12 text-center space-y-4">
-                <p className="text-3xl">🖥️</p>
-                <p className="font-semibold text-slate-600">Computer glasses available in-store</p>
-                <p className="text-sm text-slate-400 max-w-sm mx-auto">Our optometrists can help select the right computer lens for your screen distance and usage. Book a free eye test for a personalised recommendation.</p>
-                <div className="flex justify-center gap-3">
-                  <Link href="/eye-test" className="rounded-lg bg-navy-800 px-6 py-2.5 text-sm font-bold text-white">Book Eye Test</Link>
-                  <Link href="/eyeglasses" className="rounded-lg border border-navy-800 px-6 py-2.5 text-sm font-bold text-navy-800">Browse All Frames</Link>
-                </div>
-              </div>}
-        </div>
+        {/* Products — filters, sort and guide are database-driven */}
+        <CatalogListing slug="computer-glasses" kind="frame" sp={searchParams} headless fallback={{ title: "", subtitle: "" }}
+          filter={(q: any) => q.or("attrs->>lens_type.eq.computer,attrs->>usage.eq.computer,attrs->>category.eq.computer")} />
 
         {/* Tips */}
         <div className="mt-10 rounded-2xl bg-navy-50 border border-navy-100 p-6">

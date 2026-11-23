@@ -1,9 +1,11 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { fmt } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function BuyingList({ searchParams }: { searchParams: { ids?: string } }) {
   const ids = (searchParams.ids ?? "").split(",").filter(Boolean);
-  const { data } = await supabaseServer().from("lab_orders").select("*").in("id", ids).order("lens_desc");
+  const { scope } = await getScopeCtx(); let q=supabaseServer().from("lab_orders").select("*").in("id", ids); if(scope)q=q.eq("branch_id",scope);
+  const { data } = await q.order("lens_desc");
   const rows = data ?? []; const th = "border border-slate-300 px-1.5 py-1"; const e = (l: any, s: string) => `${fmt(l[`${s}_sph`]) || "0.00"} / ${fmt(l[`${s}_cyl`]) || "0.00"} x ${l[`${s}_axis`] ?? "-"}${l[`${s}_add`] ? ` +${Number(l[`${s}_add`]).toFixed(2)}` : ""}`;
   return (<div className="min-h-screen bg-slate-200 py-6 print:bg-white print:py-0"><style>{`@page{size:A5 portrait;margin:0}@media print{html,body{background:#fff}}`}</style>
     <div className="mx-auto mb-4 flex w-[148mm] justify-end print:hidden"><PrintButton label="Print buying list" /></div>

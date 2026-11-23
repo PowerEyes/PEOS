@@ -1,6 +1,5 @@
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { CompareBar } from "@/components/CompareBar";
@@ -12,12 +11,9 @@ import { SiteProvider } from "@/lib/site-context";
 import { ChromeProvider } from "@/components/chrome";
 import { getSiteChrome } from "@/lib/chrome";
 
-const inter = Inter({ subsets:["latin"], variable:"--font-inter" });
-
-// Announcement / logo / nav / footer are rendered in this layout, so the only
-// way for an ERP edit to reach every route immediately is for every route to
-// render per request. Selected explicitly for Phase 5; the site-settings /
-// analytics read above is thereby fresh too, which is what a CMS wants.
+// Site settings and chrome are CMS-driven, so the root layout must render per
+// request to pick up ERP edits. Individual marketing pages below opt into
+// static generation with revalidation where appropriate.
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -41,8 +37,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const analyticsId = site.analyticsId.trim();
   const isGA = /^G-[A-Z0-9]+$/i.test(analyticsId);
   return (
-    <html lang="en" className={inter.variable}>
-      <body className={`${inter.className} bg-canvas antialiased`}>
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet" />
+      </head>
+      <body className="bg-canvas antialiased font-sans">
         {analyticsId && (isGA ? (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${analyticsId}`} strategy="afterInteractive" />

@@ -64,7 +64,7 @@ export default async function ComparePage({ searchParams }: { searchParams: { id
                             <p className="text-xs text-slate-500">{p.brand}</p>
                             <p className="font-bold text-sm text-navy-900">{p.model}</p>
                           </div>
-                          <a href={`/product/${p.id}`} target="_blank" className="rounded-lg bg-gold-500 px-4 py-2 text-xs font-bold text-white hover:bg-gold-600 transition">
+                          <a href={`/product/${p.id}`} className="rounded-lg bg-gold-500 px-4 py-2 text-xs font-bold text-white hover:bg-gold-600 transition">
                             {p.power_eligible ? "Choose Lenses" : "Add to Bag"}
                           </a>
                         </div>

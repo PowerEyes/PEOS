@@ -1,0 +1,15 @@
+// Run arbitrary SQL: node scripts/sql.mjs "select ..."
+import pg from "pg";
+const sql = process.argv.slice(2).join(" ");
+if (!sql) { console.error("usage: node scripts/sql.mjs \"<sql>\""); process.exit(1); }
+const client = new pg.Client({
+  connectionString: process.env.DATABASE_URL ??
+    "postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
+  ssl: { rejectUnauthorized: false },
+});
+await client.connect();
+try {
+  const r = await client.query(sql);
+  if (r.rows) console.log(JSON.stringify(r.rows, null, 1));
+  else console.log("OK", r.command, r.rowCount);
+} finally { await client.end(); }

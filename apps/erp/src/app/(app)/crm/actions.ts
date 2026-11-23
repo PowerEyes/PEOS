@@ -1,10 +1,18 @@
 
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 
+async function canManageCRM() {
+  const { data, error } = await supabaseServer().rpc("has_perm", { p: "crm_manage" });
+  return !error && data === true;
+}
+
 export async function updateCRMSettings(fd: FormData) {
+  const gate = await subscriptionGate(); if (gate) return gate;
+  if (!(await canManageCRM())) return { error: "You do not have permission to manage CRM automation." };
   const sb = supabaseServer();
   const bool = (k:string) => fd.get(k) === "true";
   const num  = (k:string) => Number(fd.get(k) || 0);
@@ -25,6 +33,8 @@ export async function updateCRMSettings(fd: FormData) {
 }
 
 export async function triggerFunction(fnName: string) {
+  const gate = await subscriptionGate(); if (gate) return gate;
+  if (!(await canManageCRM())) return { error: "You do not have permission to run CRM automation." };
   { const { data: ok } = await supabaseServer().rpc("is_admin"); if (!ok) return { error: "Only owners and admins can do this." }; }
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/${fnName}`;
   const key  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -37,6 +47,8 @@ export async function triggerFunction(fnName: string) {
 }
 
 export async function sendTestMessage(phone: string, template: string) {
+  const gate = await subscriptionGate(); if (gate) return gate;
+  if (!(await canManageCRM())) return { error: "You do not have permission to send CRM messages." };
   { const { data: ok } = await supabaseServer().rpc("is_admin"); if (!ok) return { error: "Only owners and admins can do this." }; }
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/order-whatsapp`;
   const key  = process.env.SUPABASE_SERVICE_ROLE_KEY!;

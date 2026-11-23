@@ -1,4 +1,6 @@
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
+import { getScopeCtx } from "@/lib/branch-scope";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
@@ -6,12 +8,14 @@ import { supabaseServer } from "@/lib/supabase/server";
 type R = { error?: string; ok?: string; id?: string };
 
 export async function addExpense(input: unknown): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const s = z.object({ category: z.string().min(1), description: z.string().min(1), amount: z.number().positive(), expense_date: z.string(), payment_method: z.enum(["cash","upi","card","bank"]), reference: z.string().optional(), branch_id: z.string().uuid() }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };
   const { error } = await supabaseServer().from("expenses").insert(s.data);
   if (error) return { error: dbError(error.message) }; revalidatePath("/finance"); return { ok: "Expense saved" };
 }
 export async function addPurchaseInvoice(input: unknown): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const s = z.object({ supplier_name: z.string().min(1), supplier_gstin: z.string().optional(), invoice_no: z.string().min(1), invoice_date: z.string(), supply_type: z.enum(["intrastate","interstate"]), branch_id: z.string().uuid(),
     items: z.array(z.object({ description: z.string(), hsn: z.string().optional(), qty: z.number().int().positive(), unit_price: z.number().positive(), tax_pct: z.number().min(0).max(28) })) }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };
@@ -32,6 +36,7 @@ export async function addPurchaseInvoice(input: unknown): Promise<R> {
   revalidatePath("/finance"); return { ok: "Purchase invoice saved", id: data.id };
 }
 export async function saveDayClosing(input: unknown): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const s = z.object({ branch_id: z.string().uuid(), closing_date: z.string(), opening_cash: z.number().min(0), actual_cash: z.number().min(0), expected_cash: z.number(), cash_sales: z.number(), upi_sales: z.number(), card_sales: z.number(), bank_sales: z.number(), total_sales: z.number(), order_count: z.number().int(), notes: z.string().optional() }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };
   const v = s.data; const { error } = await supabaseServer().from("day_closings").upsert({ ...v, cash_difference: v.actual_cash - v.expected_cash }, { onConflict: "org_id,branch_id,closing_date" });
@@ -63,18 +68,20 @@ export async function getDayBook(branch_id: string, closing_date: string): Promi
   };
 }
 export async function createCreditNote(input: unknown): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const s = z.object({ sale_id: z.string().uuid(), reason: z.string().min(1), refund_method: z.string().optional(), lines: z.array(z.object({ line_id: z.string().uuid(), qty: z.number().int().positive() })) }).safeParse(input);
   if (!s.success) return { error: s.error.issues[0].message };
   const { data, error } = await supabaseServer().rpc("create_credit_note", { p: s.data });
   if (error) return { error: dbError(error.message) }; revalidatePath("/finance"); revalidatePath("/sales"); return { ok: data.code, id: data.id };
 }
 export async function closePeriod(year: number, month: number): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   if (!Number.isInteger(month) || month < 1 || month > 12) return { error: "Invalid period" };
-  const sb = supabaseServer(); const start = `${year}-${String(month).padStart(2,"0")}-01`;
+  const sb = supabaseServer(); const { scope } = await getScopeCtx(); const start = `${year}-${String(month).padStart(2,"0")}-01`;
   const end = new Date(year, month, 1).toISOString().slice(0,10);
   const [{ data: out }, { data: inp }] = await Promise.all([
-    sb.from("sales").select("cgst_total, sgst_total, igst_total").eq("kind","order").neq("status","cancelled").gte("created_at",start).lt("created_at",end),
-    sb.from("purchase_items").select("cgst_amt, sgst_amt, igst_amt").gte("created_at",start).lt("created_at",end)]);
+    sb.from("sales").select("cgst_total, sgst_total, igst_total").eq("kind","order").neq("status","cancelled").match(scope ? { branch_id: scope } : {}).gte("created_at",start).lt("created_at",end),
+    (scope ? sb.from("purchase_items").select("cgst_amt, sgst_amt, igst_amt, purchase_invoices!inner(branch_id)").eq("purchase_invoices.branch_id", scope) : sb.from("purchase_items").select("cgst_amt, sgst_amt, igst_amt")).gte("created_at",start).lt("created_at",end)]);
   const sum = (arr: any[], k: string) => arr.reduce((a, r) => a + Number(r[k] ?? 0), 0);
   const oc = sum(out ?? [], "cgst_total"), os = sum(out ?? [], "sgst_total"), oi = sum(out ?? [], "igst_total");
   const ic = sum(inp ?? [], "cgst_amt"), is2 = sum(inp ?? [], "sgst_amt"), ii = sum(inp ?? [], "igst_amt");

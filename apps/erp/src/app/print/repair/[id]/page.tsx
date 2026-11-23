@@ -3,9 +3,11 @@ import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { BarcodeSvg } from "@/components/BarcodeSvg";
 import { PrintButton } from "@/components/PrintButton";
+import { getScopeCtx } from "@/lib/branch-scope";
 export default async function RepairPrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("repair", params.id, searchParams?.dt);
-  const { data: r } = await sb.from("repairs").select("*, customers(*), branches(name, address, phone)").eq("id", params.id).single();
+  const { scope } = await getScopeCtx(); let q=sb.from("repairs").select("*, customers(*), branches(name, address, phone)").eq("id", params.id); if(scope)q=q.eq("branch_id",scope);
+  const { data: r } = await q.single();
   if (!r) notFound();
   const { data: org } = await sb.from("organizations").select("name").limit(1).maybeSingle();
   const d = (x: string) => new Date(x).toLocaleDateString("en-IN"); const c = r.customers;

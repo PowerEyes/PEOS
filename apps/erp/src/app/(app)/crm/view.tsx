@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { MessageCircle, Zap, Clock, CheckCircle, XCircle, Bell, Gift, ShoppingCart, Package, Play, Settings, ChevronDown, ChevronUp } from "lucide-react";
 import { updateCRMSettings, triggerFunction } from "./actions";
-import { TEMPLATE_PREVIEW } from "../../../../../../supabase/functions/_shared/templates";
+
+const TEMPLATE_PREVIEW: Record<string,string> = {};
 
 const dStr = (d:string) => d ? new Date(d).toLocaleString("en-IN",{dateStyle:"short",timeStyle:"short"}) : "—";
 

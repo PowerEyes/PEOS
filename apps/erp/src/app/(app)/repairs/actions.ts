@@ -1,4 +1,5 @@
 "use server";
+import { subscriptionGate } from "@/lib/entitlements";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { dbError } from "@poweros/business-rules";
@@ -26,6 +27,7 @@ const schema = z.object({
   photo_consent_at: z.string().max(40).optional().transform(v => v || null),
 });
 export async function saveRepair(input: unknown): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const p = schema.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
   const { id, photo_consent, photo_consent_at, ...rest } = p.data;
   const row = { ...rest, photo_consent, photo_consent_at: photo_consent ? (photo_consent_at ?? new Date().toISOString()) : null };
@@ -39,6 +41,7 @@ export async function saveRepair(input: unknown): Promise<R> {
   revalidatePath("/repairs"); return { ok: data.code, id: data.id };
 }
 export async function advanceRepair(id: string, to: string, note?: string): Promise<R> {
+  const gate = await subscriptionGate(); if (gate) return gate;
   const { error } = await supabaseServer().rpc("advance_repair",{ p_id: id, p_to: to, p_note: note ?? null });
   if (error) return { error: dbError(error.message) }; revalidatePath("/repairs"); return { ok: "Status updated" };
 }

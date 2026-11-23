@@ -52,7 +52,7 @@ begin
     v_disc := coalesce((l->>'discount_pct')::numeric, 0);
     if v_disc < 0 or v_disc > 100 then raise exception 'Discount must be 0–100'; end if;
     if v_disc > v_maxdisc and coalesce(v_role,'') not in ('owner','admin')
-      then raise exception 'Discounts above %% need an owner or admin', v_maxdisc; end if;
+      then raise exception 'Discounts above % need an owner or admin', concat(v_maxdisc, '%'); end if;
 
     if v_type = 'lens' then
       select * into v_pkg from lens_packages where id = (l->>'lens_package_id')::uuid and status = 'active';

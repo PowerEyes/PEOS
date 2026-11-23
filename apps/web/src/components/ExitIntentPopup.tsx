@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Tag, Eye } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+const QUIET = ["/product", "/checkout", "/my", "/login", "/track-order", "/compare"];
 
 const STORAGE_KEY = "pe_exit_popup_shown";
 const OFFERS = [
@@ -14,11 +16,15 @@ const OFFERS = [
 export function ExitIntentPopup() {
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
+  const path = usePathname() ?? "";
+  const quiet = QUIET.some((q) => path === q || path.startsWith(q + "/"));
   const offer = OFFERS[Math.floor(Math.random() * OFFERS.length)];
 
   useEffect(() => {
+    // Never interrupt product detail, checkout or the customer portal; hide if already open when navigating there.
+    if (quiet) { setVisible(false); return; }
     // Don't show if already shown in this session
-    if (sessionStorage.getItem(STORAGE_KEY)) return;
+    try { if (sessionStorage.getItem(STORAGE_KEY)) return; } catch { return; }
 
     let triggered = false;
     const onMouseLeave = (e: MouseEvent) => {
@@ -41,7 +47,7 @@ export function ExitIntentPopup() {
 
     document.addEventListener("mouseleave", onMouseLeave);
     return () => { document.removeEventListener("mouseleave", onMouseLeave); clearTimeout(timer); };
-  }, []);
+  }, [quiet]);
 
   function copyCode() {
     navigator.clipboard.writeText(offer.code).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });

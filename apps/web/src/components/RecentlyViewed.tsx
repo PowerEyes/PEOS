@@ -45,7 +45,7 @@ export function RecentlyViewed({ excludeId }: { excludeId?: string }) {
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {products.map(p => (
-          <a key={p.id} href={`/product/${p.id}`} target="_blank" rel="noopener"
+          <a key={p.id} href={`/product/${p.id}`} rel="noopener"
             className="group rounded-xl bg-white border border-slate-100 shadow-sm overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition">
             <div className="aspect-square bg-slate-50 flex items-center justify-center overflow-hidden">
               {p.images?.[0]

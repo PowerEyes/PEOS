@@ -56,6 +56,18 @@ create table if not exists role_permissions (
   permission text not null check (permission in ('finance_view', 'expenses', 'day_closing', 'catalogue_edit')),
   allowed boolean not null, updated_by uuid default auth.uid(), updated_at timestamptz not null default now(),
   unique (org_id, role_key, permission));
+-- 20261122010000 already created role_permissions as a bare grant table
+-- (org_id, role_key, permission) with no `allowed` flag, so the CREATE TABLE
+-- above is skipped there. Add the columns has_perm() reads either way; a default
+-- is required because that table is already seeded. 20261128000000 repeats this
+-- normalisation for databases where this migration ran against the older shape.
+alter table role_permissions add column if not exists allowed boolean not null default true;
+alter table role_permissions add column if not exists updated_by uuid default auth.uid();
+alter table role_permissions add column if not exists updated_at timestamptz not null default now();
+-- audit_row() reads coalesce(new.id, old.id), but the 20261122010000 shape has
+-- no surrogate key (its PK is org_id+role_key+permission). Same treatment as
+-- org_domains gets above; a table that already has `id` is left alone.
+alter table role_permissions add column if not exists id uuid not null default gen_random_uuid();
 alter table role_permissions enable row level security;
 drop policy if exists roleperm_sel on role_permissions;
 create policy roleperm_sel on role_permissions for select to authenticated using (org_id = public.current_org());
@@ -69,10 +81,13 @@ create or replace function public.has_perm(p text) returns boolean language sql 
   from (select public.current_role_key() r) x $$;
 create or replace function public.my_permissions() returns text[] language sql stable security definer set search_path = public as
 $$ select coalesce(array_agg(p), '{}') from unnest(array['finance_view', 'expenses', 'day_closing', 'catalogue_edit']) p where public.has_perm(p) $$;
-create or replace function public.set_role_permission(p_role text, p_perm text, p_allowed boolean) returns void language plpgsql security definer set search_path = public as $$
+-- This migration has existed with both p_perm and p_permission in deployments.
+-- Drop the exact signature before recreating it so either version upgrades cleanly.
+drop function if exists public.set_role_permission(text, text, boolean);
+create function public.set_role_permission(p_role text, p_permission text, p_allowed boolean) returns void language plpgsql security definer set search_path = public as $$
 begin
   if not public.is_admin() then raise exception 'Only owners and admins can change permissions' using errcode = '42501'; end if;
-  insert into role_permissions (org_id, role_key, permission, allowed) values (public.current_org(), p_role, p_perm, p_allowed)
+  insert into role_permissions (org_id, role_key, permission, allowed) values (public.current_org(), p_role, p_permission, p_allowed)
   on conflict (org_id, role_key, permission) do update set allowed = excluded.allowed, updated_by = auth.uid(), updated_at = now();
 end $$;
 

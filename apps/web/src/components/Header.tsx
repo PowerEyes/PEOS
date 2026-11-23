@@ -52,6 +52,9 @@ export function Header({ portal = false }: { portal?: boolean }) {
     ? navRaw.map(i => ({ ...i, mega: MEGA_BY_LABEL.get(i.label) }))
     : null;
   const [scrolled, setScrolled] = useState(false);
+  const hdrRef = useRef<HTMLElement>(null);
+  // Publish the live header height so sticky toolbars (filters) sit exactly beneath the fixed header.
+  useEffect(() => { const el = hdrRef.current; if (!el) return; const set = () => document.documentElement.style.setProperty("--hdr", el.offsetHeight + "px"); set(); const ro = new ResizeObserver(set); ro.observe(el); return () => ro.disconnect(); }, []);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mega, setMega] = useState<string|null>(null);
   const [query, setQuery] = useState("");
@@ -114,7 +117,7 @@ export function Header({ portal = false }: { portal?: boolean }) {
     : [];
 
   return (
-    <header className={`sticky top-0 z-40 w-full bg-white transition-shadow ${scrolled ? "shadow-md" : ""}`}>
+    <header ref={hdrRef} className={`sticky top-0 z-40 w-full bg-white transition-shadow ${scrolled ? "shadow-md" : ""}`}>
       {/* Top info bar — the whole bar goes away when `announcement` is hidden */}
       {ann && (
       <div className="bg-navy-900 px-4 py-1.5 text-center text-[11px] text-slate-300">
@@ -171,7 +174,7 @@ export function Header({ portal = false }: { portal?: boolean }) {
                 {suggestions.map(s => {
                   const img = s.images?.[0] ? `${SUPABASE_URL}/storage/v1/object/public/product-images/${s.images[0]}` : null;
                   return (
-                    <a key={s.id} href={`/product/${s.id}`} target="_blank" rel="noopener"
+                    <a key={s.id} href={`/product/${s.id}`} rel="noopener"
                       onClick={() => setSearchFocus(false)}
                       className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition border-b border-slate-50 last:border-0">
                       <div className="h-12 w-12 shrink-0 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden border border-slate-100">
@@ -271,7 +274,7 @@ export function Header({ portal = false }: { portal?: boolean }) {
         {showDropdown && (suggestions.length > 0 || quick.length > 0) && (
           <div className="mt-2 rounded-xl bg-white border border-slate-100 shadow-lg overflow-hidden">
             {suggestions.slice(0,3).map(s => (
-              <a key={s.id} href={`/product/${s.id}`} target="_blank" onClick={()=>setSearchFocus(false)}
+              <a key={s.id} href={`/product/${s.id}`} onClick={()=>setSearchFocus(false)}
                 className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 border-b border-slate-50 last:border-0">
                 <span className="text-lg">👓</span>
                 <div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{s.brand} {s.model}</p></div>

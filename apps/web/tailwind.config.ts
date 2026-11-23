@@ -7,7 +7,7 @@ export default {
       gold: { 400:"#D9A25E",500:"#C48A3F",600:"#A8722F" },
       canvas: "#F9FAFB"
     },
-    fontFamily: { sans: ["var(--font-inter)","system-ui","sans-serif"], display: ["var(--font-playfair)","Georgia","serif"] },
+    fontFamily: { sans: ["var(--font-general-sans)","system-ui","sans-serif"], display: ["var(--font-general-sans)","system-ui","sans-serif"] },
     animation: { "fade-in": "fadeIn .4s ease-out", "slide-up": "slideUp .4s ease-out" },
     keyframes: { fadeIn: { "0%": { opacity: "0" }, "100%": { opacity: "1" } }, slideUp: { "0%": { opacity: "0", transform: "translateY(16px)" }, "100%": { opacity: "1", transform: "translateY(0)" } } }
   }},

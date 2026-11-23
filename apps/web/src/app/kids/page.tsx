@@ -1,7 +1,8 @@
 
 import { supabasePublic } from "@/lib/supabase/server";
 import Link from "next/link";
-import { ProductGrid } from "@/components/ProductGrid";
+import { CatalogListing } from "@/components/CatalogListing";
+import { getPage } from "@/lib/pages";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import type { Metadata } from "next";
 import { Header } from "@/components/Header";
@@ -13,13 +14,13 @@ export const metadata: Metadata = {
 };
 export const revalidate = 300;
 
-const AGES = [
+const DEFAULT_AGES = [
   { range:"3–6 years",  label:"Pre-School",   desc:"Flexible hinges, soft nose pads, unbreakable TR90 frames" },
   { range:"6–10 years", label:"Primary",       desc:"Spring hinges, wide bridge, comes with warranty" },
   { range:"10–14 years",label:"Middle School", desc:"Teen styles, thinner lenses, premium brands" },
   { range:"14–17 years",label:"Teenage",       desc:"Full adult frame styles with youth sizing" },
 ];
-const SAFETY = [
+const DEFAULT_SAFETY = [
   { e:"🛡️", t:"Impact Resistant",         d:"Polycarbonate or Trivex lenses are 10× stronger than standard plastic — mandatory for children below 16." },
   { e:"🔧", t:"Flexible Frames",           d:"TR90 and memory metal frames bend without breaking — ideal for active children." },
   { e:"🔵", t:"Blue Light Filter",         d:"Recommended for school children who use tablets and computers for homework." },
@@ -28,13 +29,10 @@ const SAFETY = [
   { e:"📋", t:"Free Kids Eye Test",        d:"Comprehensive children's eye test, free of charge, recommended annually from age 3." },
 ];
 
-export default async function KidsPage() {
-  const sb = supabasePublic();
-  const { data: products } = await sb.from("public_catalog")
-    .select("id,brand,model,kind,selling_price,mrp,images,in_stock,attrs,bestseller,new_arrival,power_eligible,sku")
-    .or("attrs->>gender.eq.kids,attrs->>gender.eq.children,attrs->>age_group.eq.kids")
-    .order("bestseller",{ascending:false}).order("selling_price").limit(60);
-
+export default async function KidsPage({ searchParams }: { searchParams: Record<string, string> }) {
+  const page = await getPage("kids");
+  const AGES = (page?.body.ages as typeof DEFAULT_AGES) ?? DEFAULT_AGES;
+  const SAFETY = (page?.body.safety as typeof DEFAULT_SAFETY) ?? DEFAULT_SAFETY;
   return (
     <div className="min-h-screen bg-slate-50">
       <Header/>
@@ -46,7 +44,7 @@ export default async function KidsPage() {
           <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-white text-xs font-semibold mb-4">
             👶 Safe &amp; Fun Eyewear for Children
           </div>
-          <h1 className="font-extrabold text-4xl sm:text-5xl leading-tight">Kids Eyewear</h1>
+          <h1 className="font-extrabold text-4xl sm:text-5xl leading-tight">{page?.title ?? "Kids Eyewear"}</h1>
           <p className="mt-4 text-slate-200 text-lg max-w-xl">Impact-resistant lenses, flexible frames and styles children love. Free eye tests for all ages — walk-in or book online.</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="#products" className="rounded-xl bg-gold-500 px-7 py-3.5 font-bold text-sm hover:bg-gold-600 transition">Shop Kids Frames →</Link>
@@ -108,23 +106,8 @@ export default async function KidsPage() {
         </div>
 
         {/* Products */}
-        <div id="products">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="font-bold text-2xl text-navy-900">Kids Frames</h2>
-            <Link href="/eyeglasses?gender=kids" className="text-sm text-navy-700 hover:underline">View all →</Link>
-          </div>
-          {(products?.length ?? 0) > 0
-            ? <ProductGrid products={(products ?? []) as any} showRecentlyViewed/>
-            : <div className="rounded-2xl bg-white border border-slate-100 p-12 text-center space-y-4">
-                <p className="text-4xl">👶</p>
-                <p className="font-semibold text-slate-600">Wide range of kids frames available in-store</p>
-                <p className="text-sm text-slate-400 max-w-sm mx-auto">Visit our Mogappair East store to see our full range of children's eyewear. Walk-in and free eye test available daily 10 AM – 9 PM.</p>
-                <div className="flex justify-center gap-3">
-                  <Link href="/eye-test" className="rounded-lg bg-navy-800 px-6 py-2.5 text-sm font-bold text-white">Book Eye Test</Link>
-                  <Link href="/store-locator" className="rounded-lg border border-navy-800 px-6 py-2.5 text-sm font-bold text-navy-800">Find Our Store</Link>
-                </div>
-              </div>}
-        </div>
+        <CatalogListing slug="kids" kind="frame" sp={searchParams} headless fallback={{ title: "", subtitle: "" }}
+          filter={(q: any) => q.or("gender.eq.kids,attrs->>gender.eq.kids,attrs->>gender.eq.children,attrs->>age_group.eq.kids")} />
       </div>
       <Footer/>
     </div>);

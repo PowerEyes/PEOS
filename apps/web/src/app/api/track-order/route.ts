@@ -29,7 +29,7 @@ export async function GET(req: Request) {
   const { data: customer } = await sb
     .from("customers").select("id").eq("phone", phone).limit(1).maybeSingle();
 
-  if (!customer) return NextResponse.json({ error:"No account found with that phone number. Check the number or contact us on WhatsApp." }, { status:404 });
+  if (!customer) return NextResponse.json({ error:"Order not found for these details. Please check the order number and phone, or contact us on WhatsApp." }, { status:404 });
 
   // Look up order by code + customer
   const { data: order } = await sb
@@ -40,7 +40,7 @@ export async function GET(req: Request) {
     .eq("kind","order")
     .maybeSingle();
 
-  if (!order) return NextResponse.json({ error:`Order #${code} not found for this phone number. Please check and try again.` }, { status:404 });
+  if (!order) return NextResponse.json({ error:"Order not found for these details. Please check the order number and phone, or contact us on WhatsApp." }, { status:404 });
 
   return NextResponse.json({
     code: order.code,

@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
+import { BranchAccess } from "./branch-access";
 import { StaffView } from "./view";
 import { Assignments } from "./assignments";
 import { Permissions } from "./permissions";
@@ -10,5 +11,6 @@ export default async function Page() {
   ]);
   const { data: perms } = await sb.from("role_permissions").select("role_key,permission,allowed");
   const { data: assignments } = await sb.from("staff_assignments").select("*").order("created_at", { ascending: false }).limit(50);
-  return (<div className="space-y-6"><StaffView staff={staff ?? []} branches={branches ?? []} /><Permissions rows={perms ?? []} /><Assignments staff={staff ?? []} branches={branches ?? []} assignments={assignments ?? []} /></div>);
+  const { data: links } = await sb.from("profile_branches").select("profile_id,branch_id");
+  return (<div className="space-y-6"><StaffView staff={staff ?? []} branches={branches ?? []} /><BranchAccess staff={staff ?? []} branches={branches ?? []} links={links ?? []} /><Permissions rows={perms ?? []} /><Assignments staff={staff ?? []} branches={branches ?? []} assignments={assignments ?? []} /></div>);
 }

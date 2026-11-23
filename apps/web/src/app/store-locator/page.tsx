@@ -16,6 +16,8 @@ const safeMap = (m: unknown): string => {
     return u.protocol === "https:" && /(^|\.)google\.com$/.test(u.hostname) && u.pathname.startsWith("/maps") ? u.toString() : "";
   } catch { return ""; }
 };
+const WEEK:[string,string][]=[["mon","Mon"],["tue","Tue"],["wed","Wed"],["thu","Thu"],["fri","Fri"],["sat","Sat"],["sun","Sun"]];
+const showHours=(hours:any)=>WEEK.map(([key,label])=>{const h=hours?.[key];if(!h)return null;return `${label} ${h.closed?"Closed":`${h.open}–${h.close}`}`;}).filter(Boolean).join(" · ");
 export default async function Page() {
   const site = await getSiteSettings();
   const { data: branches } = await supabasePublic().from("branches").select("*").eq("is_active",true).order("name");
@@ -38,7 +40,7 @@ export default async function Page() {
               <p className="flex items-start gap-2 text-sm text-slate-600 mt-2"><MapPin size={14} className="mt-0.5 shrink-0 text-gold-500"/>{b.address}</p>
               <p className="flex items-center gap-2 text-sm text-slate-600 mt-1"><Phone size={14} className="text-gold-500"/>{b.phone}</p>
               {b.email&&<p className="flex items-center gap-2 text-sm text-slate-600 mt-1"><Mail size={14} className="text-gold-500"/>{b.email}</p>}
-              <p className="flex items-center gap-2 text-sm text-slate-600 mt-1"><Clock size={14} className="text-gold-500"/>Mon – Sat: 9:30 AM – 8:30 PM | Sun: 10 AM – 7 PM</p></div>
+              {showHours(b.opening_hours)&&<p className="flex items-start gap-2 text-sm text-slate-600 mt-1"><Clock size={14} className="mt-0.5 text-gold-500"/>{showHours(b.opening_hours)}</p>}</div>
             {safeMap(b.map_embed) && (
               <iframe src={safeMap(b.map_embed)} title={`Map — ${b.name}`} loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"

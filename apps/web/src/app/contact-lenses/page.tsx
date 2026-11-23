@@ -5,17 +5,19 @@ import { ProductCard } from "@/components/ProductCard";
 import Link from "next/link";
 import { inr } from "@/lib/types";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { CatalogListing } from "@/components/CatalogListing";
+import { getPage } from "@/lib/pages";
 export const revalidate = 60;
 export const metadata = { title: "Contact Lenses – Daily, Monthly & Coloured" };
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams: Record<string,string> }) {
   const sb = supabasePublic();
-  const { data: products } = await sb.from("public_catalog").select("*").eq("kind","contact_lens").limit(60);
+  const hero = await getPage("hero-contact-lenses");
   const TYPES = [["Daily Disposable","Wear & throw daily. Maximum hygiene.","🟦"],["Monthly","Replace once a month. Economical choice.","🟩"],["Toric","Corrects astigmatism precisely.","🟨"],["Coloured","Change your eye colour.","🟣"],["Multifocal","Progressive correction in a contact lens.","🟤"]];
   return (<div className="min-h-screen bg-white"><Header/>
     <Breadcrumb strip items={[{ label: "Contact Lenses" }]} />
     <div className="bg-gradient-to-r from-teal-900 to-teal-700 py-14 px-4 text-center text-white">
-      <h1 className="font-display text-4xl font-bold">Contact Lenses</h1>
-      <p className="mt-2 text-teal-200">Daily, monthly and coloured lenses from leading brands</p></div>
+      <h1 className="font-display text-4xl font-bold">{hero?.title ?? "Contact Lenses"}</h1>
+      <p className="mt-2 text-teal-200">{hero?.subtitle ?? "Daily, monthly and coloured lenses from leading brands"}</p></div>
     <div className="mx-auto max-w-6xl section-pad px-4 space-y-10">
       {/* Lens types */}
       <div><h2 className="font-display text-2xl font-bold text-navy-900 mb-4">Shop by Type</h2>
@@ -27,13 +29,10 @@ export default async function Page() {
       <div className="grid gap-4 sm:grid-cols-3">
         {[["📋 Need a Prescription","All prescription contact lenses require a valid contact lens prescription.","Book Eye Test","/eye-test"],["🚚 Fast Dispatch","Same-day dispatch for orders placed before 3 PM.","",""],["🔄 Easy Reorder","Reorder your lenses in two taps once your Rx is saved.","My Reorders","/my/reorder"]].map(([h,d,btn,href]:any)=>(
           <div key={h} className="card p-5 space-y-2"><p className="font-semibold text-navy-900">{h}</p><p className="text-sm text-slate-500">{d}</p>{btn&&<Link href={href} className="btn-gold inline-flex text-sm">{btn}</Link>}</div>))}</div>
-      {/* Products */}
-      {products?.length ? (<div><h2 className="font-display text-2xl font-bold text-navy-900 mb-4">Our Contact Lenses</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">{products.map((p:any)=><ProductCard key={p.id} p={p}/>)}</div></div>)
-      : (<div className="card p-10 text-center text-slate-500"><p className="text-lg">Contact lens products coming soon</p><p className="text-sm mt-1">Visit our Mogappair stores for a wide range of contact lenses</p>
-          <Link href="/store-locator" className="btn-gold mt-5 inline-flex">Find a Store</Link></div>)}
       {/* Brands */}
       <div className="rounded-2xl bg-navy-50 p-6"><h2 className="font-semibold text-navy-900 mb-3">Brands we carry</h2>
         <div className="flex flex-wrap gap-3">{["Alcon","Johnson & Johnson","Bausch & Lomb","CooperVision","Sauflon","Zeiss"].map(b=><span key={b} className="rounded-full border border-navy-200 bg-white px-4 py-2 text-sm font-medium text-navy-800">{b}</span>)}</div></div>
-    </div><Footer/></div>);
+    </div>
+    <CatalogListing slug="contact-lenses" kind="contact_lens" sp={searchParams} headless fallback={{title:"",subtitle:""}} />
+    <div className="h-10"/><Footer/></div>);
 }
