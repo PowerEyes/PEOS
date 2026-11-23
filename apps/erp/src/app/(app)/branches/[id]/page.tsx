@@ -7,9 +7,9 @@ export default async function BranchDetailPage({ params }: { params: { id: strin
   const { data: branch } = await sb.from("branches").select("*").eq("id", params.id).single();
   if (!branch) notFound();
 
-  const { data: staff } = await sb.from("staff_profiles").select("*, auth_users:user_id(email)").eq("branch_id", params.id);
+  const { data: staff } = await sb.from("profiles").select("id, full_name, role_key, deactivated").eq("branch_id", params.id);
   const { data: sales } = await sb.from("sales").select("id, total, created_at").eq("branch_id", params.id).order("created_at", { ascending: false }).limit(5);
-  const { data: inventory } = await sb.from("inventory_ledger").select("id").eq("branch_id", params.id);
+  const { data: inventory } = await sb.from("stock_movements").select("id").eq("branch_id", params.id);
 
   return (
     <div className="space-y-6">
@@ -18,7 +18,7 @@ export default async function BranchDetailPage({ params }: { params: { id: strin
           <h1 className="text-2xl font-bold text-navy-900">{branch.name}</h1>
           <p className="text-sm text-slate-500">{branch.address || "No address"} · {branch.code}</p>
         </div>
-        <Link href={`/branches/${params.id}/edit`} className="btn btn-outline">Edit</Link>
+        <Link href={`/branches/${params.id}/finance`} className="btn btn-outline">Finance</Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -31,7 +31,7 @@ export default async function BranchDetailPage({ params }: { params: { id: strin
           <p className="text-2xl font-bold text-navy-900">{sales?.length || 0}</p>
         </div>
         <div className="card p-4">
-          <p className="text-sm text-slate-500">Inventory Entries</p>
+          <p className="text-sm text-slate-500">Stock Movements</p>
           <p className="text-2xl font-bold text-navy-900">{inventory?.length || 0}</p>
         </div>
         <div className="card p-4">
@@ -47,9 +47,8 @@ export default async function BranchDetailPage({ params }: { params: { id: strin
             <div key={s.id} className="flex items-center justify-between py-2 border-b last:border-0">
               <div>
                 <p className="font-medium">{s.full_name || "—"}</p>
-                <p className="text-sm text-slate-500">{s.role}</p>
+                <p className="text-sm text-slate-500">{s.role_key}{s.deactivated ? " · inactive" : ""}</p>
               </div>
-              <Link href={`/staff/${s.id}`} className="text-sm text-gold-600 hover:underline">View</Link>
             </div>
           ))}
           {(!staff || staff.length === 0) && <p className="text-sm text-slate-500">No staff assigned</p>}
@@ -68,9 +67,9 @@ export default async function BranchDetailPage({ params }: { params: { id: strin
       </div>
 
       <div className="flex gap-3">
-        <Link href={`/branches/${params.id}/inventory`} className="btn btn-outline">Inventory</Link>
-        <Link href={`/branches/${params.id}/sales`} className="btn btn-outline">Sales</Link>
-        <Link href={`/branches/${params.id}/reports`} className="btn btn-outline">Reports</Link>
+        <Link href={`/branches/${params.id}/finance`} className="btn btn-outline">Finance</Link>
+        <Link href={`/branches/${params.id}/cashbook`} className="btn btn-outline">Cashbook</Link>
+        <Link href="/reports/branch-comparison" className="btn btn-outline">Compare branches</Link>
       </div>
     </div>
   );

@@ -4,9 +4,10 @@ export default async function BranchComparisonReportPage() {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await sb.from("staff_profiles").select("tenant_id").eq("user_id", user.id).single();
-  const { data: branches } = await sb.from("branches").select("id, name").eq("tenant_id", profile?.tenant_id);
-  const { data: sales } = await sb.from("sales").select("branch_id, total").eq("tenant_id", profile?.tenant_id);
+  const { data: profile } = await sb.from("profiles").select("org_id").eq("id", user.id).single();
+  if (!profile?.org_id) return null;
+  const { data: branches } = await sb.from("branches").select("id, name").eq("org_id", profile.org_id);
+  const { data: sales } = await sb.from("sales").select("branch_id, total").eq("org_id", profile.org_id);
 
   return (
     <div className="space-y-6">

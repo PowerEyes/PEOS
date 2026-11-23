@@ -6,13 +6,13 @@ export default async function BranchesPage() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return null;
 
-  const { data: profile } = await sb.from("staff_profiles").select("tenant_id, role").eq("user_id", user.id).single();
+  const { data: profile } = await sb.from("profiles").select("org_id, role_key").eq("id", user.id).single();
   if (!profile) return null;
 
   const { data: branches } = await sb
     .from("branches")
     .select("*")
-    .eq("tenant_id", profile.tenant_id)
+    .eq("org_id", profile.org_id)
     .order("name");
 
   return (

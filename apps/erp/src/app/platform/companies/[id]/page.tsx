@@ -28,6 +28,11 @@ export default async function CompanyDetail({ params }: { params: { id: string }
         <Link href="/platform/companies" className="text-slate-400 hover:text-white">← Companies</Link>
         <h2 className="text-2xl font-semibold">{org.name}</h2>
         <span className="rounded-full bg-slate-800 px-2 py-0.5 text-xs capitalize text-slate-300">{sub?.status ?? "no subscription"}</span>
+        <nav className="ml-auto flex gap-3 text-sm">
+          <Link href={`/platform/companies/${org.id}/activity`} className="text-slate-400 hover:text-gold-400">Activity</Link>
+          <Link href={`/platform/companies/${org.id}/usage`} className="text-slate-400 hover:text-gold-400">Usage</Link>
+          <Link href={`/platform/companies/${org.id}/support`} className="text-slate-400 hover:text-gold-400">Support</Link>
+        </nav>
       </div>
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4 lg:col-span-2">

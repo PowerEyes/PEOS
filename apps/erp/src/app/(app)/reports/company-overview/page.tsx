@@ -4,11 +4,12 @@ export default async function CompanyOverviewReportPage() {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await sb.from("staff_profiles").select("tenant_id").eq("user_id", user.id).single();
-  const { data: branches } = await sb.from("branches").select("id, name, is_active").eq("tenant_id", profile?.tenant_id);
-  const { data: staff } = await sb.from("staff_profiles").select("id, role").eq("tenant_id", profile?.tenant_id);
-  const { data: customers } = await sb.from("customers").select("id").eq("tenant_id", profile?.tenant_id);
-  const { data: sales } = await sb.from("sales").select("id, total").eq("tenant_id", profile?.tenant_id);
+  const { data: profile } = await sb.from("profiles").select("org_id").eq("id", user.id).single();
+  if (!profile?.org_id) return null;
+  const { data: branches } = await sb.from("branches").select("id, name, is_active").eq("org_id", profile.org_id);
+  const { data: staff } = await sb.from("profiles").select("id, role_key").eq("org_id", profile.org_id);
+  const { data: customers } = await sb.from("customers").select("id").eq("org_id", profile.org_id);
+  const { data: sales } = await sb.from("sales").select("id, total").eq("org_id", profile.org_id);
 
   return (
     <div className="space-y-6">

@@ -1,28 +1,55 @@
 import { supabaseServer } from "@/lib/supabase/server";
 
+// Branch roster. A real attendance table (clock in/out) is not in the schema yet,
+// so this shows the data that does exist: who works here today and who is
+// covering from another branch via a temporary assignment.
 export default async function AttendancePage() {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await sb.from("staff_profiles").select("tenant_id, branch_id").eq("user_id", user.id).single();
-  const { data: staff } = await sb.from("staff_profiles").select("id, full_name, role").eq("branch_id", profile?.branch_id);
+  const { data: profile } = await sb.from("profiles").select("branch_id").eq("id", user.id).single();
+
+  const now = new Date().toISOString();
+  const branchId = profile?.branch_id ?? "00000000-0000-0000-0000-000000000000";
+  const [{ data: staff }, { data: covers }] = await Promise.all([
+    sb.from("profiles").select("id, full_name, role_key, is_approved, deactivated, created_at")
+      .eq("branch_id", branchId).order("full_name"),
+    sb.from("staff_assignments").select("profile_id, starts_at, ends_at, reason")
+      .eq("branch_id", branchId).is("revoked_at", null)
+      .lte("starts_at", now).gte("ends_at", now),
+  ]);
+  const covering = new Map((covers ?? []).map((c: any) => [c.profile_id, c]));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-navy-900">Attendance</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-navy-900">Attendance</h1>
+        <p className="text-sm text-slate-500">Staff scheduled at your branch today</p>
+      </div>
       <div className="card overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50"><tr><th className="text-left p-3">Employee</th><th className="text-left p-3">Role</th><th className="text-left p-3">Status</th><th className="text-left p-3">Check-in</th><th className="text-left p-3">Check-out</th></tr></thead>
+          <thead className="bg-slate-50"><tr><th className="text-left p-3">Employee</th><th className="text-left p-3">Role</th><th className="text-left p-3">Status</th><th className="text-left p-3">Covering</th><th className="text-right p-3">Joined</th></tr></thead>
           <tbody>
-            {staff?.map((s: any) => (
-              <tr key={s.id} className="border-t">
-                <td className="p-3 font-medium">{s.full_name}</td>
-                <td className="p-3">{s.role}</td>
-                <td className="p-3"><span className="px-2 py-1 rounded text-xs bg-green-100 text-green-700">Present</span></td>
-                <td className="p-3">09:00 AM</td>
-                <td className="p-3">—</td>
-              </tr>
-            ))}
+            {staff?.map((s: any) => {
+              const cover = covering.get(s.id);
+              return (
+                <tr key={s.id} className="border-t">
+                  <td className="p-3 font-medium">{s.full_name}</td>
+                  <td className="p-3 capitalize">{(s.role_key || "").replace(/_/g, " ")}</td>
+                  <td className="p-3">
+                    {s.deactivated ? (
+                      <span className="px-2 py-1 rounded text-xs bg-slate-100 text-slate-600">Inactive</span>
+                    ) : s.is_approved ? (
+                      <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-700">Active</span>
+                    ) : (
+                      <span className="px-2 py-1 rounded text-xs bg-amber-100 text-amber-700">Pending approval</span>
+                    )}
+                  </td>
+                  <td className="p-3 text-slate-500">{cover ? (cover.reason || "Temporary assignment") : "—"}</td>
+                  <td className="p-3 text-right text-slate-500">{s.created_at ? new Date(s.created_at).toLocaleDateString() : "—"}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         {(!staff || staff.length === 0) && <p className="p-6 text-sm text-slate-500 text-center">No staff in this branch</p>}
