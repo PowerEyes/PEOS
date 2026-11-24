@@ -7,7 +7,7 @@ export default async function BranchComparisonReportPage() {
   const { data: profile } = await sb.from("profiles").select("org_id").eq("id", user.id).single();
   if (!profile?.org_id) return null;
   const { data: branches } = await sb.from("branches").select("id, name").eq("org_id", profile.org_id);
-  const { data: sales } = await sb.from("sales").select("branch_id, total").eq("org_id", profile.org_id);
+  const { data: sales } = await sb.from("sales").select("branch_id, grand_total").eq("org_id", profile.org_id).eq("kind", "order").neq("status", "cancelled");
 
   return (
     <div className="space-y-6">
@@ -20,7 +20,7 @@ export default async function BranchComparisonReportPage() {
           <tbody>
             {branches?.map((b: any) => {
               const bs = sales?.filter((s: any) => s.branch_id === b.id) || [];
-              const rev = bs.reduce((sum: number, s: any) => sum + (s.total || 0), 0);
+              const rev = bs.reduce((sum: number, s: any) => sum + (Number(s.grand_total) || 0), 0);
               return (
                 <tr key={b.id} className="border-t">
                   <td className="p-3 font-medium">{b.name}</td>

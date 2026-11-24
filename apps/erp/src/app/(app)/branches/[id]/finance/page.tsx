@@ -3,10 +3,10 @@ import { supabaseServer } from "@/lib/supabase/server";
 export default async function BranchFinancePage({ params }: { params: { id: string } }) {
   const sb = supabaseServer();
   const { data: branch } = await sb.from("branches").select("name").eq("id", params.id).single();
-  const { data: sales } = await sb.from("sales").select("id, total").eq("branch_id", params.id);
+  const { data: sales } = await sb.from("sales").select("id, grand_total").eq("branch_id", params.id).eq("kind", "order").neq("status", "cancelled");
   const { data: expenses } = await sb.from("expenses").select("id, amount").eq("branch_id", params.id);
 
-  const revenue = sales?.reduce((s: number, x: any) => s + (x.total || 0), 0) || 0;
+  const revenue = sales?.reduce((s: number, x: any) => s + (Number(x.grand_total) || 0), 0) || 0;
   const totalExpenses = expenses?.reduce((s: number, x: any) => s + (x.amount || 0), 0) || 0;
 
   return (
