@@ -86,17 +86,20 @@ export async function registerCompanyManual(data: { name: string; ownerEmail: st
   if (a.error || !a.admin) return { error: a.error };
   if (!data.name.trim()) return { error: "Company name is required." };
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.ownerEmail)) return { error: "Enter a valid owner email." };
+  // Resolve the plan BEFORE creating the company: an org without a subscription
+  // row sits in status 'none' (writes blocked) until the grandfather backfill
+  // would adopt it — a new registration must never fall into that hole.
+  const { data: plan } = await a.admin.from("billing_plans").select("id, trial_days").eq("code", data.planCode).maybeSingle();
+  if (!plan) return { error: "Plan not found — pick an existing plan code." };
   const { data: org, error } = await a.admin.from("organizations").insert({ name: data.name.trim() }).select("id").single();
   if (error) return { error: error.message };
-  const { data: plan } = await a.admin.from("billing_plans").select("id, trial_days").eq("code", data.planCode).maybeSingle();
-  if (plan) {
-    const now = new Date();
-    await a.admin.from("org_subscriptions").insert({
-      org_id: org.id, plan_id: plan.id, status: "trialing",
-      trial_ends_at: new Date(now.getTime() + (plan.trial_days ?? 14) * 86400000).toISOString(),
-      current_period_start: now.toISOString(),
-    });
-  }
+  const now = new Date();
+  const { error: subErr } = await a.admin.from("org_subscriptions").insert({
+    org_id: org.id, plan_id: plan.id, status: "trialing",
+    trial_ends_at: new Date(now.getTime() + (plan.trial_days ?? 14) * 86400000).toISOString(),
+    current_period_start: now.toISOString(),
+  });
+  if (subErr) return { error: subErr.message };
   await audit(a.admin, a.pu!, "company.register", "organization", org.id, { name: data.name, owner_email: data.ownerEmail, plan: data.planCode });
   revalidatePath("/platform/companies");
   return { ok: "Company registered. The owner will receive an invitation to set up their account." };

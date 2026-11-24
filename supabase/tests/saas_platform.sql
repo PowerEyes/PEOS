@@ -261,5 +261,32 @@ do $$ declare n int; begin
 end $$;
 reset role;
 
+-- ══ Grandfather backfill (criterion 9) ══════════════════════════════════════
+-- 20261215000000 extracts the step-9 rollout statement into
+-- backfill_grandfather_subscriptions(): idempotent, service-side, and asserted
+-- here against the exact state it was written for.
+create temp table _gf as select gen_random_uuid() org_gf;
+grant select on _gf to public;
+insert into organizations (id, name) select org_gf, 'Grandfathered Co' from _gf;
+-- no subscription row on purpose: the pre-subscription state criterion 9 means.
+select pg_temp.expect_rows(
+  $q$select public.backfill_grandfather_subscriptions() >= 1$q$,
+  1, 'backfill finds at least the subscription-less organisation');
+select pg_temp.expect_rows(
+  $q$select 1 from org_subscriptions s
+       join billing_plans p on p.id = s.plan_id
+       where s.org_id = (select org_gf from _gf)
+         and p.code = 'legacy' and s.status = 'active'
+         and s.current_period_end > now() + interval '9 years'$q$,
+  1, 'subscription-less organisation is grandfathered onto the legacy plan');
+select pg_temp.expect_rows(
+  $q$select 1 from org_subscriptions s
+       where s.org_id = (select org from _ids)
+         and s.plan_id = (select id from billing_plans where code = 'legacy')$q$,
+  0, 'organisations that already had a subscription keep their own history');
+select pg_temp.expect_rows(
+  $q$select 1 where public.backfill_grandfather_subscriptions() = 0$q$,
+  1, 'backfill is idempotent — a second run finds nothing to do');
+
 rollback;
 \echo 'ALL SAAS PLATFORM CHECKS PASSED'
