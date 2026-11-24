@@ -103,7 +103,10 @@ export default async function SubscriptionPage() {
           <h1 className="text-2xl font-bold text-navy-900">Subscription</h1>
           <p className="text-sm text-slate-500">Plan, usage and billing for {orgRes.data?.name}</p>
         </div>
-        <Link href="/subscription/invoices" className="btn btn-ghost">Billing history</Link>
+        <div className="flex gap-2">
+          <Link href="/subscription/usage" className="btn btn-ghost">Usage</Link>
+          <Link href="/subscription/invoices" className="btn btn-ghost">Billing history</Link>
+        </div>
       </div>
 
       {restricted && (

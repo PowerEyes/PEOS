@@ -46,6 +46,12 @@ declare
   v_total integer := 0;
   o record;
 begin
+  -- The scheduler carries no tenant identity. Clear any residual JWT claims
+  -- (set_config(..., true) is transaction-scoped, so a session can outlive the
+  -- reset role that follows it) so the per-org guard sees a cron/service caller
+  -- instead of a stale authenticated member of some other company.
+  perform set_config('request.jwt.claims', '', true);
+  perform set_config('request.jwt.claim.sub', '', true);
   for o in select id from public.organizations loop
     v_total := v_total + public.refresh_subscription_usage(o.id);
   end loop;

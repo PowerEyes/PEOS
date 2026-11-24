@@ -211,5 +211,55 @@ select pg_temp.expect_rows(
   1, 'tenant can call entitlement_enforcement() for the write guard');
 reset role;
 
+-- ── Usage snapshots (refresh_subscription_usage, plan §6 /subscription/usage) ──
+-- The no-arg scheduler variant and the per-org call both run as the function
+-- owner here (no auth.uid()), which is the service-role/cron path.
+do $$ declare n int; begin
+  n := public.refresh_subscription_usage((select org from _ids));
+  if n < 1 then raise exception 'FAIL: usage refresh returned %', n; end if;
+  raise notice 'ok   usage refresh snapshots live counts (rows=%)', n;
+end $$;
+select pg_temp.expect_rows(
+  $q$select 1 from subscription_usage where org_id = (select org from _ids) and metric = 'branches'$q$,
+  1, 'usage snapshot row written for branches');
+do $$ declare before_n int; after_n int; begin
+  select count(*) into before_n from subscription_usage where org_id = (select org from _ids);
+  perform public.refresh_subscription_usage((select org from _ids));
+  select count(*) into after_n from subscription_usage where org_id = (select org from _ids);
+  if after_n <> before_n then
+    raise exception 'FAIL: usage refresh is not idempotent (% -> %)', before_n, after_n;
+  end if;
+  raise notice 'ok   usage refresh is idempotent (rows stay %)', after_n;
+end $$;
+select pg_temp.expect_rows(
+  $q$select 1 from (select public.refresh_subscription_usage()) r$q$,
+  1, 'scheduler variant refreshes every organisation');
+
+-- Cross-org guard: a signed-in member of another company cannot snapshot ours.
+create temp table _uids as select gen_random_uuid() other_org, gen_random_uuid() other_user;
+grant select on _uids to public;
+insert into organizations (id, name) select other_org, 'Usage Guard Org' from _uids;
+insert into auth.users (id, email, email_confirmed_at) select other_user, other_user || '@t.test', now() from _uids;
+delete from profiles where id = (select other_user from _uids);
+insert into profiles (id, org_id, full_name, role_key, is_approved)
+  select other_user, other_org, 'Other Owner', 'owner', true from _uids;
+select pg_temp.as_user(other_user) from _uids;
+do $$ begin
+  begin
+    perform public.refresh_subscription_usage((select org from _ids));
+  exception when others then
+    raise notice 'ok   cross-org usage refresh denied: %', sqlerrm;
+    return;
+  end;
+  raise exception 'FAIL: cross-org usage refresh was allowed';
+end $$;
+-- ...while their own organisation still refreshes fine.
+do $$ declare n int; begin
+  n := public.refresh_subscription_usage((select other_org from _uids));
+  if n < 1 then raise exception 'FAIL: own-org usage refresh returned %', n; end if;
+  raise notice 'ok   own-org usage refresh allowed (rows=%)', n;
+end $$;
+reset role;
+
 rollback;
 \echo 'ALL SAAS PLATFORM CHECKS PASSED'
