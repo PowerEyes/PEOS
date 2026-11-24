@@ -25,7 +25,7 @@ test("specialist roles are staff-tier: branch-bound, never admin/manager screens
   const specialists = ["optometrist", "receptionist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant"];
   for (const r of specialists) {
     for (const p of ["/", "/sales", "/customers", "/workshop", "/inventory", "/appointments"]) assert.equal(routeAllowed(r, p), true, `${r} ${p}`);
-    for (const p of ["/staff", "/settings", "/website", "/reports", "/crm", "/subscription"]) assert.equal(routeAllowed(r, p), false, `${r} ${p}`);
+    for (const p of ["/staff", "/settings", "/website", "/reports", "/crm", "/subscription", "/company"]) assert.equal(routeAllowed(r, p), false, `${r} ${p}`);
     assert.equal(routeAllowed(r, "/finance"), false, `${r} /finance needs finance_view`);
   }
 });

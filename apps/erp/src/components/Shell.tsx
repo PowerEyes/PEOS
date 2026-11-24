@@ -10,7 +10,7 @@ import {
   LayoutDashboard, Users, FileText, Calendar, ShoppingCart, Wrench,
   Package, DollarSign, Settings, Globe, LogOut, ChevronDown, ChevronRight,
   Hammer, UserCheck, ReceiptText, MessageCircle, Tag, TrendingUp, FileBarChart,
-  Stethoscope, Wallet, ClipboardCheck, LifeBuoy,
+  Stethoscope, Wallet, ClipboardCheck, LifeBuoy, Building2,
 } from "lucide-react";
 
 type NavItem = {
@@ -61,6 +61,7 @@ const NAV: NavItem[] = [
       { label:"Coupons",        href:"/website/coupons",   icon:Tag },
     ],
   },
+  { label:"Company",          href:"/company",            icon:Building2 },
   { label:"Settings",         href:"/settings",          icon:Settings },
   { label:"Store Domains",    href:"/settings/domains",  icon:Globe },
 ];

@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@poweros/ui";
-import { Home, Users, FileText, UserPlus, FilePlus, Search, ShoppingCart, Boxes, Wrench, Glasses, Landmark, CalendarDays, Shield, Settings } from "lucide-react";
+import { Home, Users, FileText, UserPlus, FilePlus, Search, ShoppingCart, Boxes, Wrench, Glasses, Landmark, CalendarDays, Shield, Settings, Building2 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 type Cmd = { label: string; hint?: string; icon: any; go: string };
@@ -17,6 +17,7 @@ const BASE: Cmd[] = [
   { label: "Inventory",      icon: Boxes,        go: "/inventory" },
   { label: "Finance",        icon: Landmark,     go: "/finance" },
   { label: "Staff & Users",  icon: Shield,       go: "/staff" },
+  { label: "Company",         icon: Building2,     go: "/company" },
   { label: "Settings",       icon: Settings,     go: "/settings" },
   { label: "New customer",   icon: UserPlus,     go: "/customers?new=1" },
   { label: "New prescription", icon: FilePlus,   go: "/prescriptions?new=1" },

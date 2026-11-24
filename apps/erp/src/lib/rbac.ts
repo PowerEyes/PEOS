@@ -38,6 +38,7 @@ export function routeTier(role?: string | null): Role | null {
 // longest matching prefix wins
 const RULES: [string, Role[]][] = [
   ["/staff", ADMIN], ["/settings", ADMIN], ["/website", ADMIN],
+  ["/company", ADMIN],
   ["/reports", MANAGER], ["/crm", MANAGER],
   ["/print/buying-list", MANAGER],
   ["/subscription", ADMIN],

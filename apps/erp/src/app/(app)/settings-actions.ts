@@ -8,8 +8,8 @@ import { z } from "zod";
 
 type R = { error?: string; ok?: string };
 
-// Owner/admin gate shared by every settings mutation.
-async function adminCtx(): Promise<R & { sb?: any; orgId?: string }> {
+// Owner/admin gate shared by every settings mutation (also used by /company/*).
+export async function adminCtx(): Promise<R & { sb?: any; orgId?: string }> {
   const sb = supabaseServer();
   const {
     data: { user },
@@ -27,8 +27,9 @@ async function adminCtx(): Promise<R & { sb?: any; orgId?: string }> {
   return { sb, orgId: profile.org_id };
 }
 
-// Upsert key/value rows — org_settings PK is (org_id, key).
-async function putKeys(
+// Upsert key/value rows — org_settings PK is (org_id, key). Exported for the
+// /company/* actions; callers pass an explicit allow-list of keys.
+export async function putKeys(
   sb: any,
   orgId: string,
   entries: Array<[string, any]>,
