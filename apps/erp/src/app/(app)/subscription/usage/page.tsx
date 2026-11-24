@@ -19,7 +19,9 @@ export default async function SubscriptionUsagePage({ searchParams }: { searchPa
 
   const [entitlements, usageRes, snapshotRes] = await Promise.all([
     getEntitlements(profile.org_id),
-    sb.rpc("org_usage", { p_org: profile.org_id }),
+    // No org argument since 20261216000000: my_org_usage() resolves the
+    // caller's own organisation server-side (raw org_usage() is tenant-revoked).
+    sb.rpc("my_org_usage"),
     sb.from("subscription_usage").select("metric, value, period_start, period_end, updated_at")
       .order("updated_at", { ascending: false }).limit(20),
   ]);

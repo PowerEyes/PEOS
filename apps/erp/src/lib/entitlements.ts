@@ -19,7 +19,10 @@ export async function getEntitlements(orgId?: string): Promise<Entitlements | nu
     org = data?.org_id as string | undefined;
   }
   if (!org) return null;
-  const { data, error } = await sb.rpc("resolve_entitlements", { p_org: org });
+  // my_entitlements() takes no argument: since 20261216000000 the raw
+  // resolve_entitlements(org) is revoked for tenant roles, and the wrapper
+  // resolves the caller's own organisation server-side (current_org()).
+  const { data, error } = await sb.rpc("my_entitlements");
   if (error || !data) return null;
   return data as Entitlements;
 }
