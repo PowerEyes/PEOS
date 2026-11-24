@@ -1,0 +1,152 @@
+{
+ "appliedAt": "2026-11-24T16:02:02.251Z",
+ "scratch": "postgresql://postgres:postgres@127.0.0.1:5433/postgres",
+ "results": [
+  {
+   "file": "20261121030000_purchase_orders.sql",
+   "ok": false,
+   "ms": 4,
+   "error": "trigger \"trg_po_audit\" for relation \"purchase_orders\" already exists",
+   "position": null
+  },
+  {
+   "file": "20261121040000_suppliers_missing_columns.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261125010000_fix_patient_customer_id.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261125020000_site_pages.sql",
+   "ok": false,
+   "ms": 46,
+   "error": "policy \"sp_anon\" for table \"site_pages\" already exists",
+   "position": null
+  },
+  {
+   "file": "20261126000000_branch_read_wide_write_narrow.sql",
+   "ok": true,
+   "ms": 9
+  },
+  {
+   "file": "20261126010000_fix_place_sale_array_operator.sql",
+   "ok": true,
+   "ms": 1
+  },
+  {
+   "file": "20261126020000_product_costs.sql",
+   "ok": false,
+   "ms": 1,
+   "error": "policy \"pc_sel\" for table \"product_costs\" already exists",
+   "position": null
+  },
+  {
+   "file": "20261126030000_branch_overview.sql",
+   "ok": true,
+   "ms": 5
+  },
+  {
+   "file": "20261127000000_fix_rbac_function_signatures.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261127010000_ops_permissions.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261128000000_data_driven_workflows.sql",
+   "ok": true,
+   "ms": 137
+  },
+  {
+   "file": "20261129000000_settings_configuration.sql",
+   "ok": true,
+   "ms": 19
+  },
+  {
+   "file": "20261130000000_enforce_prescription_approval.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261201000000_subscription_engine.sql",
+   "ok": true,
+   "ms": 65
+  },
+  {
+   "file": "20261202000000_saas_enforcement.sql",
+   "ok": true,
+   "ms": 26
+  },
+  {
+   "file": "20261203000000_trial_on_signup.sql",
+   "ok": true,
+   "ms": 4
+  },
+  {
+   "file": "20261205000000_checkout_billing.sql",
+   "ok": true,
+   "ms": 20
+  },
+  {
+   "file": "20261206000000_subscription_lifecycle.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261207000000_customer_phone_uniqueness.sql",
+   "ok": true,
+   "ms": 7
+  },
+  {
+   "file": "20261208000000_patient_customer_id_columns.sql",
+   "ok": true,
+   "ms": 2
+  },
+  {
+   "file": "20261209000000_cross_tenant_policy_fixes.sql",
+   "ok": true,
+   "ms": 2
+  },
+  {
+   "file": "20261210000000_branch_scoped_money_reads.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261211000000_subscription_usage_refresh.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261212000000_role_model_expansion.sql",
+   "ok": true,
+   "ms": 5
+  },
+  {
+   "file": "20261213000000_cancelled_access_until_period_end.sql",
+   "ok": true,
+   "ms": 2
+  },
+  {
+   "file": "20261214000000_platform_break_glass.sql",
+   "ok": true,
+   "ms": 14
+  },
+  {
+   "file": "20261215000000_grandfather_backfill_function.sql",
+   "ok": true,
+   "ms": 3
+  },
+  {
+   "file": "20261216000000_security_audit_fixes.sql",
+   "ok": true,
+   "ms": 3
+  }
+ ]
+}

@@ -44,7 +44,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
   function StaffRow({ s }: { s: any }) {
     const review = s.is_approved && !s.deactivated && s.branch_reviewed === false;
     return (
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 py-3.5 hover:bg-slate-50 transition">
+      <div className="flex flex-col gap-3 px-4 py-3.5 hover:bg-slate-50 transition">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <Avatar name={s.full_name}/>{review && <button title="Branch was auto-assigned. Click to confirm." disabled={busy===s.id} onClick={()=>run(s.id, ()=>updateStaff(s.id,{branch_id:s.branch_id}))} className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">Confirm branch</button>}
           <div className="min-w-0 flex-1 space-y-0.5">
@@ -64,7 +64,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
           {s.is_approved && !s.deactivated && (
             <select value={s.role_key} disabled={busy===s.id}
               onChange={e=>run(s.id, ()=>updateStaff(s.id,{role_key:e.target.value}))}
-              className="field w-auto py-1.5 text-xs sm:text-sm capitalize">
+              className="field !w-auto !py-1.5 !text-xs sm:!text-sm capitalize">
               {ROLES.map(r=><option key={r} value={r} className="capitalize">{r}</option>)}
             </select>)}
 
@@ -72,7 +72,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
           {s.is_approved && !s.deactivated && (
             <select value={s.branch_id??""} disabled={busy===s.id}
               onChange={e=>run(s.id, ()=>updateStaff(s.id,{branch_id:e.target.value||null}))}
-              className="field w-auto py-1.5 text-xs sm:text-sm">
+              className="field !w-auto !py-1.5 !text-xs sm:!text-sm">
               <option value="">All branches</option>
               {branches.map(b=><option key={b.id} value={b.id}>{b.name}</option>)}
             </select>)}
