@@ -199,12 +199,13 @@ function NavLink({ item, depth = 0, onNavigate, collapsed = false }: { item: Nav
   );
 }
 
-export function Shell({ children, user, branches, settings, scope = null }: {
+export function Shell({ children, user, branches, settings, tenantName, scope = null }: {
   scope?: string | null;
   children: React.ReactNode;
   user?: { name: string; role: string; perms?: string[] };
   branches?: { id: string; name: string }[];
   settings?: any;
+  tenantName?: string;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -269,7 +270,7 @@ export function Shell({ children, user, branches, settings, scope = null }: {
             {!collapsed && (
               <div className="min-w-0">
                 <p className="font-extrabold text-sm text-white leading-tight truncate">PowerOS</p>
-                <p className="text-[9px] text-slate-400 tracking-wider uppercase truncate">Power Eyes Opticals</p>
+                <p className="text-[9px] text-slate-400 tracking-wider uppercase truncate">{tenantName || "Power Eyes Opticals"}</p>
               </div>
             )}
           </div>
@@ -365,7 +366,6 @@ export function Shell({ children, user, branches, settings, scope = null }: {
             {/* Notifications */}
             <button className="relative rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition" aria-label="Notifications">
               <Bell size={18} />
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">3</span>
             </button>
 
             {/* Branch switcher */}
@@ -395,9 +395,9 @@ export function Shell({ children, user, branches, settings, scope = null }: {
         {/* Footer */}
         <footer className="shrink-0 border-t border-slate-200 bg-white px-4 sm:px-6 py-2 flex items-center justify-between text-xs text-slate-400">
           <div className="flex items-center gap-4">
-            <span>© 2026 PowerOS · Power Eyes Opticals</span>
+            <span>© {new Date().getFullYear()} PowerOS · {tenantName || "Power Eyes Opticals"}</span>
             <span className="hidden sm:inline">·</span>
-            <span className="hidden sm:inline">v1.0.0</span>
+            <span className="hidden sm:inline">v{process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}</span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="hover:text-slate-600 transition">Privacy</Link>
@@ -405,7 +405,7 @@ export function Shell({ children, user, branches, settings, scope = null }: {
             <Link href="/help" className="hover:text-slate-600 transition">Help</Link>
             <span className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="hidden sm:inline">System OK</span>
+              <span className="hidden sm:inline">Online</span>
             </span>
           </div>
         </footer>

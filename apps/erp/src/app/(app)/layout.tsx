@@ -20,6 +20,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     sb.from("message_templates").select("*").order("sort_order"),
     getSettings(),
   ]);
+  const { data: tenantData } = p?.org_id ? await sb.from("tenants").select("name").eq("id", p.org_id).single() : { data: null };
+  const tenantName = tenantData?.name || "Power Eyes Opticals";
   if (!p?.is_approved) {
     return (
       <main className="grid min-h-screen place-items-center p-6 text-center">
@@ -39,7 +41,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const announcements = p.org_id ? await getAnnouncements(sb, status) : [];
   return (
     <TemplatesProvider templates={tmpls ?? []} storeName={branches?.[0]?.name ?? "our store"}>
-      <Shell user={{ name: p.full_name ?? user.email!, role: p.role_key, perms: perms ?? [] }} branches={branches ?? []} settings={settings} scope={resolveScope(p.role_key, p.branch_id ?? null, (branches ?? []).map((b: any) => b.id))}>
+      <Shell user={{ name: p.full_name ?? user.email!, role: p.role_key, perms: perms ?? [] }} branches={branches ?? []} settings={settings} tenantName={tenantName} scope={resolveScope(p.role_key, p.branch_id ?? null, (branches ?? []).map((b: any) => b.id))}>
         <AnnouncementBanner items={announcements} />
         {children}
       </Shell>
