@@ -36,7 +36,7 @@ const idx = (rows, keyOf, valOf = (x) => x) => {
   return m;
 };
 
-function cmp(name, aRows, bRows, keyOf, valOf, showLimit = 15) {
+function cmp(name, aRows, bRows, keyOf, valOf, showLimit = 500) {
   const a = idx(aRows, keyOf, valOf);
   const b = idx(bRows, keyOf, valOf);
   const missing = [...b.keys()].filter((k) => !a.has(k));   // in b, not in a
