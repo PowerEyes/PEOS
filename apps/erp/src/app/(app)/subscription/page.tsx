@@ -106,6 +106,7 @@ export default async function SubscriptionPage() {
         <div className="flex gap-2">
           <Link href="/subscription/usage" className="btn btn-ghost">Usage</Link>
           <Link href="/subscription/invoices" className="btn btn-ghost">Billing history</Link>
+          <Link href="/support" className="btn btn-ghost">Support</Link>
         </div>
       </div>
 

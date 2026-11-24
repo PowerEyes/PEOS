@@ -2,8 +2,10 @@ import { resolveScope } from "@/lib/branch-scope";
 import { supabaseServer } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";
+import { AnnouncementBanner } from "@/components/announcement-banner";
 import { TemplatesProvider } from "@/components/templates-context";
 import { getSettings } from "@/lib/settings";
+import { getAnnouncements, getSubscriptionStatus } from "@/lib/announcements";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const sb = supabaseServer();
@@ -31,9 +33,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </main>
     );
   }
+  // Announcements aimed at this company's subscription status (all | trialing |
+  // past_due | expired), shown as a dismissible banner above the page content.
+  const status = p.org_id ? await getSubscriptionStatus(sb, p.org_id) : "none";
+  const announcements = p.org_id ? await getAnnouncements(sb, status) : [];
   return (
     <TemplatesProvider templates={tmpls ?? []} storeName={branches?.[0]?.name ?? "our store"}>
       <Shell user={{ name: p.full_name ?? user.email!, role: p.role_key, perms: perms ?? [] }} branches={branches ?? []} settings={settings} scope={resolveScope(p.role_key, p.branch_id ?? null, (branches ?? []).map((b: any) => b.id))}>
+        <AnnouncementBanner items={announcements} />
         {children}
       </Shell>
     </TemplatesProvider>

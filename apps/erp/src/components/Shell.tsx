@@ -10,7 +10,7 @@ import {
   LayoutDashboard, Users, FileText, Calendar, ShoppingCart, Wrench,
   Package, DollarSign, Settings, Globe, LogOut, ChevronDown, ChevronRight,
   Hammer, UserCheck, ReceiptText, MessageCircle, Tag, TrendingUp, FileBarChart,
-  Stethoscope, Wallet, ClipboardCheck,
+  Stethoscope, Wallet, ClipboardCheck, LifeBuoy,
 } from "lucide-react";
 
 type NavItem = {
@@ -52,6 +52,7 @@ const NAV: NavItem[] = [
   { label:"CRM Automation",   href:"/crm",               icon:MessageCircle },
   { label:"Staff",            href:"/staff",             icon:UserCheck },
   { label:"Subscription",     href:"/subscription",      icon:Wallet },
+  { label:"Support",          href:"/support",           icon:LifeBuoy },
   { label:"Setup checklist",  href:"/setup",             icon:ClipboardCheck },
   {
     label:"Website", icon:Globe,
