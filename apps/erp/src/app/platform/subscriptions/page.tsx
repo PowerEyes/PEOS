@@ -9,7 +9,7 @@ export default async function PlatformSubscriptions() {
   const admin = supabaseAdmin();
   const [{ data: orgs }, { data: subs }, { data: plans }] = await Promise.all([
     admin.from("organizations").select("id, name"),
-    admin.from("org_subscriptions").select("org_id, plan_id, status, current_period_end, trial_ends_at, created_at").order("created_at", { ascending: false }),
+    admin.from("org_subscriptions").select("id, org_id, plan_id, status, current_period_end, trial_ends_at, created_at").order("created_at", { ascending: false }),
     admin.from("billing_plans").select("id, name"),
   ]);
   const orgName = new Map((orgs ?? []).map((o: any) => [o.id, o.name]));
@@ -37,7 +37,7 @@ export default async function PlatformSubscriptions() {
               <tr key={i} className="hover:bg-slate-900/50">
                 <td className="px-4 py-3"><Link href={`/platform/companies/${s.org_id}`} className="text-white hover:text-gold-400">{orgName.get(s.org_id) ?? s.org_id}</Link></td>
                 <td className="px-4 py-3 text-slate-400">{planName.get(s.plan_id) ?? "—"}</td>
-                <td className="px-4 py-3 capitalize">{s.status}</td>
+                <td className="px-4 py-3 capitalize"><Link href={`/platform/subscriptions/${s.id}`} className="hover:text-gold-400">{s.status}</Link></td>
                 <td className="px-4 py-3 text-slate-400">{s.trial_ends_at ? new Date(s.trial_ends_at).toLocaleDateString() : "—"}</td>
                 <td className="px-4 py-3 text-slate-400">{s.current_period_end ? new Date(s.current_period_end).toLocaleDateString() : "—"}</td>
               </tr>

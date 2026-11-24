@@ -1,5 +1,6 @@
 "use client";
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { savePlan, setPlanActive } from "../actions";
 
 type Plan = Record<string, any>;
@@ -56,7 +57,12 @@ export function PlanRow({ plan, money }: { plan: Plan; money: (p: number | null)
 
   return (
     <tr className="hover:bg-slate-900/50">
-      <td className="px-4 py-3"><p className="font-medium text-white">{plan.name}</p><p className="text-xs text-slate-500">{plan.code}</p></td>
+      <td className="px-4 py-3">
+        <Link href={`/platform/plans/${plan.id}`} className="block">
+          <p className="font-medium text-white hover:text-gold-400">{plan.name}</p>
+          <p className="text-xs text-slate-500">{plan.code}</p>
+        </Link>
+      </td>
       <td className="px-4 py-3">{money(plan.price_minor)}<span className="text-xs text-slate-500">/{plan.interval}</span></td>
       <td className="px-4 py-3 text-slate-400">{plan.trial_days}d</td>
       <td className="px-4 py-3 text-slate-400">{plan.max_branches ?? "∞"}</td>
