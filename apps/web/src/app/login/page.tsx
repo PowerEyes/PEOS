@@ -3,7 +3,7 @@ import { useState } from "react";
 import { getTenantOrg } from "@/lib/tenant-client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, Glasses } from "lucide-react";
+import { Eye, EyeOff, Glasses } from "lucide-react";
 import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 export default function LoginPage() {
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [f, setF] = useState({ name:"", email:"", phone:"", gender:"male", dob:"", password:"" });
   const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
   const [waOptIn, setWaOptIn] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   async function submit(e: React.FormEvent) {
     e.preventDefault(); setBusy(true); setErr("");
     const sb = supabaseBrowser();
@@ -69,7 +70,7 @@ export default function LoginPage() {
           <div><label className="block text-sm font-medium text-navy-700 mb-1">Email address</label><input type="email" required value={f.email} onChange={e=>setF({...f,email:e.target.value})} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700" placeholder="you@example.com"/></div>
           {mode==="up"&&<div><label className="block text-sm font-medium text-navy-700 mb-1">WhatsApp number</label><input type="tel" required value={f.phone} onChange={e=>setF({...f,phone:e.target.value})} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700" placeholder="+91 98401 85186"/></div>}
           {mode==="up"&&<div><label className="block text-sm font-medium text-navy-700 mb-1">Date of birth</label><input type="date" required value={f.dob} onChange={e=>setF({...f,dob:e.target.value})} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/></div>}
-          <div><label className="block text-sm font-medium text-navy-700 mb-1">Password</label><input type="password" required minLength={8} value={f.password} onChange={e=>setF({...f,password:e.target.value})} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700" placeholder="8+ characters"/></div>
+          <div><label className="block text-sm font-medium text-navy-700 mb-1">Password</label><div className="relative"><input type={showPassword ? "text" : "password"} required minLength={8} value={f.password} onChange={e=>setF({...f,password:e.target.value})} className="w-full rounded-xl border border-slate-200 px-4 py-3 pr-10 text-sm outline-none focus:border-navy-700" placeholder="8+ characters"/><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
           {mode==="up"&&(
             <label className="flex items-start gap-2.5 cursor-pointer">
               <input
