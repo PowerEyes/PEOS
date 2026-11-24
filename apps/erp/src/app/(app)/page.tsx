@@ -3,13 +3,18 @@ import { supabaseServer } from "@/lib/supabase/server";
 import Link from "next/link";
 import { CountUp } from "@poweros/ui";
 import { resolveScope } from "@/lib/branch-scope";
+import { routeAllowed } from "@/lib/rbac";
 import { inr } from "@poweros/business-rules";
 import { Users, UserPlus, AlertTriangle, IndianRupee, Wrench, CalendarDays } from "lucide-react";
 export default async function Dashboard() {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/login");
-  const [{ data: p }, { data: brs }] = await Promise.all([sb.from("profiles").select("full_name, role_key, branch_id").eq("id", user.id).single(), sb.from("branches").select("id, name").eq("is_active", true).order("name")]);
+  const [{ data: p }, { data: brs }, { data: perms }] = await Promise.all([
+    sb.from("profiles").select("full_name, role_key, branch_id").eq("id", user.id).single(),
+    sb.from("branches").select("id, name").eq("is_active", true).order("name"),
+    sb.rpc("my_permissions"),
+  ]);
   const isOwner = ['owner','admin'].includes(p?.role_key ?? '');
   const { data: liveRow } = isOwner ? await sb.from('org_settings').select('value').eq('key','go_live').maybeSingle() : { data: null };
   const scope = resolveScope(p?.role_key ?? "staff", p?.branch_id ?? null, (brs ?? []).map((b) => b.id));
@@ -64,6 +69,36 @@ export default async function Dashboard() {
       { label: "Cashbook", href: "/finance?tab=Cashbook", color: "bg-emerald-600" },
       { label: "Cash closing", href: "/finance?tab=Closing", color: "bg-blue-600" },
     ],
+    receptionist: [
+      { label: "New customer", href: "/customers?new=1", color: "bg-navy-800" },
+      { label: "Appointments", href: "/appointments", color: "bg-emerald-600" },
+      { label: "New sale / POS", href: "/sales?new=1", color: "bg-gold-500" },
+      { label: "Repairs", href: "/repairs", color: "bg-violet-600" },
+    ],
+    sales_executive: [
+      { label: "New customer", href: "/customers?new=1", color: "bg-navy-800" },
+      { label: "New sale / POS", href: "/sales?new=1", color: "bg-gold-500" },
+      { label: "Appointments", href: "/appointments", color: "bg-emerald-600" },
+      { label: "Web orders", href: "/web-orders", color: "bg-blue-600" },
+    ],
+    inventory_manager: [
+      { label: "Inventory", href: "/inventory", color: "bg-amber-600" },
+      { label: "Stock audit", href: "/stock-audits", color: "bg-navy-800" },
+      { label: "Transfers", href: "/transfers", color: "bg-blue-600" },
+      { label: "Purchase orders", href: "/purchases", color: "bg-emerald-600" },
+    ],
+    lab_technician: [
+      { label: "Workshop & lab", href: "/workshop", color: "bg-navy-800" },
+      { label: "Repairs", href: "/repairs", color: "bg-violet-600" },
+      { label: "Inventory", href: "/inventory", color: "bg-amber-600" },
+      { label: "Appointments", href: "/appointments", color: "bg-emerald-600" },
+    ],
+    accountant: [
+      { label: "Finance", href: "/finance", color: "bg-navy-800" },
+      { label: "Cashbook", href: "/finance?tab=Cashbook", color: "bg-emerald-600" },
+      { label: "GSTR-1", href: "/finance/gstr1", color: "bg-blue-600" },
+      { label: "Accountant export", href: "/accountant-export", color: "bg-gold-500" },
+    ],
     staff: [
       { label: "New customer", href: "/customers?new=1", color: "bg-navy-800" },
       { label: "New sale / POS", href: "/sales?new=1", color: "bg-gold-500" },
@@ -71,7 +106,10 @@ export default async function Dashboard() {
       { label: "Inventory", href: "/inventory", color: "bg-amber-600" },
     ],
   };
-  const quickActions = ROLE_ACTIONS[role] ?? ROLE_ACTIONS.staff;
+  // Render only granted modules: drop any shortcut this role cannot open, so a
+  // revoked permission never leaves a tile that bounces to /?denied=1.
+  const quickActions = (ROLE_ACTIONS[role] ?? ROLE_ACTIONS.staff)
+    .filter((a) => routeAllowed(role, a.href.split("?")[0], perms ?? []));
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       {isOwner && !liveRow?.value && <Link href="/setup" className="card block border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">Finish setting up your business — open the go-live checklist →</Link>}

@@ -5,7 +5,9 @@ import { Pill, Drawer, useToast } from "@poweros/ui";
 import { CheckCircle2, UserX, Shield, UserPlus, Pencil, Mail, Phone, Building2 } from "lucide-react";
 import { approveStaff, updateStaff, inviteByEmail } from "./actions";
 
-const ROLES = ["staff","branch_manager","admin","owner"] as const;
+// Mirrors profiles_role_key_chk + rbac.ts GRANTABLE_ROLES. Order matters:
+// the invite drawer defaults to the first entry.
+const ROLES = ["staff","branch_manager","optometrist","receptionist","sales_executive","cashier","inventory_manager","lab_technician","accountant","admin","owner"] as const;
 type Role = typeof ROLES[number];
 
 function Avatar({ name }: { name?: string }) {
@@ -176,6 +178,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
           </label>
           <div className="rounded-xl bg-slate-50 border border-slate-100 p-3 text-xs text-slate-600 space-y-1">
             <p><b>Staff</b> — Can serve customers, create sales and manage lab orders</p>
+            <p><b>Specialised roles</b> — Optometrist, reception, sales, cashier, inventory, lab and accountant open with role-appropriate permissions (tune them under Staff → Permissions)</p>
             <p><b>Admin</b> — All staff permissions + manage inventory, view finance, approve staff</p>
             <p><b>Owner</b> — Full access including settings, staff roles and discount overrides</p>
           </div>

@@ -5,7 +5,7 @@ export interface StaffInput {
   branch_id: string;
 }
 
-const VALID_ROLES = ["owner", "admin", "branch_manager", "optometrist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant", "receptionist"];
+const VALID_ROLES = ["owner", "admin", "branch_manager", "staff", "optometrist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant", "receptionist"];
 
 export function validateStaff(input: StaffInput): { valid: boolean; errors: string[] } {
   const errors: string[] = [];

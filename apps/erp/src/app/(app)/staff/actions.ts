@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { dbError } from "@poweros/business-rules";
+import { GRANTABLE_ROLES } from "@/lib/rbac";
 import { supabaseServer } from "@/lib/supabase/server";
 import { serviceClient, linkBase } from "@/lib/doclinks";
 import { assertSubscriptionWritable, subscriptionGate  } from "@/lib/entitlements";
@@ -61,7 +62,8 @@ export async function revokeTempAssignment(id: string): Promise<R> {
 
 export async function setRolePermission(role: string, perm: string, allowed: boolean): Promise<R> {
   const gate = await subscriptionGate(); if (gate) return gate;
-  const allowedRoles = ["branch_manager", "staff"];
+  // Mirrors GRANTABLE_ROLES in lib/rbac.ts and the role_permissions CHECK.
+  const allowedRoles = [...GRANTABLE_ROLES];
   const allowedPermissions = ["finance_view", "expenses", "day_closing", "catalogue_edit", "reports_view", "crm_manage", "discount_override", "stock_adjust", "purchases_manage", "stock_audit", "transfers_approve", "web_orders", "credit_notes.issue"];
   if (!allowedRoles.includes(role) || !allowedPermissions.includes(perm) || typeof allowed !== "boolean") return { error: "Invalid role permission." };
   const { error } = await supabaseServer().rpc("set_role_permission", { p_role: role, p_permission: perm, p_allowed: allowed });

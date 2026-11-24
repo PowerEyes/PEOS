@@ -12,7 +12,7 @@ export const branchSchema = z.object({
 export const staffSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Valid email is required"),
-  role: z.enum(["owner", "admin", "branch_manager", "optometrist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant", "receptionist"]),
+  role: z.enum(["owner", "admin", "branch_manager", "staff", "optometrist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant", "receptionist"]),
   branch_id: z.string().uuid("Branch is required"),
   additional_branches: z.array(z.string().uuid()).optional(),
 });
