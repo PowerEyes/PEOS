@@ -31,6 +31,7 @@ export default async function CompanyDetail({ params }: { params: { id: string }
         <nav className="ml-auto flex gap-3 text-sm">
           <Link href={`/platform/companies/${org.id}/activity`} className="text-slate-400 hover:text-gold-400">Activity</Link>
           <Link href={`/platform/companies/${org.id}/usage`} className="text-slate-400 hover:text-gold-400">Usage</Link>
+          <Link href={`/platform/companies/${org.id}/records`} className="text-slate-400 hover:text-gold-400">Records</Link>
           <Link href={`/platform/companies/${org.id}/support`} className="text-slate-400 hover:text-gold-400">Support</Link>
         </nav>
       </div>

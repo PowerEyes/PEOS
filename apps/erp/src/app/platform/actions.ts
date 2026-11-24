@@ -161,3 +161,35 @@ export async function publishAnnouncement(data: { title: string; body: string; t
   revalidatePath("/platform/support");
   return { ok: "Announcement published." };
 }
+
+// ── Break-glass: explicit, audited access to a company's private records ─────
+// plan §10: platform admins have no standing access to company data; a grant
+// is per-user, per-company, reason-logged and expires after 30 minutes (the
+// expiry default lives in the database, so a buggy caller cannot mint a
+// longer-lived one). /platform/companies/[id]/records refuses to render the
+// data without an active grant, and logs the view.
+
+export async function grantBreakGlass(orgId: string, reason: string): Promise<R> {
+  const a = await platformCtx(["super_admin", "support"]);
+  if (a.error || !a.admin) return { error: a.error };
+  const why = reason.trim();
+  if (why.length < 10) return { error: "Give a reason of at least 10 characters — it is recorded in the platform audit log." };
+  const { error } = await a.admin.from("break_glass_grants").insert({
+    org_id: orgId, platform_user_id: a.pu!.user_id, reason: why,
+  });
+  if (error) return { error: error.message };
+  await audit(a.admin, a.pu!, "break_glass.granted", "organization", orgId, { reason: why });
+  revalidatePath(`/platform/companies/${orgId}/records`);
+  return { ok: "Break-glass access granted for 30 minutes. The grant and every view are recorded in the platform audit log." };
+}
+
+export async function revokeBreakGlass(grantId: string, orgId: string): Promise<R> {
+  const a = await platformCtx(["super_admin", "support"]);
+  if (a.error || !a.admin) return { error: a.error };
+  const { error } = await a.admin.from("break_glass_grants")
+    .update({ revoked_at: new Date().toISOString() }).eq("id", grantId).is("revoked_at", null);
+  if (error) return { error: error.message };
+  await audit(a.admin, a.pu!, "break_glass.revoked", "organization", orgId, { grant_id: grantId });
+  revalidatePath(`/platform/companies/${orgId}/records`);
+  return { ok: "Access revoked." };
+}
