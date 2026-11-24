@@ -27,7 +27,7 @@ export function ContactView({ stores: STORES, faqs: FAQS, hours, title, subtitle
     <div className="min-h-screen bg-slate-50">
       <Header/>
       <nav className="border-b border-slate-100 bg-white px-6 py-2 hidden sm:flex gap-6 text-sm text-slate-600">
-        {["Eyeglasses","Sunglasses","Contact Lenses","Computer Glasses","Kids Eyewear","Lens & Coatings","Offers","Eye Test","About Us"].map(n=><Link key={n} href="#" className="whitespace-nowrap hover:text-navy-900">{n}</Link>)}
+        {[{n:"Eyeglasses",h:"/eyeglasses"},{n:"Sunglasses",h:"/sunglasses"},{n:"Contact Lenses",h:"/contact-lenses"},{n:"Computer Glasses",h:"/computer-glasses"},{n:"Kids Eyewear",h:"/eyeglasses?gender=kids"},{n:"Lens & Coatings",h:"/lenses"},{n:"Offers",h:"/offers"},{n:"Eye Test",h:"/eye-test"},{n:"About Us",h:"/about"}].map(({n,h})=><Link key={n} href={h} className="whitespace-nowrap hover:text-navy-900">{n}</Link>)}
       </nav>
       <div className="border-b border-slate-100 bg-white px-4 py-2 text-xs text-slate-500">Home › <span className="font-medium text-slate-700">Contact & Support</span></div>
 
@@ -118,7 +118,7 @@ export function ContactView({ stores: STORES, faqs: FAQS, hours, title, subtitle
           <div className="flex items-center justify-between mb-5">
             <div><h2 className="font-bold text-xl text-navy-900">Frequently Asked Questions</h2>
               <p className="text-sm text-slate-500">Find quick answers to common questions. Need more help? Contact us anytime.</p></div>
-            <Link href="#" className="text-sm font-semibold text-navy-700 hover:underline whitespace-nowrap">View All FAQs →</Link>
+            <Link href="/faq" className="text-sm font-semibold text-navy-700 hover:underline whitespace-nowrap">View All FAQs →</Link>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {FAQS.map((faq,i)=>(

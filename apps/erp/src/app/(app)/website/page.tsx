@@ -16,6 +16,6 @@ export default async function Page() {
     // The preview iframe is cross-origin, so both values come from the server:
     // NEXT_PUBLIC_WEB_URL isn't guaranteed to be set in the ERP's own env, and
     // SITE_PREVIEW_KEY must never reach a browser bundle we don't control.
-    siteUrl={process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000"}
+    siteUrl={process.env.NEXT_PUBLIC_WEB_URL || ""}
     previewKey={process.env.SITE_PREVIEW_KEY || null} />;
 }

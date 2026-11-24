@@ -47,7 +47,7 @@ export default async function Page() {
                 className="h-48 w-full rounded-xl border border-slate-200" />
             )}
           <div className="flex gap-2">
-            <a href={`https://maps.google.com/?q=${encodeURIComponent((b.address??"")+", Chennai")}`} target="_blank" className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-slate-200 py-2.5 text-sm font-medium hover:border-navy-700 transition"><MapPin size={14}/>Directions</a>
+            <a href={`https://maps.google.com/?q=${encodeURIComponent(b.address ?? "")}`} target="_blank" className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-slate-200 py-2.5 text-sm font-medium hover:border-navy-700 transition"><MapPin size={14}/>Directions</a>
             <a href={waHref(site.whatsappNumber, `Hello, I'm at ${b.name}`)} target="_blank" className="flex flex-1 items-center justify-center gap-1.5 rounded-full border border-emerald-200 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50 transition"><MessageCircle size={14}/>WhatsApp</a>
           </div>
           <Link href="/eye-test" className="btn-gold w-full text-sm">Book Eye Test at this Store</Link>

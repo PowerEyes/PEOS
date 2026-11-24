@@ -7,6 +7,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { LensConfigurator } from "@/components/LensConfigurator";
 import { imgUrl, inr, disc, type Product } from "@/lib/types";
 import { Heart, Share2, Star, ShoppingBag, MessageCircle, ChevronRight, RotateCcw, Shield, Truck, Wrench, Info } from "lucide-react";
+import { useSite } from "@/lib/site-context";
+import { waHref } from "@/lib/wa";
 
 const TABS = ["Description","Fit & Size","Features","What's Included","Reviews","Similar Products","FAQ"] as const;
 
@@ -15,6 +17,7 @@ function StarBar({ pct, count }: { pct: number; count: number }) {
 }
 
 export function ProductDetail({ product: p, reviews, summary, similar }: { product: Product; reviews: any[]; summary: any; similar: Product[] }) {
+  const { whatsappNumber } = useSite();
   const [imgIdx, setImgIdx] = useState(0);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Description");
   const [withLens, setWithLens] = useState(p.power_eligible);
@@ -177,7 +180,7 @@ export function ProductDetail({ product: p, reviews, summary, similar }: { produ
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-100 bg-white p-3 sm:hidden">
         <div className="flex gap-3">
           {p.power_eligible ? <button onClick={()=>setConfiguratorOpen(true)} className="btn-gold flex-1">Choose Lenses →</button> : <button className="btn-navy flex-1">Add to Bag</button>}
-          <a href="https://wa.me/919840185186" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-emerald-500 text-white"><MessageCircle size={20}/></a>
+          <a href={waHref(whatsappNumber)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-emerald-500 text-white"><MessageCircle size={20}/></a>
         </div>
       </div>
 

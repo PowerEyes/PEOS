@@ -90,11 +90,7 @@ export const DEFAULT_FOOTER: FooterChrome = {
     { icon: "phone", label: "98401 85186", href: "tel:+919840185186" },
     { icon: "mail", label: "powereyes.chennai@gmail.com", href: "mailto:powereyes.chennai@gmail.com" },
   ],
-  social: [
-    { icon: "instagram", label: "Instagram", href: "#" },
-    { icon: "facebook", label: "Facebook", href: "#" },
-    { icon: "youtube", label: "YouTube", href: "#" },
-  ],
+  social: [],
   columns: [
     { title: "Shop", items: [
       { label: "Eyeglasses", href: "/eyeglasses" },

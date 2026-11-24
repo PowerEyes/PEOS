@@ -381,7 +381,7 @@ export function Shell({ children, user, branches, settings, scope = null }: {
             )}
 
             {/* Website link */}
-            <a href={process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000"} target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-1 hover:text-navy-700 text-xs font-semibold px-2 py-1 rounded-lg hover:bg-slate-50 transition">
+            <a href={process.env.NEXT_PUBLIC_WEB_URL || "#"} target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-1 hover:text-navy-700 text-xs font-semibold px-2 py-1 rounded-lg hover:bg-slate-50 transition">
               <ExternalLink size={12} /> Website
             </a>
           </div>

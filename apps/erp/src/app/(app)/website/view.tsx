@@ -152,7 +152,7 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
   // the origin — necessary because the ERP can't reach into a cross-origin
   // frame to call location.reload().
   const previewSrc = useMemo(() => {
-    const base = (siteUrl || "http://localhost:3000").replace(/\/+$/, "");
+    const base = (siteUrl || process.env.NEXT_PUBLIC_WEB_URL || "").replace(/\/+$/, "");
     const q = pvHidden && previewKey ? `/?preview=1&k=${encodeURIComponent(previewKey)}` : "/";
     return `${base}${q}${q.includes("?") ? "&" : "?"}_=${previewNonce}`;
   }, [siteUrl, pvHidden, previewKey, previewNonce]);
@@ -318,7 +318,7 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
         <p className="text-slate-500">Manage public website content — changes appear instantly</p></div>
       <div className="flex items-center gap-2">
         <button onClick={()=>setPreviewOpen(true)} className="btn btn-ghost text-sm"><Maximize2 size={15}/>Live preview</button>
-        <a href={siteUrl||process.env.NEXT_PUBLIC_WEB_URL||"http://localhost:3000"} target="_blank" className="btn btn-ghost text-sm"><Globe size={15}/>View website</a>
+        <a href={siteUrl||process.env.NEXT_PUBLIC_WEB_URL||"#"} target="_blank" className="btn btn-ghost text-sm"><Globe size={15}/>View website</a>
       </div>
     </div>
     <div className="flex gap-1 rounded-2xl bg-white p-1 shadow-sm overflow-x-auto">
