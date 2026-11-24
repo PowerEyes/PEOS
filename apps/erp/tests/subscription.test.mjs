@@ -15,6 +15,21 @@ test("live statuses grant access; restricted block writes", () => {
   assert.equal(isLive(live("expired")), false);
 });
 
+test("cancelled keeps writes until the paid period ends", () => {
+  const future = new Date(Date.now() + 86400000).toISOString();
+  const past = new Date(Date.now() - 86400000).toISOString();
+  // Inside the period it already paid for (plan §8): auto-renew is off but the
+  // business keeps working; the lifecycle job flips the row to expired at
+  // current_period_end, where writes stop for good.
+  assert.equal(writesBlocked({ ...live("cancelled"), current_period_end: future }), false);
+  assert.equal(writesBlocked({ ...live("cancelled"), current_period_end: past }), true);
+  // Nothing paid for: cancelled without a period end locks like expired.
+  assert.equal(writesBlocked(live("cancelled")), true);
+  assert.equal(writesBlocked({ ...live("cancelled"), current_period_end: null }), true);
+  // The database's _writes_blocked flag wins even with a period left.
+  assert.equal(writesBlocked({ ...live("cancelled"), current_period_end: future, features: { _writes_blocked: true } }), true);
+});
+
 test("_writes_blocked feature forces restricted even on a live status", () => {
   assert.equal(writesBlocked(live("active", { _writes_blocked: true })), true);
 });

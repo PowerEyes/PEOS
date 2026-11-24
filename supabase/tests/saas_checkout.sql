@@ -176,5 +176,52 @@ select pg_temp.expect_rows(
          and (e -> 'features' ->> '_writes_blocked')::boolean$q$,
   1, 'expired tenant keeps entitlements with writes blocked (reads/billing stay open)');
 
+-- ✅ Cancelled keeps access until the period it paid for ----------------------
+-- Plan §8 + lifecycle step 4: cancel stops renewal, not work. Only once
+-- current_period_end passes does cancelled block writes (and the daily job
+-- then moves the row to 'expired').
+create temp table _x as select
+  gen_random_uuid() org_cl, gen_random_uuid() org_cd, gen_random_uuid() org_s,
+  gen_random_uuid() sub_cl, gen_random_uuid() sub_cd, gen_random_uuid() sub_s;
+grant select on _x to public;
+insert into organizations (id, name) values
+  ((select org_cl from _x), 'Cancelled In Period Co'),
+  ((select org_cd from _x), 'Cancelled Past Period Co'),
+  ((select org_s from _x), 'Suspended Co');
+insert into org_subscriptions (id, org_id, plan_id, status, current_period_start, current_period_end)
+  select sub_cl, org_cl, (select id from billing_plans where code = 'starter'),
+         'cancelled', now() - interval '5 days', now() + interval '25 days' from _x;
+insert into org_subscriptions (id, org_id, plan_id, status, current_period_start, current_period_end)
+  select sub_cd, org_cd, (select id from billing_plans where code = 'starter'),
+         'cancelled', now() - interval '35 days', now() - interval '5 days' from _x;
+insert into org_subscriptions (id, org_id, plan_id, status, current_period_start, current_period_end)
+  select sub_s, org_s, (select id from billing_plans where code = 'starter'),
+         'suspended', now() - interval '5 days', now() + interval '25 days' from _x;
+
+select pg_temp.expect_rows(
+  $q$select 1 from public.resolve_entitlements((select org_cl from _x)) e
+       where e ->> 'status' = 'cancelled'
+         and (e -> 'features' ->> '_writes_blocked')::boolean is distinct from true$q$,
+  1, 'cancelled inside the paid period keeps writes (plan 8)');
+select pg_temp.expect_rows(
+  $q$select 1 from public.resolve_entitlements((select org_cd from _x)) e
+       where e ->> 'status' = 'cancelled'
+         and (e -> 'features' ->> '_writes_blocked')::boolean$q$,
+  1, 'cancelled past current_period_end blocks writes');
+select pg_temp.expect_rows(
+  $q$select 1 from public.resolve_entitlements((select org_s from _x)) e
+       where e ->> 'status' = 'suspended'
+         and (e -> 'features' ->> '_writes_blocked')::boolean$q$,
+  1, 'suspended blocks writes immediately');
+
+-- ✅ Reactivated restores access ---------------------------------------------
+update org_subscriptions set status = 'active', reactivated_at = now()
+  where id = (select sub_s from _x);
+select pg_temp.expect_rows(
+  $q$select 1 from public.resolve_entitlements((select org_s from _x)) e
+       where e ->> 'status' = 'active'
+         and (e -> 'features' ->> '_writes_blocked')::boolean is distinct from true$q$,
+  1, 'reactivated subscription writes again');
+
 rollback;
 \echo 'ALL SAAS CHECKOUT CHECKS PASSED'

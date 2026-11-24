@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseBilling } from "@/lib/supabase/admin";
 import { createRazorpayOrder, isRazorpayConfigured, razorpayKeyId, verifyOrderSignature, nextPeriodEnd } from "@/lib/razorpay";
-import { splitGst, planGate } from "@/lib/subscription-core";
+import { splitGst, planGate, LIVE_STATUSES } from "@/lib/subscription-core";
 
 type R = { error?: string; ok?: string };
 
@@ -67,11 +67,14 @@ export async function cancelSubscription(): Promise<R> {
   if (a.error || !a.sb) return { error: a.error };
   const sub = await latestSub(a.sb, a.orgId!);
   if (!sub) return { error: "No active subscription." };
+  // Only a live subscription can be cancelled — calling this directly against an
+  // expired/suspended/cancelled row must not rewrite history.
+  if (!(LIVE_STATUSES as readonly string[]).includes(sub.status)) return { error: "This subscription is not active." };
   const { error } = await a.sb.from("org_subscriptions").update({ status: "cancelled", cancelled_at: new Date().toISOString(), auto_renew: false }).eq("id", sub.id);
   if (error) return { error: error.message };
   await logEvent(a.sb, a.orgId!, "subscription.cancelled");
   revalidatePath("/subscription");
-  return { ok: "Subscription cancelled. Your data is retained — you can export or reactivate any time." };
+  return { ok: "Subscription cancelled. Automatic renewal is off — you keep access until the end of the paid period, and your data is retained. Reactivate any time before it ends." };
 }
 
 export async function reactivateSubscription(): Promise<R> {
@@ -79,26 +82,21 @@ export async function reactivateSubscription(): Promise<R> {
   if (a.error || !a.sb) return { error: a.error };
   const sub = await latestSub(a.sb, a.orgId!);
   if (!sub) return { error: "No subscription to reactivate." };
-  const { error } = await a.sb.from("org_subscriptions").update({ status: "active", reactivated_at: new Date().toISOString(), current_period_start: new Date().toISOString(), auto_renew: true }).eq("id", sub.id);
+  // Reactivate only undoes a cancellation inside the period that was already
+  // paid for. Everything else needs checkout (expired/none) or the platform
+  // (suspended) — flipping those to active here would be a free restore.
+  if (sub.status === "suspended") return { error: "This subscription was suspended by the PowerOS team — please contact support to restore it." };
+  if (sub.status !== "cancelled") return { error: "Choose a plan below to renew — reactivating without payment is not available." };
+  const end = sub.current_period_end ? Date.parse(sub.current_period_end) : NaN;
+  if (!(Number.isFinite(end) && end > Date.now())) return { error: "The paid period has ended — choose a plan below to renew." };
+  const { error } = await a.sb.from("org_subscriptions").update({
+    status: "active", reactivated_at: new Date().toISOString(),
+    cancelled_at: null, auto_renew: true,
+  }).eq("id", sub.id);
   if (error) return { error: error.message };
   await logEvent(a.sb, a.orgId!, "subscription.reactivated");
   revalidatePath("/subscription");
-  return { ok: "Subscription reactivated." };
-}
-
-export async function extendSubscription(days: number): Promise<R> {
-  const a = await ownerCtx();
-  if (a.error || !a.sb) return { error: a.error };
-  const d = Math.min(365, Math.max(1, Math.round(days) || 30));
-  const sub = await latestSub(a.sb, a.orgId!);
-  if (!sub) return { error: "No subscription." };
-  const base = sub.current_period_end ? new Date(sub.current_period_end) : new Date();
-  const end = new Date(Math.max(base.getTime(), Date.now()) + d * 86400000).toISOString();
-  const { error } = await a.sb.from("org_subscriptions").update({ status: "active", current_period_end: end }).eq("id", sub.id);
-  if (error) return { error: error.message };
-  await logEvent(a.sb, a.orgId!, "subscription.extended", { days: d, end });
-  revalidatePath("/subscription");
-  return { ok: `Subscription extended by ${d} days.` };
+  return { ok: "Subscription reactivated — automatic renewal is back on." };
 }
 
 // ---------------------------------------------------------------------------

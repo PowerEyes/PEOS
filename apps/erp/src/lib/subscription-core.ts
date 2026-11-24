@@ -17,16 +17,30 @@ export type Entitlements = {
 
 /** Statuses that grant full operational access. */
 export const LIVE_STATUSES = ["trialing", "active", "grace", "payment_pending", "payment_failed", "past_due"] as const;
-/** Statuses that block writes but keep reads/billing/export/support. */
-export const RESTRICTED_STATUSES = ["expired", "suspended", "cancelled", "none", "inactive"] as const;
+/** Statuses that block writes outright but keep reads/billing/export/support.
+ *  `cancelled` is deliberately absent: it is period-aware, see writesBlocked(). */
+export const RESTRICTED_STATUSES = ["expired", "suspended", "none", "inactive"] as const;
 
 export function isLive(e: Entitlements | null | undefined): boolean {
   return !!e && (LIVE_STATUSES as readonly string[]).includes(e.status);
 }
 
+/**
+ * Cancelled is not a lockout (plan §8): the company keeps working until
+ * `current_period_end` — the period it already paid for — with auto-renew off;
+ * the lifecycle job then flips the row to `expired`. Cancelled with no period
+ * left (or none at all) blocks exactly like expired. Mirrors the rule in
+ * public.resolve_entitlements, which is the single source of the JSON shape.
+ */
+function cancelledWithinPaidPeriod(e: Entitlements): boolean {
+  const end = e.current_period_end ? Date.parse(e.current_period_end) : NaN;
+  return Number.isFinite(end) && end > Date.now();
+}
+
 export function writesBlocked(e: Entitlements | null | undefined): boolean {
   if (!e) return true;
-  if (e.features?.["_writes_blocked"]) return true;
+  if (e.features?.["_writes_blocked"]) return true; // DB decision wins, both directions
+  if (e.status === "cancelled") return !cancelledWithinPaidPeriod(e);
   return !(LIVE_STATUSES as readonly string[]).includes(e.status);
 }
 

@@ -92,7 +92,12 @@ export default async function SubscriptionPage() {
   const currentPlan = plans.find((p: any) => p.id === currentPlanId);
   const freePlans = (plansRes.data ?? []).filter((p: any) => p.active && p.price_minor != null && Number(p.price_minor) === 0);
   const invoices = invoicesRes.data ?? [];
-  const restricted = ["expired", "suspended", "cancelled", "none", "inactive"].includes(status);
+  // Cancelled keeps working until the period it paid for ends (plan §8) — only
+  // then does it behave like the other restricted states.
+  const periodEndMs = sub?.current_period_end ? Date.parse(sub.current_period_end) : NaN;
+  const cancelledLive = status === "cancelled" && Number.isFinite(periodEndMs) && periodEndMs > Date.now();
+  const restricted = ["expired", "suspended", "none", "inactive"].includes(status)
+    || (status === "cancelled" && !cancelledLive);
   const limits = e?.limits ?? {};
   const features = Object.entries(e?.features ?? {}).filter(([k, v]) => !k.startsWith("_") && v);
 
@@ -110,6 +115,12 @@ export default async function SubscriptionPage() {
         </div>
       </div>
 
+      {cancelledLive && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          Automatic renewal is off. You keep full access until <b>{date(sub?.current_period_end)}</b> — reactivate above
+          to resume renewal, or switch plans below. Writing data stops after that date unless you renew.
+        </div>
+      )}
       {restricted && (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
           Your subscription is <b>{status}</b>. You can still read, export and download invoices — renew below to
