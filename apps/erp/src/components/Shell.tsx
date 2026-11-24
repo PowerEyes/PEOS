@@ -2,15 +2,16 @@
 "use client";
 import Link from "next/link";
 import { BranchSwitcher } from "./BranchSwitcher";
+import { CommandPalette } from "./CommandPalette";
 import { ScopeProvider } from "./ScopeContext";
 import { routeAllowed } from "@/lib/rbac";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Users, FileText, Calendar, ShoppingCart, Wrench,
   Package, DollarSign, Settings, Globe, LogOut, ChevronDown, ChevronRight,
   Hammer, UserCheck, ReceiptText, MessageCircle, Tag, TrendingUp, FileBarChart,
-  Stethoscope, Wallet, ClipboardCheck, LifeBuoy, Building2,
+  Stethoscope, Wallet, ClipboardCheck, LifeBuoy, Building2, Store, Search,
 } from "lucide-react";
 
 type NavItem = {
@@ -49,7 +50,15 @@ const NAV: NavItem[] = [
       { label:"Accountant Export", href:"/accountant-export", icon:FileBarChart },
     ],
   },
+  {
+    label:"Reports", icon:FileBarChart,
+    children:[
+      { label:"Company overview", href:"/reports/company-overview", icon:Building2 },
+      { label:"Branch comparison", href:"/reports/branch-comparison", icon:TrendingUp },
+    ],
+  },
   { label:"CRM Automation",   href:"/crm",               icon:MessageCircle },
+  { label:"Branches",         href:"/branches",          icon:Store },
   { label:"Staff",            href:"/staff",             icon:UserCheck },
   { label:"Subscription",     href:"/subscription",      icon:Wallet },
   { label:"Support",          href:"/support",           icon:LifeBuoy },
@@ -105,7 +114,16 @@ export function Shell({ children, user, branches, settings, scope = null }: {
   settings?: any;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [palOpen, setPalOpen] = useState(false);
   const path = usePathname();
+  // Ctrl/⌘+K opens the command palette from anywhere in the app.
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalOpen(o => !o); }
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, []);
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
@@ -156,6 +174,9 @@ export function Shell({ children, user, branches, settings, scope = null }: {
             </div>
           </div>
           <div className="flex items-center gap-3 text-sm text-slate-600">
+            <button onClick={() => setPalOpen(true)} className="hidden md:flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-500 hover:bg-slate-50 transition" aria-label="Search (Ctrl+K)">
+              <Search size={13} />Search <kbd className="rounded bg-slate-100 px-1 py-px font-sans text-[10px]">Ctrl K</kbd>
+            </button>
             {user && <BranchSwitcher branches={branches ?? []} scope={scope} />}
             {user && (
               <span className="hidden sm:flex items-center gap-2 text-xs text-slate-500" title={branches?.length ? `${branches.length} branch${branches.length>1?"es":""}` : undefined}>
@@ -163,7 +184,7 @@ export function Shell({ children, user, branches, settings, scope = null }: {
                 <span className="font-medium text-navy-900">{user.name}</span>
                 <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold capitalize text-slate-500">{user.role}</span>
               </span>)}
-            <Link href="/" className="hover:text-navy-700 text-xs font-semibold px-2 py-1 rounded-lg hover:bg-slate-50 transition">← Website</Link>
+            <a href={process.env.NEXT_PUBLIC_WEB_URL || "http://localhost:3000"} target="_blank" rel="noreferrer" className="hover:text-navy-700 text-xs font-semibold px-2 py-1 rounded-lg hover:bg-slate-50 transition">← Website</a>
           </div>
         </header>
         {/* Page content */}
@@ -171,5 +192,6 @@ export function Shell({ children, user, branches, settings, scope = null }: {
           <ScopeProvider value={scope}>{children}</ScopeProvider>
         </main>
       </div>
+      <CommandPalette open={palOpen} onClose={() => setPalOpen(false)} role={user?.role} perms={user?.perms} />
     </div>);
 }

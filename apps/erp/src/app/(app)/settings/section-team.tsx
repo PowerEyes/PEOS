@@ -17,7 +17,7 @@ export function TeamSection({ canEdit }: { canEdit: boolean }) {
   return (<div className="space-y-4">
     <section className="card space-y-2 p-4"><h2 className="font-semibold">Team & access</h2>
       <p className="text-sm text-slate-500">Invite people, set their branch and role, and grant temporary cross-branch access.</p>
-      <div className="flex flex-wrap gap-2"><Link href="/staff" className="btn btn-primary text-sm">Open Staff</Link><Link href="/setup" className="btn btn-ghost text-sm">Setup checklist</Link></div>
+      <div className="flex flex-wrap gap-2"><Link href="/staff" className="btn btn-primary text-sm">Open Staff</Link><Link href="/settings/roles" className="btn btn-ghost text-sm">Roles overview</Link><Link href="/setup" className="btn btn-ghost text-sm">Setup checklist</Link></div>
       {!canEdit && <p className="text-xs text-amber-700">Only owners and admins can change roles.</p>}</section>
     <section className="card space-y-2 p-4"><h2 className="font-semibold">What each role can do</h2>
       <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr className="text-left text-xs text-slate-500"><th className="py-1">Capability</th><th className="px-2">Owner</th><th className="px-2">Admin</th><th className="px-2">Manager</th><th className="px-2">Staff</th></tr></thead>

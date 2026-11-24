@@ -42,6 +42,10 @@ const RULES: [string, Role[]][] = [
   ["/reports", MANAGER], ["/crm", MANAGER],
   ["/print/buying-list", MANAGER],
   ["/subscription", ADMIN],
+  // Branches are a manager view; creating one stays owner/admin (createBranch()).
+  ["/branches", MANAGER], ["/branches/new", ADMIN],
+  // audit_read RLS returns rows to owner/admin only — match the route to it.
+  ["/audit", ADMIN],
 ];
 // Routes gated by a configurable permission (Staff → Permissions). Owners/admins always pass.
 const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"]];

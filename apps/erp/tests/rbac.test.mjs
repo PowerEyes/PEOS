@@ -41,3 +41,15 @@ test("specialist roles reach their own modules through grants, not role names", 
   assert.equal(routeAllowed("cashier", "/finance", ["finance_view"]), true);
   assert.equal(routeAllowed("lab_technician", "/workshop"), true);
 });
+test("audit is owner/admin-only; branches are manager-tier, creation admin-only", () => {
+  for (const r of ["owner", "admin"]) for (const p of ["/audit", "/branches", "/branches/xyz", "/branches/new"]) assert.equal(routeAllowed(r, p), true, `${r} ${p}`);
+  assert.equal(routeAllowed("branch_manager", "/branches"), true);
+  assert.equal(routeAllowed("branch_manager", "/branches/xyz"), true);
+  assert.equal(routeAllowed("branch_manager", "/branches/new"), false, "branch creation stays owner/admin");
+  assert.equal(routeAllowed("branch_manager", "/audit"), false, "audit rows are RLS owner/admin-only");
+  const staffTier = ["staff", "accountant", "cashier", "receptionist", "inventory_manager", "sales_executive", "lab_technician", "optometrist"];
+  for (const r of staffTier) {
+    assert.equal(routeAllowed(r, "/branches"), false, `${r} /branches`);
+    assert.equal(routeAllowed(r, "/audit"), false, `${r} /audit`);
+  }
+});

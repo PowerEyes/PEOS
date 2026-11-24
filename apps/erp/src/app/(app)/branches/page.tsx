@@ -9,6 +9,9 @@ export default async function BranchesPage() {
   const { data: profile } = await sb.from("profiles").select("org_id, role_key").eq("id", user.id).single();
   if (!profile) return null;
 
+  // Creating a branch is owner/admin (mirrors createBranch()); managers get a read view.
+  const canCreate = ["owner", "admin"].includes(profile.role_key ?? "");
+
   const { data: branches } = await sb
     .from("branches")
     .select("*")
@@ -22,7 +25,7 @@ export default async function BranchesPage() {
           <h1 className="text-2xl font-bold text-navy-900">Branches</h1>
           <p className="text-sm text-slate-500">Manage all your store locations</p>
         </div>
-        <Link href="/branches/new" className="btn btn-primary">+ New Branch</Link>
+        {canCreate && <Link href="/branches/new" className="btn btn-primary">+ New Branch</Link>}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -49,7 +52,7 @@ export default async function BranchesPage() {
         <div className="card p-12 text-center text-slate-500">
           <p className="text-lg font-medium">No branches yet</p>
           <p className="text-sm mt-1">Create your first branch to get started</p>
-          <Link href="/branches/new" className="btn btn-primary mt-4 inline-block">Create Branch</Link>
+          {canCreate && <Link href="/branches/new" className="btn btn-primary mt-4 inline-block">Create Branch</Link>}
         </div>
       )}
     </div>

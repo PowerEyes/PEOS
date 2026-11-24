@@ -55,7 +55,7 @@ export default async function Dashboard() {
       { label: "New customer", href: "/customers?new=1", color: "bg-navy-800" },
       { label: "New sale / POS", href: "/sales?new=1", color: "bg-gold-500" },
       { label: "Stock audit", href: "/stock-audits", color: "bg-amber-600" },
-      { label: "Branch reports", href: "/reports", color: "bg-blue-600" },
+      { label: "Branch reports", href: "/reports/branch-comparison", color: "bg-blue-600" },
     ],
     optometrist: [
       { label: "Patient queue", href: "/appointments", color: "bg-navy-800" },
@@ -67,7 +67,7 @@ export default async function Dashboard() {
       { label: "POS billing", href: "/sales?new=1", color: "bg-gold-500" },
       { label: "Order lookup", href: "/sales", color: "bg-navy-800" },
       { label: "Cashbook", href: "/finance?tab=Cashbook", color: "bg-emerald-600" },
-      { label: "Cash closing", href: "/finance?tab=Closing", color: "bg-blue-600" },
+      { label: "Cash closing", href: "/finance?tab=Day Closing", color: "bg-blue-600" },
     ],
     receptionist: [
       { label: "New customer", href: "/customers?new=1", color: "bg-navy-800" },
@@ -152,7 +152,7 @@ export default async function Dashboard() {
 
       {/* All-branch comparison (managers, owners, admins) */}
       {isMgr && (overview ?? []).length > 1 && (
-        <div className="card overflow-hidden"><div className="border-b border-slate-100 px-4 py-3"><p className="font-semibold">Branch comparison</p><p className="text-xs text-slate-500">Click a branch to focus the whole app on it.</p></div>
+        <div className="card overflow-hidden"><div className="flex items-center justify-between border-b border-slate-100 px-4 py-3"><div><p className="font-semibold">Branch comparison</p><p className="text-xs text-slate-500">Click a branch to focus the whole app on it.</p></div><Link href="/branches" className="text-sm font-medium text-navy-700 underline shrink-0">View all branches</Link></div>
           <div className="overflow-x-auto"><table className="w-full min-w-[640px] text-sm"><thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-4 py-2">Branch</th><th className="px-3 py-2 text-right">Today</th><th className="px-3 py-2 text-right">This month</th><th className="px-3 py-2 text-right">Collected</th><th className="px-3 py-2 text-right">Lab queue</th><th className="px-3 py-2 text-right">Repairs</th><th className="px-3 py-2 text-right">Low stock</th></tr></thead>
             <tbody className="divide-y divide-slate-100">{(overview ?? []).map((r: any) => (<tr key={r.branch_id} className={r.branch_id === scope ? "bg-gold-50" : ""}>
               <td className="px-4 py-2.5 font-medium text-navy-900">{r.branch}</td><td className="px-3 py-2.5 text-right">{inr(Number(r.today_sales))}<span className="block text-[10px] text-slate-400">{r.today_orders} orders</span></td>

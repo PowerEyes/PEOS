@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Pill, Drawer, useToast } from "@poweros/ui";
 import { CheckCircle2, UserX, Shield, UserPlus, Pencil, Mail, Phone, Building2 } from "lucide-react";
 import { approveStaff, updateStaff, inviteByEmail } from "./actions";
@@ -87,7 +88,10 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
                 className="btn btn-ghost !py-1.5 text-xs text-rose-600 gap-1"><UserX size={13}/>Reject</button>
             </div>)}
 
-          {/* Active — deactivate button */}
+          {/* Active — transfer / deactivate */}
+          {s.is_approved && !s.deactivated && (
+            <Link href={`/staff/${s.id}/transfer`} className="btn btn-ghost !py-1.5 text-xs gap-1"><Building2 size={13}/>Transfer</Link>)}
+
           {s.is_approved && !s.deactivated && (
             <button disabled={busy===s.id}
               onClick={()=>{ if(confirm(`Deactivate ${s.full_name}? They will lose access immediately.`)) run(s.id, ()=>updateStaff(s.id,{deactivated:true})); }}
@@ -115,7 +119,11 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
           <h1 className="font-display text-2xl sm:text-3xl font-semibold">Staff & Users</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">{active.length} active · {pending.length} pending · {deactivated.length} deactivated</p>
         </div>
-        <button onClick={()=>setInviteOpen(true)} className="btn btn-primary gap-2 self-start sm:self-auto"><UserPlus size={16}/>Invite staff</button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <Link href="/staff/attendance" className="btn btn-ghost !py-2 text-sm">Attendance</Link>
+          <Link href="/staff/leave" className="btn btn-ghost !py-2 text-sm">Leave</Link>
+          <button onClick={()=>setInviteOpen(true)} className="btn btn-primary gap-2"><UserPlus size={16}/>Invite staff</button>
+        </div>
       </div>
 
       {/* Pending */}

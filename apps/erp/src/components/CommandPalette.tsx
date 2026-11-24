@@ -2,10 +2,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@poweros/ui";
-import { Home, Users, FileText, UserPlus, FilePlus, Search, ShoppingCart, Boxes, Wrench, Glasses, Landmark, CalendarDays, Shield, Settings, Building2 } from "lucide-react";
+import { Home, Users, FileText, UserPlus, FilePlus, Search, ShoppingCart, Boxes, Wrench, Glasses, Landmark, CalendarDays, Shield, Settings, Building2, Store } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { routeAllowed } from "@/lib/rbac";
 
 type Cmd = { label: string; hint?: string; icon: any; go: string };
+// Every entry runs through routeAllowed() for the signed-in role, so the palette
+// can never offer a screen that bounces to /?denied=1 (mirrors the sidebar filter).
 const BASE: Cmd[] = [
   { label: "Dashboard",      icon: Home,         go: "/" },
   { label: "Customers",      icon: Users,        go: "/customers" },
@@ -15,9 +18,10 @@ const BASE: Cmd[] = [
   { label: "Workshop & Lab", icon: Wrench,       go: "/workshop" },
   { label: "Repairs",        icon: Glasses,      go: "/repairs" },
   { label: "Inventory",      icon: Boxes,        go: "/inventory" },
+  { label: "Branches",       icon: Store,        go: "/branches" },
   { label: "Finance",        icon: Landmark,     go: "/finance" },
   { label: "Staff & Users",  icon: Shield,       go: "/staff" },
-  { label: "Company",         icon: Building2,     go: "/company" },
+  { label: "Company",         icon: Building2,    go: "/company" },
   { label: "Settings",       icon: Settings,     go: "/settings" },
   { label: "New customer",   icon: UserPlus,     go: "/customers?new=1" },
   { label: "New prescription", icon: FilePlus,   go: "/prescriptions?new=1" },
@@ -27,7 +31,7 @@ const BASE: Cmd[] = [
   { label: "Add product",    icon: Boxes,        go: "/inventory?new=1" },
 ];
 
-export function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function CommandPalette({ open, onClose, role, perms }: { open: boolean; onClose: () => void; role?: string | null; perms?: string[] }) {
   const [q, setQ] = useState(""); const [found, setFound] = useState<Cmd[]>([]); const [i, setI] = useState(0);
   const router = useRouter();
   useEffect(() => { if (!open) { setQ(""); setFound([]); setI(0); } }, [open]);
@@ -45,9 +49,10 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     return () => clearTimeout(t);
   }, [q]);
   const items = useMemo(() => {
-    const filtered = BASE.filter((c) => c.label.toLowerCase().includes(q.toLowerCase()));
+    const allowed = BASE.filter((c) => routeAllowed(role, c.go.split("?")[0], perms ?? []));
+    const filtered = allowed.filter((c) => c.label.toLowerCase().includes(q.toLowerCase()));
     return [...found, ...filtered];
-  }, [found, q]);
+  }, [found, q, role, perms]);
   const run = (c: Cmd) => { onClose(); router.push(c.go); };
   return (
     <Modal open={open} onClose={onClose} title="Search PowerOS" subtitle="Jump to any page, customer or action">
