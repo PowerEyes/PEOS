@@ -1,421 +1,287 @@
 "use client";
+
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Activity, ArrowLeftRight, BarChart3, Bell, Building2, CalendarDays, ChevronDown,
+  ChevronLeft, ChevronRight, ClipboardCheck, CreditCard, FileBarChart, FileText,
+  Glasses, Globe, HardDrive, Heart, LayoutDashboard, LogOut, Menu, MessageCircle,
+  Package, Plus, Receipt, Search, Settings, Shield, ShoppingCart, Store, Stethoscope,
+  Truck, UserCheck, Users, Wallet, Wrench, X, Zap, Banknote, Megaphone, Boxes, Tag, Eye,
+} from "lucide-react";
 import { BranchSwitcher } from "./BranchSwitcher";
 import { CommandPalette } from "./CommandPalette";
 import { ScopeProvider } from "./ScopeContext";
 import { routeAllowed } from "@/lib/rbac";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import {
-  LayoutDashboard, Users, FileText, Calendar, ShoppingCart, Wrench,
-  Package, DollarSign, Settings, Globe, LogOut, ChevronDown, ChevronRight,
-  Hammer, UserCheck, ReceiptText, MessageCircle, Tag, TrendingUp, FileBarChart,
-  Stethoscope, Wallet, ClipboardCheck, LifeBuoy, Building2, Store, Search,
-  ChevronLeft, ChevronRight as ChevronRightIcon, Bell, Plus, Home, User,
-  BarChart3, CreditCard, Shield, Database, Zap, Heart, Eye, Phone, Mail,
-  Truck, PackageCheck, ClipboardList, FileSearch, Users2, Briefcase,
-  Activity, Target, Layers, Boxes, ArrowRightLeft, Receipt, Banknote,
-  Megaphone, Settings2, Lock, HardDrive, Wifi, WifiOff, HelpCircle,
-  ExternalLink, ChevronUp,
-} from "lucide-react";
 
-type NavItem = {
-  label: string; href?: string; icon: any;
-  badge?: string; children?: { label: string; href: string; icon: any }[];
-  roles?: string[];
-};
+type Leaf = { label: string; href: string; icon: any; roles?: string[] };
+type Group = { label: string; icon: any; children: Leaf[] };
+type NavEntry = Leaf | Group;
+const isGroup = (n: NavEntry): n is Group => "children" in n;
 
-const ok = (href: string | undefined, u?: { role: string; perms?: string[] }) => !href || routeAllowed(u?.role, href.split("?")[0], u?.perms ?? []);
-function visible(item: NavItem, u?: { role: string; perms?: string[] }): NavItem | null {
-  if (item.children) { const ch = item.children.filter(c => ok(c.href, u)); return ch.length ? { ...item, children: ch } : null; }
-  return ok(item.href, u) ? item : null;
-}
-
-const NAV: NavItem[] = [
-  // 1. Dashboard
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Owner Dashboard", href: "/owner-dashboard", icon: Building2, roles: ["owner", "admin"] },
-  { label: "Branch Dashboard", href: "/branch-dashboard", icon: Store, roles: ["branch_manager", "manager"] },
-  { label: "Employee Dashboard", href: "/employee-dashboard", icon: Users2, roles: ["optometrist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant", "receptionist"] },
-
-  // 2. Customers & CRM
-  { label: "Customers", href: "/customers", icon: Users },
-  { label: "CRM Automation", href: "/crm", icon: MessageCircle },
-  { label: "Inbox & Alerts", href: "/inbox", icon: MessageCircle },
-
-  // 3. Clinical
-  { label: "Appointments", href: "/appointments", icon: Calendar },
-  { label: "Prescriptions", href: "/prescriptions", icon: FileText },
-  { label: "Optometrist", href: "/optometrist", icon: Stethoscope, roles: ["optometrist", "owner", "admin", "branch_manager"] },
-  { label: "Receptionist", href: "/receptionist", icon: UserCheck, roles: ["receptionist", "owner", "admin", "branch_manager"] },
-  { label: "Consultations", href: "/consultations", icon: FileSearch, roles: ["optometrist", "owner", "admin", "branch_manager"] },
-  { label: "LPIMS", href: "/lpims", icon: Eye, roles: ["optometrist", "owner", "admin", "branch_manager", "inventory_manager"] },
-
-  // 4. Sales & POS
-  { label: "POS & Orders", href: "/sales", icon: ShoppingCart },
-  { label: "Web Orders", href: "/web-orders", icon: Globe },
-  { label: "Cashier", href: "/cashier", icon: CreditCard, roles: ["cashier", "owner", "admin", "branch_manager"] },
-
-  // 5. Inventory
-  { label: "Inventory", href: "/inventory", icon: Package },
-  { label: "Display", href: "/inventory/display", icon: Layers },
-  { label: "Lens Options", href: "/inventory/options", icon: Settings2 },
-  { label: "Lens Packages", href: "/inventory/packages", icon: Boxes },
-  { label: "Stock Transfers", href: "/transfers", icon: ArrowRightLeft },
-  { label: "Transfer Approvals", href: "/transfers/approvals", icon: ClipboardCheck },
-  { label: "Stock Audit", href: "/stock-audits", icon: ClipboardList },
-
-  // 6. Procurement
-  { label: "Purchase Orders", href: "/purchases", icon: ClipboardCheck },
-  { label: "Purchase Invoices", href: "/purchase-invoices", icon: ReceiptText },
-  { label: "Suppliers", href: "/suppliers", icon: Truck },
-
-  // 7. Workshop & Lab
-  { label: "Workshop & Lab", href: "/workshop", icon: Wrench },
-  { label: "Lab Technician", href: "/lab-tech", icon: Hammer, roles: ["lab_technician", "owner", "admin", "branch_manager"] },
-  { label: "Repairs", href: "/repairs", icon: Hammer },
-  { label: "Dispensing", href: "/dispensing", icon: PackageCheck },
-  { label: "Quality Control", href: "/quality-control", icon: ClipboardCheck },
-
-  // 8. Finance & Accounts
-  {
-    label: "Finance", icon: DollarSign,
-    children: [
-      { label: "Overview", href: "/finance", icon: DollarSign },
-      { label: "Cashbook", href: "/finance?tab=Cashbook", icon: Wallet },
-      { label: "Sales Report", href: "/finance/reports", icon: TrendingUp },
-      { label: "GSTR-1 Export", href: "/finance/gstr1", icon: FileBarChart },
-      { label: "Accountant Export", href: "/accountant-export", icon: FileBarChart },
-      { label: "Expenses", href: "/expenses", icon: Receipt },
-      { label: "Bank Reconciliation", href: "/bank-reconciliation", icon: Banknote },
-    ],
-  },
-
-  // 9. Staff & Payroll
-  { label: "Staff", href: "/staff", icon: UserCheck },
-  { label: "Attendance", href: "/staff/attendance", icon: Activity },
-  { label: "Leave Management", href: "/staff/leave", icon: Calendar },
-  { label: "Payroll", href: "/payroll", icon: Wallet },
-
-  // 10. Customer Engagement
-  { label: "Communications", href: "/communications", icon: Megaphone },
-  { label: "Loyalty & Referrals", href: "/loyalty", icon: Heart },
-
-  // 11. Branches
-  { label: "Branches", href: "/branches", icon: Store },
-  { label: "Branch Comparison", href: "/owner-dashboard/branch-comparison", icon: BarChart3, roles: ["owner", "admin"] },
-  { label: "Branch Inventory", href: "/owner-dashboard/branch-inventory", icon: Package, roles: ["owner", "admin", "branch_manager"] },
-
-  // 12. Reports & Analytics
-  {
-    label: "Reports", icon: FileBarChart,
-    children: [
-      { label: "Company Overview", href: "/reports/company-overview", icon: Building2 },
-      { label: "Branch Comparison", href: "/reports/branch-comparison", icon: TrendingUp },
-    ],
-  },
-
-  // 13. Website Management
-  {
-    label: "Website", icon: Globe,
-    children: [
-      { label: "Website Studio", href: "/website", icon: Globe },
-      { label: "Pages", href: "/website/pages", icon: FileText },
-      { label: "Coupons", href: "/website/coupons", icon: Tag },
-    ],
-  },
-
-  // 14. Settings & Security
-  { label: "Settings", href: "/settings", icon: Settings },
-  { label: "Roles & Permissions", href: "/settings/roles", icon: Shield, roles: ["owner", "admin"] },
-  { label: "Store Domains", href: "/settings/domains", icon: Globe },
-  { label: "Security", href: "/settings/security", icon: Lock, roles: ["owner", "admin"] },
-  { label: "Integrations", href: "/settings/integrations", icon: Zap, roles: ["owner", "admin"] },
-  { label: "Backup", href: "/settings/backup", icon: HardDrive, roles: ["owner", "admin"] },
-  { label: "Audit Log", href: "/audit", icon: FileText },
-
-  // 15. Subscription & Billing
-  { label: "Subscription", href: "/subscription", icon: CreditCard },
-  { label: "Usage", href: "/subscription/usage", icon: BarChart3 },
-  { label: "Invoices", href: "/subscription/invoices", icon: ReceiptText },
-
-  // 16. Platform Administration (admin only)
-  { label: "Platform", href: "/platform", icon: Building2, roles: ["platform_admin"] },
-  { label: "Companies", href: "/platform/companies", icon: Building2, roles: ["platform_admin"] },
-  { label: "Plans", href: "/platform/plans", icon: CreditCard, roles: ["platform_admin"] },
-  { label: "Subscriptions", href: "/platform/subscriptions", icon: Wallet, roles: ["platform_admin"] },
-  { label: "Billing", href: "/platform/billing", icon: DollarSign, roles: ["platform_admin"] },
-  { label: "Support", href: "/platform/support", icon: LifeBuoy, roles: ["platform_admin"] },
-  { label: "Announcements", href: "/platform/announcements", icon: Megaphone, roles: ["platform_admin"] },
-  { label: "Maintenance", href: "/platform/maintenance", icon: Settings, roles: ["platform_admin"] },
-  { label: "Security", href: "/platform/security", icon: Shield, roles: ["platform_admin"] },
-  { label: "Backup", href: "/platform/backup", icon: HardDrive, roles: ["platform_admin"] },
-
-  // Other
-  { label: "Setup checklist", href: "/setup", icon: ClipboardCheck },
-  { label: "Store Domains", href: "/settings/domains", icon: Globe },
-  { label: "Offline Sync", href: "/offline-sync", icon: WifiOff },
+const NAV: NavEntry[] = [
+  { label: "Dashboard", icon: LayoutDashboard, children: [
+    { label: "Overview", href: "/", icon: LayoutDashboard },
+    { label: "Owner Dashboard", href: "/owner-dashboard", icon: Building2 },
+    { label: "Branch Dashboard", href: "/branch-dashboard", icon: Store },
+    { label: "Employee Dashboard", href: "/employee-dashboard", icon: Users },
+    { label: "Branch Comparison", href: "/owner-dashboard/branch-comparison", icon: BarChart3 },
+    { label: "Branch Inventory", href: "/owner-dashboard/branch-inventory", icon: Package },
+  ]},
+  { label: "Customers & CRM", icon: Users, children: [
+    { label: "Customers", href: "/customers", icon: Users },
+    { label: "CRM", href: "/crm", icon: MessageCircle },
+    { label: "Inbox", href: "/inbox", icon: Bell },
+  ]},
+  { label: "Clinical", icon: Stethoscope, children: [
+    { label: "Appointments", href: "/appointments", icon: CalendarDays },
+    { label: "Prescriptions", href: "/prescriptions", icon: FileText },
+    { label: "Consultations", href: "/consultations", icon: Eye },
+    { label: "LPIMS", href: "/lpims", icon: Glasses },
+  ]},
+  { label: "Sales & POS", icon: ShoppingCart, children: [
+    { label: "Sales & Orders", href: "/sales", icon: ShoppingCart },
+    { label: "Web Orders", href: "/web-orders", icon: Globe },
+  ]},
+  { label: "Inventory", icon: Package, children: [
+    { label: "Inventory", href: "/inventory", icon: Package },
+    { label: "Stock Transfers", href: "/transfers", icon: ArrowLeftRight },
+    { label: "Transfer Approvals", href: "/transfers/approvals", icon: ClipboardCheck },
+    { label: "Stock Audits", href: "/stock-audits", icon: Boxes },
+  ]},
+  { label: "Procurement", icon: Truck, children: [
+    { label: "Purchase Orders", href: "/purchases", icon: ClipboardCheck },
+    { label: "Purchase Invoices", href: "/purchase-invoices", icon: Receipt },
+    { label: "Suppliers", href: "/suppliers", icon: Truck },
+  ]},
+  { label: "Workshop & Lab", icon: Wrench, children: [
+    { label: "Workshop", href: "/workshop", icon: Wrench },
+    { label: "Repairs", href: "/repairs", icon: Glasses },
+    { label: "Dispensing", href: "/dispensing", icon: Package },
+    { label: "Quality Control", href: "/quality-control", icon: ClipboardCheck },
+  ]},
+  { label: "Finance & Accounts", icon: Wallet, children: [
+    { label: "Finance Overview", href: "/finance", icon: Wallet },
+    { label: "Finance Reports", href: "/finance/reports", icon: FileBarChart },
+    { label: "GSTR-1", href: "/finance/gstr1", icon: FileText },
+    { label: "Accountant Export", href: "/accountant-export", icon: FileBarChart },
+    { label: "Expenses", href: "/expenses", icon: Receipt },
+    { label: "Bank Reconciliation", href: "/bank-reconciliation", icon: Banknote },
+  ]},
+  { label: "Staff & Payroll", icon: UserCheck, children: [
+    { label: "Staff", href: "/staff", icon: Users },
+    { label: "Attendance", href: "/staff/attendance", icon: Activity },
+    { label: "Leave", href: "/staff/leave", icon: CalendarDays },
+    { label: "Payroll", href: "/payroll", icon: Wallet },
+  ]},
+  { label: "Customer Engagement", icon: Heart, children: [
+    { label: "Communications", href: "/communications", icon: Megaphone },
+    { label: "Loyalty", href: "/loyalty", icon: Heart },
+  ]},
+  { label: "Branches", icon: Store, children: [
+    { label: "Branch Directory", href: "/branches", icon: Store },
+  ]},
+  { label: "Reports & Analytics", icon: BarChart3, children: [
+    { label: "Reports", href: "/reports", icon: FileBarChart },
+    { label: "Branch Comparison", href: "/reports/branch-comparison", icon: BarChart3 },
+    { label: "Company Overview", href: "/reports/company-overview", icon: Building2 },
+  ]},
+  { label: "Website Management", icon: Globe, children: [
+    { label: "Website Studio", href: "/website", icon: Globe },
+    { label: "Pages", href: "/website/pages", icon: FileText },
+    { label: "Coupons", href: "/website/coupons", icon: Tag },
+  ]},
+  { label: "Settings & Security", icon: Settings, children: [
+    { label: "Settings", href: "/settings", icon: Settings },
+    { label: "Roles & Permissions", href: "/settings/roles", icon: Shield },
+    { label: "Domains", href: "/settings/domains", icon: Globe },
+    { label: "Security", href: "/settings/security", icon: Lock },
+    { label: "Integrations", href: "/settings/integrations", icon: Zap },
+    { label: "Backups", href: "/settings/backup", icon: HardDrive },
+    { label: "Audit Log", href: "/audit", icon: FileText },
+  ]},
+  { label: "Subscription & Billing", icon: CreditCard, children: [
+    { label: "Subscription", href: "/subscription", icon: CreditCard },
+    { label: "Usage", href: "/subscription/usage", icon: BarChart3 },
+    { label: "Invoices", href: "/subscription/invoices", icon: Receipt },
+  ]},
 ];
 
-function NavLink({ item, depth = 0, onNavigate, collapsed = false }: { item: NavItem; depth?: number; onNavigate?: () => void; collapsed?: boolean }) {
-  const path = usePathname();
-  const [open, setOpen] = useState(() => item.children?.some(c => path.startsWith(c.href)) ?? false);
-
-  if (item.children) {
-    const anyActive = item.children.some(c => path === c.href || path.startsWith(c.href + "/"));
-    return (
-      <div>
-        <button onClick={() => setOpen(o => !o)}
-          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${anyActive ? "text-orange-400 bg-white/5 font-semibold" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}>
-          <item.icon size={17} className={anyActive ? "text-orange-400" : "text-slate-400"} />
-          <span className="flex-1 text-left">{item.label}</span>
-          {open ? <ChevronDown size={14} className="text-slate-500" /> : <ChevronRight size={14} className="text-slate-500" />}
-        </button>
-        {open && (
-          <div className="ml-4 mt-0.5 space-y-0.5 border-l border-slate-700 pl-3">
-            {item.children.map(c => <NavLink key={c.href} item={c} depth={1} onNavigate={onNavigate} />)}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  const active = item.href === "/" ? path === "/" : path === item.href || path.startsWith(item.href + "/");
-  if (collapsed) {
-    return (
-      <Link href={item.href!} onClick={onNavigate} title={item.label}
-        className={`flex items-center justify-center rounded-xl px-2 py-2.5 text-sm font-medium transition ${active ? "bg-orange-500/20 text-orange-400" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}>
-        <item.icon size={18} className={active ? "text-orange-400" : "text-slate-500"} />
-      </Link>
-    );
-  }
-  return (
-    <Link href={item.href!} onClick={onNavigate}
-      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${active ? "bg-orange-500/20 text-orange-400 font-semibold" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}>
-      <item.icon size={17} className={active ? "text-orange-400" : "text-slate-500"} />
-      <span className="flex-1">{item.label}</span>
-      {item.badge && <span className="rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold text-white">{item.badge}</span>}
-    </Link>
-  );
+const ROLE_ONLY: Record<string, string[]> = {
+  "/settings/roles": ["owner", "admin"],
+  "/settings/security": ["owner", "admin"],
+  "/settings/integrations": ["owner", "admin"],
+  "/settings/backup": ["owner", "admin"],
+  "/website": ["owner", "admin"],
+  "/website/pages": ["owner", "admin"],
+  "/website/coupons": ["owner", "admin"],
+  "/staff": ["owner", "admin"],
+  "/staff/attendance": ["owner", "admin"],
+  "/staff/leave": ["owner", "admin"],
+  "/branches": ["owner", "admin", "branch_manager"],
+  "/subscription": ["owner", "admin"],
+  "/subscription/usage": ["owner", "admin"],
+  "/subscription/invoices": ["owner", "admin"],
+};
+function allowed(href: string, user?: { role: string; perms?: string[] }) {
+  const path = href.split("?")[0];
+  const role = user?.role ?? "";
+  const roles = ROLE_ONLY[path];
+  return (!roles || roles.includes(role)) && routeAllowed(role, path, user?.perms ?? []);
+}
+function activePath(path: string, href: string) {
+  const target = href.split("?")[0];
+  return target === "/" ? path === "/" : path === target || path.startsWith(target + "/");
+}
+function titleCase(value: string) {
+  return value.split("/").filter(Boolean).map(s => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())).join(" / ");
 }
 
-export function Shell({ children, user, branches, settings, tenantName, scope = null }: {
-  scope?: string | null;
-  children: React.ReactNode;
+function NavGroup({ item, path, collapsed, onNavigate, onExpand }: {
+  item: NavEntry; path: string; collapsed: boolean; onNavigate: () => void; onExpand: () => void;
+}) {
+  const leaves = isGroup(item) ? item.children : [item];
+  const active = leaves.some(x => activePath(path, x.href));
+  const [open, setOpen] = useState(active);
+  useEffect(() => { if (active) setOpen(true); }, [active]);
+  if (!isGroup(item)) {
+    return <Link href={item.href} onClick={onNavigate} title={collapsed ? item.label : undefined}
+      aria-current={active ? "page" : undefined}
+      className={`group flex min-h-10 items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${collapsed ? "justify-center px-2" : ""} ${active ? "bg-orange-500/15 text-orange-300" : "text-slate-300 hover:bg-white/7 hover:text-white"}`}>
+      <item.icon size={17} className={active ? "text-orange-400" : "text-slate-400"} />
+      {!collapsed && <span className="truncate">{item.label}</span>}
+    </Link>;
+  }
+  return <div>
+    <button type="button" onClick={() => { if (collapsed) { onExpand(); setOpen(true); } else setOpen(v => !v); }}
+      title={collapsed ? item.label : undefined} aria-expanded={open}
+      className={`flex min-h-10 w-full items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${collapsed ? "justify-center px-2" : ""} ${active ? "text-orange-300" : "text-slate-300 hover:bg-white/7 hover:text-white"}`}>
+      <item.icon size={17} className={active ? "text-orange-400" : "text-slate-400"} />
+      {!collapsed && <><span className="flex-1 truncate text-left">{item.label}</span><ChevronDown size={14} className={`transition-transform ${open ? "rotate-180" : ""}`} /></>}
+    </button>
+    {open && !collapsed && <div className="ml-5 mt-1 space-y-0.5 border-l border-slate-700/80 pl-2">
+      {leaves.map(leaf => <Link key={leaf.href} href={leaf.href} onClick={onNavigate}
+        aria-current={activePath(path, leaf.href) ? "page" : undefined}
+        className={`flex min-h-9 items-center gap-2.5 rounded-md px-2.5 py-2 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 ${activePath(path, leaf.href) ? "bg-orange-500/15 font-semibold text-orange-300" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}>
+        <leaf.icon size={15} /><span>{leaf.label}</span>
+      </Link>)}
+    </div>}
+  </div>;
+}
+
+export function Shell({ children, user, branches, tenantName, scope = null, pendingApprovals = 0, canSeeApprovals = false }: {
+  scope?: string | null; children: React.ReactNode;
   user?: { name: string; role: string; perms?: string[] };
-  branches?: { id: string; name: string }[];
-  settings?: any;
-  tenantName?: string;
+  branches?: { id: string; name: string }[]; settings?: any; tenantName?: string;
+  pendingApprovals?: number; canSeeApprovals?: boolean;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [palOpen, setPalOpen] = useState(false);
   const path = usePathname();
   const router = useRouter();
 
-  // Persist sidebar collapse state
-  useEffect(() => {
-    const saved = localStorage.getItem("sidebar-collapsed");
-    if (saved === "true") setCollapsed(true);
-  }, []);
-
-  const toggleCollapse = () => {
-    setCollapsed(c => {
-      localStorage.setItem("sidebar-collapsed", String(!c));
-      return !c;
-    });
-  };
-
-  // Ctrl/⌘+K opens the command palette from anywhere in the app.
+  useEffect(() => { try { setCollapsed(localStorage.getItem("poweros.sidebar.collapsed") === "true"); } catch {} }, []);
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalOpen(o => !o); }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalOpen(v => !v); }
+      if (e.key === "Escape") { setCreateOpen(false); setProfileOpen(false); setSidebarOpen(false); }
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, []);
+  useEffect(() => { setSidebarOpen(false); setCreateOpen(false); setProfileOpen(false); }, [path]);
+  const toggleCollapse = () => setCollapsed(v => {
+    try { localStorage.setItem("poweros.sidebar.collapsed", String(!v)); } catch {}
+    return !v;
+  });
+  const visibleNav = useMemo(() => NAV.map(entry => {
+    if (!isGroup(entry)) return allowed(entry.href, user) ? entry : null;
+    const children = entry.children.filter(c => allowed(c.href, user));
+    return children.length ? { ...entry, children } : null;
+  }).filter(Boolean) as NavEntry[], [user]);
+  const createItems = [
+    { label: "New Customer", href: "/customers?new=1", icon: Users },
+    { label: "New Sale", href: "/sales?new=1", icon: ShoppingCart },
+    { label: "New Appointment", href: "/appointments?new=1", icon: CalendarDays },
+    { label: "New Prescription", href: "/prescriptions?new=1", icon: FileText },
+    { label: "New Purchase", href: "/purchases?new=1", icon: ClipboardCheck },
+    { label: "New Repair", href: "/repairs?new=1", icon: Glasses },
+    { label: "New Expense", href: "/expenses", icon: Receipt },
+  ].filter(x => allowed(x.href, user));
+  const pageTitle = path === "/" ? "Dashboard" : titleCase(path);
+  const crumbs = path.split("/").filter(Boolean);
+  const roleLabel = (user?.role ?? "User").replace(/_/g, " ");
 
-  // Role-based redirect on mount
-  useEffect(() => {
-    const redirects: Record<string, string> = {
-      owner: "/owner-dashboard", admin: "/", branch_manager: "/branch-dashboard",
-      optometrist: "/optometrist", receptionist: "/receptionist",
-      sales_executive: "/sales/pos", cashier: "/cashier",
-      lab_technician: "/lab-tech", accountant: "/finance",
-      platform_admin: "/platform",
-    };
-    // Only redirect on initial load (root path)
-    if (path === "/" && user?.role && redirects[user.role]) {
-      // Don't redirect if already on the right page
-    }
-  }, [user, path]);
-
-  const filteredNav = NAV.filter(item => {
-    if (item.roles && user?.role && !item.roles.includes(user.role)) return false;
-    return visible(item, user) !== null;
-  }).map(item => visible(item, user)!).filter(Boolean);
-
-  return (
-    <div className="flex h-screen bg-slate-100 overflow-hidden">
-      {/* Mobile overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity" onClick={() => setSidebarOpen(false)} />)}
-
-      {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 flex flex-col bg-navy-900 transition-all duration-300 lg:static ${collapsed ? "w-16" : "w-64"} ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        {/* Logo */}
-        <div className={`flex h-14 shrink-0 items-center border-b border-white/10 ${collapsed ? "justify-center px-2" : "justify-between px-4"}`}>
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="grid h-8 w-8 place-items-center rounded-lg bg-orange-500 text-white font-bold text-sm select-none shrink-0">👁</div>
-            {!collapsed && (
-              <div className="min-w-0">
-                <p className="font-extrabold text-sm text-white leading-tight truncate">PowerOS</p>
-                <p className="text-[9px] text-slate-400 tracking-wider uppercase truncate">{tenantName || "Power Eyes Opticals"}</p>
-              </div>
-            )}
-          </div>
-          {!collapsed && (
-            <button onClick={() => setSidebarOpen(false)} className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white lg:hidden" aria-label="Close menu">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-            </button>
-          )}
-        </div>
-
-        {/* Branch selector */}
-        {!collapsed && user && (
-          <div className="px-3 py-2 border-b border-white/10">
-            <BranchSwitcher branches={branches ?? []} scope={scope} />
-          </div>
-        )}
-
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5 scrollbar-thin scrollbar-thumb-white/10">
-          {filteredNav.map(item => (
-            <NavLink key={item.label} item={item} onNavigate={() => setSidebarOpen(false)} collapsed={collapsed} />
-          ))}
-        </nav>
-
-        {/* Collapse toggle (desktop) */}
-        <div className="hidden lg:flex border-t border-white/10 p-2">
-          <button onClick={toggleCollapse} className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-400 hover:bg-white/5 hover:text-white transition" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
-            {collapsed ? <ChevronRightIcon size={16} /> : <><ChevronLeft size={16} /><span>Collapse</span></>}
-          </button>
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-white/10 p-2">
-          <form action="/api/logout" method="POST">
-            <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition">
-              <LogOut size={16} />
-              {!collapsed && <span>Sign out</span>}
-            </button>
-          </form>
-        </div>
-      </aside>
-
-      {/* Main */}
-      <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
-        {/* Top bar */}
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 z-10 shadow-sm">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(o => !o)} className="rounded-lg p-1.5 text-slate-600 hover:bg-slate-100 active:scale-95 lg:hidden" aria-label="Toggle navigation">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-            </button>
-            {/* Breadcrumbs */}
-            <nav className="hidden sm:flex items-center gap-1 text-sm text-slate-500">
-              <span className="font-medium text-navy-900">PowerOS</span>
-              {path !== "/" && (
-                <>
-                  <ChevronRight size={14} className="text-slate-300" />
-                  <span className="font-medium text-slate-700 capitalize">{path.split("/").filter(Boolean).join(" / ").replace(/-/g, " ")}</span>
-                </>
-              )}
-            </nav>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm text-slate-600">
-            {/* Global Search */}
-            <button onClick={() => setPalOpen(true)} className="hidden md:flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 text-xs text-slate-500 hover:bg-slate-100 hover:border-slate-300 transition" aria-label="Search (Ctrl+K)">
-              <Search size={13} /> Search anything... <kbd className="rounded bg-white border border-slate-200 px-1.5 py-px font-sans text-[10px] text-slate-400">⌘K</kbd>
-            </button>
-
-            {/* Quick Create */}
-            <div className="relative group">
-              <button className="flex items-center gap-1 rounded-full bg-orange-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-orange-600 transition shadow-sm" aria-label="Quick create">
-                <Plus size={14} /> <span className="hidden sm:inline">Create</span>
-              </button>
-              <div className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-slate-200 bg-white shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                <div className="p-1">
-                  {[
-                    { label: "New Customer", href: "/customers?new=1", icon: Users },
-                    { label: "New Sale", href: "/sales?new=1", icon: ShoppingCart },
-                    { label: "New Appointment", href: "/appointments?new=1", icon: Calendar },
-                    { label: "New Prescription", href: "/prescriptions?new=1", icon: FileText },
-                    { label: "New Purchase", href: "/purchases?new=1", icon: ClipboardCheck },
-                    { label: "New Repair", href: "/repairs?new=1", icon: Hammer },
-                    { label: "New Expense", href: "/expenses", icon: Receipt },
-                  ].map(item => (
-                    <Link key={item.href} href={item.href} className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">
-                      <item.icon size={14} className="text-slate-400" /> {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Notifications */}
-            <button className="relative rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition" aria-label="Notifications">
-              <Bell size={18} />
-            </button>
-
-            {/* Branch switcher */}
-            {user && <BranchSwitcher branches={branches ?? []} scope={scope} />}
-
-            {/* User profile */}
-            {user && (
-              <span className="hidden sm:flex items-center gap-2 text-xs text-slate-500" title={branches?.length ? `${branches.length} branch${branches.length > 1 ? "es" : ""}` : undefined}>
-                <span className="grid h-6 w-6 place-items-center rounded-full bg-navy-800 font-bold text-[10px] text-white">{(user.name || "?").slice(0, 1).toUpperCase()}</span>
-                <span className="font-medium text-navy-900">{user.name}</span>
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold capitalize text-slate-500">{user.role}</span>
-              </span>
-            )}
-
-            {/* Website link */}
-            <a href={process.env.NEXT_PUBLIC_WEB_URL || "#"} target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-1 hover:text-navy-700 text-xs font-semibold px-2 py-1 rounded-lg hover:bg-slate-50 transition">
-              <ExternalLink size={12} /> Website
-            </a>
-          </div>
-        </header>
-
-        {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <ScopeProvider value={scope}>{children}</ScopeProvider>
-        </main>
-
-        {/* Footer */}
-        <footer className="shrink-0 border-t border-slate-200 bg-white px-4 sm:px-6 py-2 flex items-center justify-between text-xs text-slate-400">
-          <div className="flex items-center gap-4">
-            <span>© {new Date().getFullYear()} PowerOS · {tenantName || "Power Eyes Opticals"}</span>
-            <span className="hidden sm:inline">·</span>
-            <span className="hidden sm:inline">v{process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-slate-600 transition">Privacy</Link>
-            <Link href="/terms" className="hover:text-slate-600 transition">Terms</Link>
-            <Link href="/help" className="hover:text-slate-600 transition">Help</Link>
-            <span className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="hidden sm:inline">Online</span>
-            </span>
-          </div>
-        </footer>
+  return <div className="flex h-[100dvh] overflow-hidden bg-slate-50 text-slate-900">
+    {sidebarOpen && <button aria-label="Close navigation overlay" className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-[2px] lg:hidden" onClick={() => setSidebarOpen(false)} />}
+    <aside className={`fixed inset-y-0 left-0 z-50 flex w-[272px] flex-col bg-[#101e32] text-white shadow-2xl transition-all duration-200 lg:static lg:translate-x-0 lg:shadow-none ${collapsed ? "lg:w-[76px]" : "lg:w-[272px]"} ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`flex h-16 shrink-0 items-center border-b border-white/10 ${collapsed ? "justify-center px-2" : "justify-between px-4"}`}>
+        <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="PowerOS home">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-orange-500 text-lg font-black text-white">P</span>
+          {!collapsed && <span className="min-w-0"><span className="block text-[15px] font-bold tracking-tight">PowerOS</span><span className="block truncate text-[10px] uppercase tracking-[.14em] text-slate-400">{tenantName || "Optical ERP"}</span></span>}
+        </Link>
+        <button className="rounded-md p-1.5 text-slate-400 hover:bg-white/10 lg:hidden" onClick={() => setSidebarOpen(false)} aria-label="Close menu"><X size={18} /></button>
       </div>
-      <CommandPalette open={palOpen} onClose={() => setPalOpen(false)} role={user?.role} perms={user?.perms} />
-    </div>
-  );
-}
+      {!collapsed && user && <div className="border-b border-white/10 px-3 py-3"><BranchSwitcher branches={branches ?? []} scope={scope} /></div>}
+      <nav aria-label="Main navigation" className="flex-1 space-y-1 overflow-y-auto px-2.5 py-3">
+        {visibleNav.map((item) => <NavGroup key={item.label} item={item} path={path} collapsed={collapsed} onNavigate={() => setSidebarOpen(false)} onExpand={() => { try { localStorage.setItem("poweros.sidebar.collapsed", "false"); } catch {} setCollapsed(false); }} />)}
+      </nav>
+      <div className="border-t border-white/10 p-2">
+        <button onClick={toggleCollapse} className="hidden min-h-10 w-full items-center justify-center gap-2 rounded-lg px-3 text-xs text-slate-400 hover:bg-white/5 hover:text-white lg:flex" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+          {collapsed ? <ChevronRight size={16} /> : <><ChevronLeft size={16} /><span>Collapse sidebar</span></>}
+        </button>
+        <form action="/api/logout" method="POST"><button className={`flex min-h-10 w-full items-center gap-3 rounded-lg px-3 text-sm text-slate-400 transition hover:bg-rose-500/10 hover:text-rose-300 ${collapsed ? "justify-center" : ""}`}><LogOut size={16} />{!collapsed && "Sign out"}</button></form>
+      </div>
+    </aside>
 
-// Need to update NavLink to accept collapsed prop
-function NavLinkWrapper(props: any) {
-  return <NavLink {...props} />;
+    <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <header className="z-30 flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200/80 bg-white px-3 shadow-[0_1px_2px_rgba(15,23,42,.03)] sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <button onClick={() => setSidebarOpen(true)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 lg:hidden" aria-label="Open navigation"><Menu size={19} /></button>
+          <button onClick={toggleCollapse} className="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:inline-flex" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>{collapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}</button>
+          <div className="min-w-0">
+            <nav aria-label="Breadcrumb" className="hidden items-center gap-1 truncate text-[11px] text-slate-400 sm:flex">
+              <Link href="/" className="hover:text-slate-700">PowerOS</Link>
+              {crumbs.map((crumb, i) => <span key={`${crumb}-${i}`} className="inline-flex items-center gap-1"><ChevronRight size={12} /><span className={i === crumbs.length - 1 ? "font-medium text-slate-600" : ""}>{titleCase(crumb)}</span></span>)}
+            </nav>
+            <h1 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{pageTitle}</h1>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <button onClick={() => setPalOpen(true)} className="hidden h-9 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-500 hover:border-slate-300 hover:bg-white md:flex" aria-label="Search PowerOS (Control K)"><Search size={14} /><span>Search</span><kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px]">Ctrl K</kbd></button>
+          {user && <div className="hidden xl:block"><BranchSwitcher branches={branches ?? []} scope={scope} /></div>}
+          <div className="relative">
+            <button onClick={() => setCreateOpen(v => !v)} aria-expanded={createOpen} aria-label="Quick create" className="flex h-9 items-center gap-1.5 rounded-lg bg-orange-500 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2"><Plus size={15} /><span className="hidden sm:inline">Create</span></button>
+            {createOpen && <div className="absolute right-0 top-11 z-50 w-56 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+              {createItems.length ? createItems.map(item => <Link key={item.href} href={item.href} onClick={() => setCreateOpen(false)} className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"><item.icon size={15} className="text-slate-400" />{item.label}</Link>) : <p className="p-3 text-xs text-slate-500">No create actions are available for this role.</p>}
+            </div>}
+          </div>
+          <button onClick={() => router.push("/inbox")} aria-label="Open notifications and inbox" title="Notifications and alerts" className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800"><Bell size={18} /></button>
+          {canSeeApprovals && <button onClick={() => router.push("/transfers/approvals")} aria-label={`${pendingApprovals} pending transfer approvals`} title="Pending transfer approvals" className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-800"><ClipboardCheck size={18} />{pendingApprovals > 0 && <span className="absolute -right-0.5 -top-0.5 min-w-4 rounded-full bg-orange-500 px-1 text-center text-[9px] font-bold leading-4 text-white">{pendingApprovals > 99 ? "99+" : pendingApprovals}</span>}</button>}
+          {user && <div className="relative">
+            <button onClick={() => setProfileOpen(v => !v)} aria-expanded={profileOpen} className="flex h-9 items-center gap-2 rounded-lg px-1.5 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-[#14243b] text-xs font-bold text-white">{(user.name || "U").slice(0,1).toUpperCase()}</span>
+              <span className="hidden max-w-28 text-left sm:block"><span className="block truncate text-xs font-semibold text-slate-800">{user.name}</span><span className="block truncate text-[10px] capitalize text-slate-500">{roleLabel}</span></span><ChevronDown size={13} className="hidden text-slate-400 sm:block" />
+            </button>
+            {profileOpen && <div className="absolute right-0 top-11 z-50 w-52 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+              <div className="border-b border-slate-100 px-3 py-2"><p className="truncate text-xs font-semibold">{user.name}</p><p className="text-[10px] capitalize text-slate-500">{roleLabel}</p></div>
+              <Link href="/settings" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Settings</Link>
+              <Link href="/support" onClick={() => setProfileOpen(false)} className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Help & Support</Link>
+              <form action="/api/logout" method="POST"><button className="w-full rounded-lg px-3 py-2 text-left text-sm text-rose-600 hover:bg-rose-50">Sign out</button></form>
+            </div>}
+          </div>}
+        </div>
+      </header>
+      <main className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-5 lg:p-7"><ScopeProvider value={scope}>{children}</ScopeProvider></main>
+      <footer className="flex min-h-10 shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-slate-200 bg-white px-3 py-2 text-[10px] text-slate-400 sm:px-5">
+        <div className="flex flex-wrap items-center gap-x-3"><span>© 2026 PowerOS</span><span className="hidden sm:inline">·</span><span className="max-w-48 truncate">{tenantName || "Power Eyes Opticals"}</span><span className="hidden md:inline">v{process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}</span></div>
+        <div className="flex items-center gap-3"><Link href="/support" className="hover:text-slate-700">Help & Support</Link><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Application</span></div>
+      </footer>
+    </div>
+    <CommandPalette open={palOpen} onClose={() => setPalOpen(false)} role={user?.role} perms={user?.perms} />
+  </div>;
 }

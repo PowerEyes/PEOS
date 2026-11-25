@@ -48,7 +48,7 @@ const RULES: [string, Role[]][] = [
   ["/audit", ADMIN],
 ];
 // Routes gated by a configurable permission (Staff → Permissions). Owners/admins always pass.
-const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"]];
+const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"], ["/transfers/approvals", "transfers_approve"]];
 export const PERMISSIONS = [
   { key: "finance_view", label: "View finance, cashbook & purchase invoices" },
   { key: "expenses", label: "Record expenses" },
@@ -64,9 +64,52 @@ export const PERMISSIONS = [
   { key: "web_orders", label: "Manage online order fulfilment" },
   { key: "credit_notes.issue", label: "Issue credit notes and refunds" },
 ] as const;
+const SPECIAL_ROUTE_ROLES: Record<string, string[]> = {
+  "/owner-dashboard/branch-comparison": ["owner", "admin"],
+  "/owner-dashboard/branch-inventory": ["owner", "admin", "branch_manager"],
+  "/owner-dashboard": ["owner", "admin"],
+  "/branch-dashboard": ["owner", "admin", "branch_manager"],
+  "/employee-dashboard": ["optometrist", "receptionist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant", "staff", "owner", "admin", "branch_manager"],
+  "/optometrist": ["optometrist", "owner", "admin", "branch_manager"],
+  "/receptionist": ["receptionist", "owner", "admin", "branch_manager"],
+  "/sales/pos": ["sales_executive", "cashier", "owner", "admin", "branch_manager"],
+  "/cashier": ["cashier", "owner", "admin", "branch_manager"],
+  "/lab-tech": ["lab_technician", "owner", "admin", "branch_manager"],
+  "/consultations": ["optometrist", "owner", "admin", "branch_manager"],
+  "/lpims": ["optometrist", "inventory_manager", "owner", "admin", "branch_manager"],
+  "/appointments": ["optometrist", "receptionist", "sales_executive", "owner", "admin", "branch_manager"],
+  "/prescriptions": ["optometrist", "receptionist", "owner", "admin", "branch_manager"],
+  "/crm": ["owner", "admin", "branch_manager"],
+  "/sales": ["sales_executive", "cashier", "owner", "admin", "branch_manager"],
+  "/web-orders": ["sales_executive", "owner", "admin", "branch_manager"],
+  "/inventory": ["inventory_manager", "owner", "admin", "branch_manager"],
+  "/transfers/approvals": ["inventory_manager", "owner", "admin", "branch_manager"],
+  "/transfers": ["inventory_manager", "owner", "admin", "branch_manager"],
+  "/stock-audits": ["inventory_manager", "owner", "admin", "branch_manager"],
+  "/purchases": ["inventory_manager", "owner", "admin", "branch_manager"],
+  "/purchase-invoices": ["accountant", "inventory_manager", "owner", "admin", "branch_manager"],
+  "/suppliers": ["inventory_manager", "accountant", "owner", "admin", "branch_manager"],
+  "/workshop": ["lab_technician", "owner", "admin", "branch_manager"],
+  "/dispensing": ["lab_technician", "owner", "admin", "branch_manager"],
+  "/quality-control": ["lab_technician", "owner", "admin", "branch_manager"],
+  "/repairs": ["lab_technician", "receptionist", "sales_executive", "owner", "admin", "branch_manager"],
+  "/finance": ["accountant", "owner", "admin", "branch_manager"],
+  "/expenses": ["accountant", "owner", "admin", "branch_manager"],
+  "/payroll": ["accountant", "owner", "admin"],
+  "/communications": ["owner", "admin", "branch_manager"],
+  "/loyalty": ["sales_executive", "owner", "admin", "branch_manager"],
+  "/branches": ["owner", "admin", "branch_manager"],
+  "/reports": ["owner", "admin", "branch_manager"],
+  "/website": ["owner", "admin"],
+  "/staff": ["owner", "admin"],
+  "/settings": ["owner", "admin"],
+  "/subscription": ["owner", "admin"],
+};
 export function routeAllowed(role: string | null | undefined, path: string, perms: string[] = []): boolean {
   const tier = routeTier(role);
   if (!tier) return false;
+  const specialistRoute = Object.entries(SPECIAL_ROUTE_ROLES).sort((a, b) => b[0].length - a[0].length).find(([p]) => path === p || path.startsWith(p + "/"));
+  if (specialistRoute && !specialistRoute[1].includes(role ?? "")) return false;
   const pr = PERM_ROUTES.find(([p]) => path === p || path.startsWith(p + "/"));
   if (pr && !isAdminRole(role) && !perms.includes(pr[1])) return false;
   const hit = RULES.filter(([p]) => path === p || path.startsWith(p + "/")).sort((a, b) => b[0].length - a[0].length)[0];

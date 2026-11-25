@@ -27,6 +27,23 @@ export async function middleware(req: NextRequest) {
   // enforces platform_users. Do not apply tenant RBAC route rules there.
   if (pth === "/platform" || pth.startsWith("/platform/")) return res;
   if (!routeAllowed(p!.role_key, pth, (perms as string[]) ?? [])) return NextResponse.redirect(new URL("/?denied=1", req.url));
+  // Role landing is resolved server-side so the first authenticated navigation is
+  // deterministic and does not briefly render the wrong dashboard.
+  if (pth === "/") {
+    const landing: Record<string, string> = {
+      owner: "/owner-dashboard",
+      admin: "/",
+      branch_manager: "/branch-dashboard",
+      optometrist: "/optometrist",
+      receptionist: "/receptionist",
+      sales_executive: "/sales/pos",
+      cashier: "/cashier",
+      lab_technician: "/lab-tech",
+      accountant: "/finance",
+    };
+    const destination = landing[p!.role_key];
+    if (destination && destination !== "/") return NextResponse.redirect(new URL(destination, req.url));
+  }
   return res;
 }
 export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] };
