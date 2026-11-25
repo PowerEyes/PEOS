@@ -390,14 +390,40 @@ function RxDrawer({
                       <button
                         key={c.id}
                         onClick={() => setCid(c.id)}
-                        className={`flex w-full justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition ${cid === c.id ? "border-gold-500 bg-amber-50" : "border-slate-100 hover:bg-navy-50"}`}
+                        className={`flex w-full justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition ${cid === c.id ? "border-gold-500 bg-amber-50 ring-2 ring-gold-400/30" : "border-slate-100 hover:bg-navy-50"}`}
                       >
-                        <b>{c.full_name}</b>
-                        <span className="text-slate-500">{c.vision_id}</span>
+                        <div className="flex flex-col">
+                          <b className="text-navy-900">{c.full_name}</b>
+                          <span className="text-xs text-slate-500">{c.phone} {c.vision_id ? `· ${c.vision_id}` : ""}</span>
+                        </div>
+                        {cid === c.id && <span className="text-gold-500 text-xs font-medium">Selected</span>}
                       </button>
                     ))}
                   </div>
+                  {list.length === 0 && q.trim() && (
+                    <p className="mt-2 text-sm text-slate-500 text-center py-2">No customers found. <span className="text-navy-700 font-medium">Create a new customer →</span></p>
+                  )}
                 </div>
+              )}
+              {cust && (
+                <div className="rounded-2xl border border-navy-100 bg-navy-50/50 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-navy-900">{cust.full_name}</p>
+                      <p className="text-xs text-slate-500">{cust.phone} · {cust.vision_id}</p>
+                    </div>
+                    <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium">Active</span>
+                  </div>
+                  <div className="flex gap-3 text-xs text-slate-500">
+                    <span>Vision ID: {cust.vision_id}</span>
+                    <span>Customer ID: {cust.id?.slice(0, 8)}</span>
+                  </div>
+                </div>
+              )}
+              {!cid && (
+                <p className="text-sm text-amber-700 bg-amber-50 rounded-xl px-4 py-2.5 text-center">
+                  Select a customer above to enable prescription methods
+                </p>
               )}
               <div className="grid gap-3 sm:grid-cols-3">
                 <button
