@@ -181,6 +181,11 @@ function RxDrawer({
   const [cid, setCid] = useState<string | null>(presetId);
   const [q, setQ] = useState("");
   const [searchResults, setSearchResults] = useState<Cust[]>([]);
+  const getAccessToken = async () => {
+    const sb = supabaseBrowser();
+    const { data } = await sb.auth.getSession();
+    return data.session?.access_token || "";
+  };
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchError, setSearchError] = useState("");
   const [v, setV] = useState<RxValues>(emptyRx());
@@ -224,7 +229,7 @@ function RxDrawer({
     }
   }, [open, presetId]);
   const cust = customers.find((c) => c.id === cid);
-  // Debounced search across name, phone, vision_id, and family_id
+  // Debounced search across name, phone, vision_id, and family_id via API
   useEffect(() => {
     if (!q.trim()) {
       setSearchResults([]);
@@ -236,19 +241,16 @@ function RxDrawer({
     setSearchError("");
     const timer = setTimeout(async () => {
       try {
-        const sb = supabaseBrowser();
-        const term = q.trim().toLowerCase();
-        const { data, error } = await sb
-          .from("customers")
-          .select("id, full_name, phone, vision_id, family_id")
-          .or(`full_name.ilike.%${term}%,phone.ilike.%${term}%,vision_id.ilike.%${term}%,family_id.ilike.%${term}%`)
-          .limit(10);
-        if (error) {
+        const res = await fetch(`/api/customers/search?q=${encodeURIComponent(q.trim())}`, {
+          headers: { Authorization: `Bearer ${await getAccessToken()}` },
+        });
+        if (!res.ok) {
           setSearchError("Search failed. Try again.");
           setSearchResults([]);
-        } else {
-          setSearchResults((data ?? []) as Cust[]);
+          return;
         }
+        const json = await res.json();
+        setSearchResults((json.data ?? []) as Cust[]);
       } catch {
         setSearchError("Search failed. Try again.");
         setSearchResults([]);
@@ -417,20 +419,42 @@ function RxDrawer({
                       className="field pl-9"
                     />
                   </div>
-                  <div className="mt-2 space-y-1">
-                    {list.map((c) => (
+                  <div className="mt-2 space-y-1 max-h-64 overflow-y-auto">
+                    {searchLoading && (
+                      <div className="flex items-center justify-center py-4">
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-navy-200 border-t-navy-700" />
+                        <span className="ml-2 text-sm text-slate-500">Searching...</span>
+                      </div>
+                    )}
+                    {searchError && (
+                      <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 text-center">{searchError}</div>
+                    )}
+                    {!searchLoading && !searchError && list.length === 0 && q.trim() && (
+                      <div className="rounded-xl bg-slate-50 px-4 py-6 text-center">
+                        <p className="text-sm text-slate-500">No customers found</p>
+                        <p className="text-xs text-slate-400 mt-1">Try a different name, phone, Vision ID, or Family ID</p>
+                      </div>
+                    )}
+                    {!searchLoading && !searchError && list.map((c) => (
                       <button
                         key={c.id}
                         onClick={() => setCid(c.id)}
-                        className={`flex w-full justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition ${cid === c.id ? "border-gold-500 bg-amber-50 ring-2 ring-gold-400/30" : "border-slate-100 hover:bg-navy-50"}`}
+                        className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm transition-all ${cid === c.id ? "border-gold-500 bg-amber-50 ring-2 ring-gold-400/30 shadow-sm" : "border-slate-100 hover:bg-navy-50 hover:border-navy-200"}`}
                       >
-                        <div className="flex flex-col">
+                        <div className="flex flex-col gap-0.5">
                           <b className="text-navy-900">{c.full_name}</b>
-                          <span className="text-xs text-slate-500">
-                            {c.phone ? `📞 ${c.phone}` : ""} {c.vision_id ? `· ${c.vision_id}` : ""} {c.family_id ? `· Family: ${c.family_id}` : ""}
-                          </span>
+                          <div className="flex flex-wrap gap-x-3 text-xs text-slate-500">
+                            {c.phone && <span>📞 {c.phone}</span>}
+                            {c.vision_id && <span>👁 {c.vision_id}</span>}
+                            {c.family_id && <span>👨‍👩‍👧 {c.family_id}</span>}
+                          </div>
                         </div>
-                        {cid === c.id && <span className="text-gold-500 text-xs font-medium">Selected</span>}
+                        {cid === c.id && (
+                          <span className="flex items-center gap-1 text-gold-500 text-xs font-medium shrink-0">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                            Selected
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>
