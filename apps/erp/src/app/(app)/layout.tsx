@@ -20,7 +20,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     sb.from("message_templates").select("*").order("sort_order"),
     getSettings(),
   ]);
-  const { data: tenantData } = p?.org_id ? await sb.from("tenants").select("name").eq("id", p.org_id).single() : { data: null };
+  const { data: tenantData } = p?.org_id ? await sb.from("organizations").select("name").eq("id", p.org_id).single() : { data: null };
   const tenantName = tenantData?.name || "Power Eyes Opticals";
   if (!p?.is_approved) {
     return (

@@ -1,2 +1,6 @@
-import { redirect } from "next/navigation";
-export default function Page() { redirect("/finance"); }
+import Link from "next/link";
+import { Building2, FileText, ReceiptText, TrendingUp } from "lucide-react";
+export default function ReportsPage() {
+ const items=[{title:"Finance & cashbook",desc:"Revenue, expenses, cashbook, GST ledger, closing and credit notes.",href:"/finance",icon:ReceiptText},{title:"Company overview",desc:"Organization-wide performance and summary reporting.",href:"/reports/company-overview",icon:Building2},{title:"Branch comparison",desc:"Compare branch performance and operational indicators.",href:"/reports/branch-comparison",icon:TrendingUp},{title:"GSTR-1 export",desc:"Period-based tax data and CSV sections for review/export.",href:"/finance/gstr1",icon:FileText}];
+ return <main className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6"><header><h1 className="font-display text-3xl font-semibold">Reports & Analytics</h1><p className="mt-1 text-sm text-slate-500">Choose a report area. Verify reporting periods and source data before using exports for statutory or business decisions.</p></header><section className="grid gap-3 sm:grid-cols-2">{items.map(x=><Link key={x.href} href={x.href} className="card group p-5 transition hover:-translate-y-0.5 hover:shadow-md"><x.icon size={22} className="mb-3 text-navy-700"/><h2 className="font-semibold text-navy-900">{x.title}</h2><p className="mt-1 text-sm text-slate-500">{x.desc}</p><span className="mt-4 inline-block text-sm font-semibold text-gold-700">Open report →</span></Link>)}</section></main>
+}

@@ -1,3 +1,4 @@
+import { PortalPageHeader } from "@/components/PortalPageHeader";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { getCustomer } from "@/lib/customer";
@@ -9,12 +10,14 @@ const STATUS_LABEL: Record<string,string> = { lab_pending:"In Production",in_wor
 const STATUS_COLOR: Record<string,string> = { lab_pending:"bg-blue-50 text-blue-700",in_workshop:"bg-violet-50 text-violet-700",qc:"bg-orange-50 text-orange-700",ready:"bg-emerald-50 text-emerald-700",delivered:"bg-emerald-50 text-emerald-700",cancelled:"bg-rose-50 text-rose-600",draft:"bg-slate-50 text-slate-600" };
 export default async function OrdersPage() {
   const customer = await getCustomer(); if (!customer) redirect("/my/login");
-  const { data: orders } = await supabaseServer().from("sales").select("id,code,status,payment_status,grand_total,paid_total,needs_lab,created_at,sale_lines(description,qty,line_total)").eq("customer_id", customer.id).eq("kind","order").order("created_at",{ascending:false}).limit(50);
+  const { data: orders, error: ordersError } = await supabaseServer().from("sales").select("id,code,status,payment_status,grand_total,paid_total,needs_lab,created_at,sale_lines(description,qty,line_total)").eq("customer_id", customer.id).eq("kind","order").order("created_at",{ascending:false}).limit(50);
   return (
     <div className="space-y-5">
       <LiveRefresh seconds={30} />
-      <h1 className="font-display text-2xl font-bold text-navy-900">My Orders</h1>
-      {!orders?.length ? (
+      <PortalPageHeader title="My Orders" description="Track order progress, view payment balances, and open an order timeline."/>
+      {ordersError ? (
+        <div role="alert" className="card border-amber-200 p-8 text-center"><p className="font-semibold text-amber-800">Orders unavailable</p><p className="mt-2 text-sm text-slate-500">We could not load your order history. Refresh or contact support if this continues.</p></div>
+      ) : !orders?.length ? (
         <div className="card p-16 text-center"><ShoppingBag size={40} className="mx-auto mb-3 text-slate-300"/><p className="font-semibold text-slate-600">No orders yet</p><Link href="/eyeglasses" className="btn-gold mt-5 inline-flex">Shop Eyeglasses</Link></div>
       ) : (
         <div className="space-y-3">{orders.map(o => {

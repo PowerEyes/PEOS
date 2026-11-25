@@ -29,8 +29,9 @@ import {
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { createPrescription } from "./actions";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 
-type Cust = { id: string; full_name: string; phone: string; vision_id: string; family_id?: string };
+type Cust = { id: string; full_name: string; phone: string; vision_id: string };
 const TONE = { active: "green", expiring: "gold", expired: "red" } as const;
 
 async function shrink(file: File): Promise<Blob> {
@@ -180,14 +181,6 @@ function RxDrawer({
   const [step, setStep] = useState<"start" | "scan" | "values">("start");
   const [cid, setCid] = useState<string | null>(presetId);
   const [q, setQ] = useState("");
-  const [searchResults, setSearchResults] = useState<Cust[]>([]);
-  const getAccessToken = async () => {
-    const sb = supabaseBrowser();
-    const { data } = await sb.auth.getSession();
-    return data.session?.access_token || "";
-  };
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState("");
   const [v, setV] = useState<RxValues>(emptyRx());
   const [check, setCheck] = useState<Set<string>>(new Set());
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -229,39 +222,13 @@ function RxDrawer({
     }
   }, [open, presetId]);
   const cust = customers.find((c) => c.id === cid);
-  // Debounced search across name, phone, vision_id, and family_id via API
-  useEffect(() => {
-    if (!q.trim()) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      setSearchError("");
-      return;
-    }
-    setSearchLoading(true);
-    setSearchError("");
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/customers/search?q=${encodeURIComponent(q.trim())}`, {
-          headers: { Authorization: `Bearer ${await getAccessToken()}` },
-        });
-        if (!res.ok) {
-          setSearchError("Search failed. Try again.");
-          setSearchResults([]);
-          return;
-        }
-        const json = await res.json();
-        setSearchResults((json.data ?? []) as Cust[]);
-      } catch {
-        setSearchError("Search failed. Try again.");
-        setSearchResults([]);
-      } finally {
-        setSearchLoading(false);
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [q]);
-
-  const list = q.trim() ? searchResults : customers.slice(0, 6);
+  const list = customers
+    .filter((c) =>
+      `${c.full_name} ${c.phone} ${c.vision_id}`
+        .toLowerCase()
+        .includes(q.toLowerCase()),
+    )
+    .slice(0, 6);
   const setEye = (s: "od" | "os") => (k: keyof Eye, val: any) => {
     setV((p) => ({ ...p, [s]: { ...p[s], [k]: val } }));
     setCheck((c) => {
@@ -419,75 +386,19 @@ function RxDrawer({
                       className="field pl-9"
                     />
                   </div>
-                  <div className="mt-2 space-y-1 max-h-64 overflow-y-auto">
-                    {searchLoading && (
-                      <div className="flex items-center justify-center py-4">
-                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-navy-200 border-t-navy-700" />
-                        <span className="ml-2 text-sm text-slate-500">Searching...</span>
-                      </div>
-                    )}
-                    {searchError && (
-                      <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700 text-center">{searchError}</div>
-                    )}
-                    {!searchLoading && !searchError && list.length === 0 && q.trim() && (
-                      <div className="rounded-xl bg-slate-50 px-4 py-6 text-center">
-                        <p className="text-sm text-slate-500">No customers found</p>
-                        <p className="text-xs text-slate-400 mt-1">Try a different name, phone, Vision ID, or Family ID</p>
-                      </div>
-                    )}
-                    {!searchLoading && !searchError && list.map((c) => (
+                  <div className="mt-2 space-y-1">
+                    {list.map((c) => (
                       <button
                         key={c.id}
                         onClick={() => setCid(c.id)}
-                        className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm transition-all ${cid === c.id ? "border-gold-500 bg-amber-50 ring-2 ring-gold-400/30 shadow-sm" : "border-slate-100 hover:bg-navy-50 hover:border-navy-200"}`}
+                        className={`flex w-full justify-between rounded-xl border px-4 py-2.5 text-left text-sm transition ${cid === c.id ? "border-gold-500 bg-amber-50" : "border-slate-100 hover:bg-navy-50"}`}
                       >
-                        <div className="flex flex-col gap-0.5">
-                          <b className="text-navy-900">{c.full_name}</b>
-                          <div className="flex flex-wrap gap-x-3 text-xs text-slate-500">
-                            {c.phone && <span>📞 {c.phone}</span>}
-                            {c.vision_id && <span>👁 {c.vision_id}</span>}
-                            {c.family_id && <span>👨‍👩‍👧 {c.family_id}</span>}
-                          </div>
-                        </div>
-                        {cid === c.id && (
-                          <span className="flex items-center gap-1 text-gold-500 text-xs font-medium shrink-0">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                            Selected
-                          </span>
-                        )}
+                        <b>{c.full_name}</b>
+                        <span className="text-slate-500">{c.vision_id}</span>
                       </button>
                     ))}
                   </div>
-                  {searchLoading && (
-                    <p className="mt-2 text-sm text-slate-500 text-center py-2">Searching...</p>
-                  )}
-                  {searchError && (
-                    <p className="mt-2 text-sm text-red-600 text-center py-2">{searchError}</p>
-                  )}
-                  {!searchLoading && !searchError && list.length === 0 && q.trim() && (
-                    <p className="mt-2 text-sm text-slate-500 text-center py-2">No customers found. <span className="text-navy-700 font-medium">Create a new customer →</span></p>
-                  )}
                 </div>
-              )}
-              {cust && (
-                <div className="rounded-2xl border border-navy-100 bg-navy-50/50 p-4 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-navy-900">{cust.full_name}</p>
-                      <p className="text-xs text-slate-500">{cust.phone} · {cust.vision_id}</p>
-                    </div>
-                    <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium">Active</span>
-                  </div>
-                  <div className="flex gap-3 text-xs text-slate-500">
-                    <span>Vision ID: {cust.vision_id}</span>
-                    <span>Customer ID: {cust.id?.slice(0, 8)}</span>
-                  </div>
-                </div>
-              )}
-              {!cid && (
-                <p className="text-sm text-amber-700 bg-amber-50 rounded-xl px-4 py-2.5 text-center">
-                  Select a customer above to enable prescription methods
-                </p>
               )}
               <div className="grid gap-3 sm:grid-cols-3">
                 <button
@@ -911,6 +822,8 @@ export function RxView({
   useEffect(() => {
     if (sp.get("new")) setOpen(true);
   }, [sp]);
+  const expired = rows.filter((r:any) => rxStatus(r.valid_till) === "expired").length;
+  const expiring = rows.filter((r:any) => rxStatus(r.valid_till) === "expiring").length;
   const f = rows.filter((r) =>
     `${r.rx_code} ${r.customers?.full_name} ${r.customers?.phone}`
       .toLowerCase()
@@ -935,6 +848,7 @@ export function RxView({
           New prescription
         </button>
       </div>
+      <ModuleKpiGrid className="mb-1" items={[{label:"Prescription records",value:rows.length,detail:"Loaded records",icon:KPIIcons.check},{label:"Active",value:rows.length-expired-expiring,detail:"Not expired or near expiry",tone:"success",icon:KPIIcons.check},{label:"Expiring soon",value:expiring,detail:"Review and follow up",tone:expiring?"warning":"default",icon:KPIIcons.clock},{label:"Expired",value:expired,detail:"Review before dispensing",tone:expired?"danger":"default",icon:KPIIcons.warning}]} />
       <div className="relative">
         <Search size={16} className="absolute left-3 top-3.5 text-slate-400" />
         <input

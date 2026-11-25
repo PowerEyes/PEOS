@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 import { useRouter } from "next/navigation";
 import { approveStockAudit, saveCountLine, startStockAudit, submitStockAudit } from "./actions";
 
@@ -17,6 +18,7 @@ export function StockAuditsView({ sessions, branches, products, stock, scope, cu
   const branchName = (id: string) => branches.find(b => b.id === id)?.name ?? "Branch";
   return <div className="mx-auto max-w-6xl space-y-5">
     <header><h1 className="font-display text-3xl font-semibold">Stock cycle counts</h1><p className="text-sm text-slate-500">Compare a physical count with the system snapshot. An authorised manager approves and posts the variance.</p></header>
+    <ModuleKpiGrid items={[{label:"Count sessions",value:sessions.length,detail:"Recent audit sessions",icon:KPIIcons.package},{label:"In progress",value:sessions.filter((x:any)=>x.status==="counting").length,detail:"Counts still being entered",tone:"info",icon:KPIIcons.clock},{label:"Awaiting approval",value:sessions.filter((x:any)=>x.status==="submitted").length,detail:"Manager review required",tone:sessions.some((x:any)=>x.status==="submitted")?"warning":"success",icon:KPIIcons.warning},{label:"Approved / posted",value:sessions.filter((x:any)=>x.status==="approved").length,detail:"Completed and locked sessions",tone:"success",icon:KPIIcons.check}]} />
     {message && <div role="alert" className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{message}</div>}
     <section className="card space-y-3 p-4">
       <h2 className="font-semibold">Start a count</h2>

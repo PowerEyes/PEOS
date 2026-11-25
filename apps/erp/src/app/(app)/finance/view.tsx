@@ -1,6 +1,7 @@
 "use client";
 import { useScope } from "@/components/ScopeContext";
 import { useEffect, useMemo, useState } from "react";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, Modal, Pill, useToast } from "@poweros/ui";
@@ -422,6 +423,7 @@ export function FinanceView({ settings, salesMonth, salesToday, outstanding, exp
         <div><h1 className="font-display text-3xl font-semibold">Finance</h1><p className="text-slate-500">Revenue, GST, expenses and reporting</p></div>
         {!settings.gst && <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">GST is OFF — invoices print without tax</div>}
       </div>
+      {tab === "Dashboard" && <ModuleKpiGrid className="mb-4" items={[{label:"Sales this month",value:inr(salesMonth.reduce((a:any,r:any)=>a+Number(r.grand_total||0),0)),detail:"Non-cancelled sales",icon:KPIIcons.money},{label:"Sales today",value:inr(salesToday.reduce((a:any,r:any)=>a+Number(r.grand_total||0),0)),detail:"Today so far",tone:"info",icon:KPIIcons.trend},{label:"Outstanding",value:inr(outstanding.reduce((a:any,r:any)=>a+Math.max(0,Number(r.grand_total||0)-Number(r.paid_total||0)),0)),detail:"Unpaid orders loaded",tone:"warning",icon:KPIIcons.clock},{label:"Expenses this month",value:inr(expenses.reduce((a:any,r:any)=>a+Number(r.amount||0),0)),detail:"Recorded expenses",icon:KPIIcons.warning}]} />}
       <div className="flex gap-1 overflow-x-auto rounded-2xl bg-white p-1 shadow-sm">
         {TABS.map(t => <button key={t} onClick={()=>setTab(t)} className={`relative whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium ${tab===t?"text-white":"text-slate-600 hover:bg-slate-50"}`}>
           {tab===t && <motion.span layoutId="ftab" className="absolute inset-0 rounded-xl bg-navy-800"/>}<span className="relative">{t}</span></button>)}</div>

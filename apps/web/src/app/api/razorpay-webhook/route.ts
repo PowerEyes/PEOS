@@ -1,107 +1,89 @@
-
-import { getOrgId } from "@/lib/tenant";
+import crypto from "node:crypto";
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import crypto from "crypto";
+import { serviceDb } from "@/lib/tenant";
+import { finalizeStorefrontQuote } from "@/lib/storefront-order";
 
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  // Read raw body — essential for HMAC verification
+  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET?.trim();
+  if (!webhookSecret) return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
+
   const rawBody = await req.text();
   const signature = req.headers.get("x-razorpay-signature") ?? "";
-  const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET ?? process.env.RAZORPAY_KEY_SECRET ?? "";
+  if (!signature) return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
 
-  // Verify signature — fail closed: never process unsigned or unverifiable events.
-  if (!webhookSecret || !signature) return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-  const expected = crypto.createHmac("sha256", webhookSecret).update(rawBody).digest("hex");
-  const ea = Buffer.from(expected), sa = Buffer.from(signature);
-  if (ea.length !== sa.length || !crypto.timingSafeEqual(ea, sa)) {
-    console.error("[rzp-webhook] signature mismatch");
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  const expected = crypto.createHmac("sha256", webhookSecret).update(rawBody).digest();
+  let supplied: Buffer;
+  try { supplied = Buffer.from(signature, "hex"); }
+  catch { return NextResponse.json({ error: "Invalid signature." }, { status: 400 }); }
+  if (expected.length !== supplied.length || !crypto.timingSafeEqual(expected, supplied)) {
+    return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
-  const orgId = await getOrgId();
   let event: any;
   try { event = JSON.parse(rawBody); }
-  catch { return NextResponse.json({ error: "Invalid JSON" }, { status: 400 }); }
+  catch { return NextResponse.json({ error: "Invalid JSON." }, { status: 400 }); }
 
-  const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!svcKey) return NextResponse.json({ error: "Not configured" }, { status: 503 }); // 5xx so Razorpay retries
+  // Only captured storefront payments create orders. Failed/other events are
+  // acknowledged without changing an already-paid order.
+  if (event.event !== "payment.captured") return NextResponse.json({ ok: true, ignored: event.event });
 
-  const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, svcKey);
+  const payment = event.payload?.payment?.entity;
+  const orderId = typeof payment?.order_id === "string" ? payment.order_id : "";
+  const paymentId = typeof payment?.id === "string" ? payment.id : "";
+  if (!orderId || !paymentId || payment?.status !== "captured") {
+    return NextResponse.json({ error: "Captured payment payload is incomplete." }, { status: 400 });
+  }
 
-  // ── payment.captured ─────────────────────────────────────────────────────
-  if (event.event === "payment.captured") {
-    const payment = event.payload?.payment?.entity;
-    if (!payment) return NextResponse.json({ ok: true });
-
-    const { id: razorpay_payment_id, order_id: razorpay_order_id, amount, notes } = payment;
-
-    // Check if we already recorded this payment (client-side confirm may have run first)
-    const { data: existing } = await sb
-      .from("online_payments")
-      .select("id, sale_id")
-      .eq("razorpay_payment_id", razorpay_payment_id)
-      .maybeSingle();
-
-    if (existing?.sale_id) {
-      // Already processed — just update status to be safe
-      await sb.from("online_payments").update({ status: "paid" }).eq("id", existing.id);
-      return NextResponse.json({ ok: true, already: true });
+  try {
+    const db = serviceDb();
+    // Resolve the tenant from the immutable server-created checkout quote, never
+    // from the webhook request host. A shared Razorpay webhook URL serves all shops.
+    const quoteId = typeof payment.notes?.quote_id === "string" ? payment.notes.quote_id : "";
+    let quoteQuery = db.from("checkout_quotes").select("*").eq("razorpay_order_id", orderId);
+    if (quoteId) quoteQuery = quoteQuery.eq("id", quoteId);
+    const { data: quote, error: quoteError } = await quoteQuery.maybeSingle();
+    if (quoteError) throw new Error("Could not resolve the checkout quote for this payment.");
+    if (!quote) {
+      console.error("[rzp-webhook] captured payment has no matching checkout quote", { orderId, paymentId, quoteId });
+      if (quoteId) return NextResponse.json({ error: "Captured payment quote is not available for finalization." }, { status: 500 });
+      return NextResponse.json({ ok: true, ignored: true });
+    }
+    if (payment.currency !== quote.currency || Number(payment.amount) !== Number(quote.amount_minor)) {
+      console.error("[rzp-webhook] captured payment amount does not match quote", { orderId, paymentId, quoteId: quote.id });
+      return NextResponse.json({ error: "Captured payment does not match the checkout quote." }, { status: 400 });
     }
 
-    // Not yet processed — this means the client callback failed (browser closed, etc.)
-    // Attempt to create the order from notes stored in the Razorpay order
-    const customerPhone = notes?.phone ?? "";
-    const customerEmail = notes?.email ?? "";
-    const customerName = notes?.name ?? "Online Customer";
-
-    let customerId: string | null = null;
-    if (customerEmail) {
-      const { data } = await sb.from("customers").select("id").eq("email", customerEmail).maybeSingle();
-      if (data) customerId = data.id;
-    }
-    if (!customerId && customerPhone) {
-      const { data } = await sb.from("customers").select("id").eq("phone", customerPhone.replace(/\D/g,"")).maybeSingle();
-      if (data) customerId = data.id;
-    }
-    if (!customerId) {
-      const { data } = await sb.from("customers").insert({
-        org_id: orgId, full_name: customerName,
-        phone: customerPhone.replace(/\D/g,""), email: customerEmail || null,
-        city: "Chennai", state: "Tamil Nadu", pincode: "600037",
-      }).select("id").single();
-      customerId = data?.id ?? null;
+    if (quote.status === "consumed" && quote.sale_id) {
+      return NextResponse.json({ ok: true, already: true, sale_id: quote.sale_id });
     }
 
-    if (!customerId) {
-      console.error("[rzp-webhook] could not find/create customer");
-      return NextResponse.json({ error: "Customer not found" }, { status: 500 });
+    const { data: existingPayment, error: existingError } = await db.from("online_payments")
+      .select("sale_id,razorpay_order_id").eq("razorpay_payment_id", paymentId).maybeSingle();
+    if (existingError) throw new Error("Could not check payment replay state.");
+    if (existingPayment?.razorpay_order_id && existingPayment.razorpay_order_id !== orderId) {
+      return NextResponse.json({ error: "Payment ID is already associated with another order." }, { status: 409 });
+    }
+    if (existingPayment?.sale_id) {
+      await db.from("checkout_quotes").update({
+        status: "consumed", consumed_at: new Date().toISOString(), sale_id: existingPayment.sale_id,
+      }).eq("id", quote.id).neq("status", "consumed");
+      return NextResponse.json({ ok: true, already: true, sale_id: existingPayment.sale_id });
     }
 
-    // Record the online payment
-    await sb.from("online_payments").insert({
-      org_id: orgId, customer_id: customerId, sale_id: null,
-      razorpay_order_id, razorpay_payment_id,
-      amount: amount / 100, status: "paid",
+    const finalized = await finalizeStorefrontQuote(db, quote, {
+      method: "razorpay",
+      amount: Number(payment.amount) / 100,
+      paymentId,
+      orderId,
+      signature: null,
     });
-
-    console.log(`[rzp-webhook] payment captured: ${razorpay_payment_id} for customer ${customerId}`);
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, sale_id: finalized.id, already: finalized.alreadyCompleted });
+  } catch (error: any) {
+    console.error("[rzp-webhook] storefront settlement failed:", error?.message ?? error);
+    // 5xx asks Razorpay to retry. place_sale is idempotent on quote ID, so retries
+    // cannot create duplicate sales or consume stock twice.
+    return NextResponse.json({ error: "Payment was captured but order finalization needs retry." }, { status: 500 });
   }
-
-  // ── payment.failed ───────────────────────────────────────────────────────
-  if (event.event === "payment.failed") {
-    const payment = event.payload?.payment?.entity;
-    if (payment?.order_id) {
-      await sb.from("online_payments")
-        .update({ status: "failed" })
-        .eq("razorpay_order_id", payment.order_id);
-      console.log(`[rzp-webhook] payment failed: ${payment.id}`);
-    }
-    return NextResponse.json({ ok: true });
-  }
-
-  // All other events acknowledged silently
-  return NextResponse.json({ ok: true });
 }

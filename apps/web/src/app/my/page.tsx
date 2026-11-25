@@ -11,6 +11,7 @@ export default async function PortalDashboard() {
 
   // Live counts for THIS customer — no placeholder values.
   let stats = { rx: 0, orders: 0, upcoming: 0, warranty: 0, points: 0 };
+  let statsUnavailable = false;
   if (customer) {
     const sb = supabaseServer();
     const cid = customer.id;
@@ -38,6 +39,7 @@ export default async function PortalDashboard() {
       sb.from("loyalty_ledger").select("delta").eq("customer_id", cid).limit(1000),
     ]);
 
+    statsUnavailable = Boolean(rx.error || orders.error || upcoming.error || warranty.error || ledger.error);
     stats = {
       rx: rx.count ?? 0,
       orders: orders.count ?? 0,
@@ -69,6 +71,7 @@ export default async function PortalDashboard() {
         </div>
       )}
     </div>
+    {statsUnavailable && <div role="status" className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">Some account metrics could not be loaded. Values may be incomplete; refresh the page or contact support if this continues.</div>}
     <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2.5 sm:gap-3">
       {cards.map(([I,n,l]: any) => (
         <div key={l as string} className="card p-3 sm:p-4 text-center">

@@ -15,7 +15,7 @@ export async function CatalogListing({ slug, kind, filter, sp, fallback, tone = 
   const sb = supabasePublic();
   let q = sb.from("public_catalog").select("*").eq("kind", kind).order("bestseller", { ascending: false }).order("selling_price");
   if (filter) q = filter(q);
-  const [{ data }, hero] = await Promise.all([q.limit(300), getPage(`hero-${slug}`)]);
+  const [{ data, error: catalogError }, hero] = await Promise.all([q.limit(300), getPage(`hero-${slug}`)]);
   const rows = (data ?? []) as any[];
   const facets = buildFacets(rows);
   const shown = applyFilters(rows, sp, facets);
@@ -29,8 +29,9 @@ export async function CatalogListing({ slug, kind, filter, sp, fallback, tone = 
       </div>)}
     <div id="products" className="mx-auto max-w-7xl scroll-mt-24 px-4 sm:px-6 lg:px-8">
       <div className="flex justify-end pt-4"><GuideButton page={slug} /></div>
-      <Suspense fallback={null}><ProductFilters facets={facets} bounds={priceBounds(rows)} total={rows.length} shown={shown.length} /></Suspense>
-      <div className="pt-4"><ProductGrid products={shown as Product[]} kind={kind as any} brands={[]} /></div>
+      {catalogError && <div role="alert" className="mx-auto my-4 max-w-3xl rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"><p className="font-semibold">Catalog temporarily unavailable</p><p className="mt-1">We couldn't load the product catalog. Please refresh the page or try again shortly.</p></div>}
+      {!catalogError && <><Suspense fallback={null}><ProductFilters facets={facets} bounds={priceBounds(rows)} total={rows.length} shown={shown.length} /></Suspense>
+      <div className="pt-4"><ProductGrid products={shown as Product[]} kind={kind as any} brands={[]} /></div></>}
     </div>
   </>);
 }

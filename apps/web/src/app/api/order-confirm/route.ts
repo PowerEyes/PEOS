@@ -4,8 +4,8 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { getOrgId, serviceDb } from "@/lib/tenant";
 import { rateLimited, tooMany } from "@/lib/ratelimit";
 import { dbError } from "@poweros/business-rules";
+import { finalizeStorefrontQuote } from "@/lib/storefront-order";
 
-const clean = (v: unknown, n: number) => typeof v === "string" ? v.replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, n) : "";
 
 export async function POST(req: Request) {
   if (await rateLimited(req, "order-confirm", 30, 600)) return tooMany();
@@ -43,34 +43,18 @@ export async function POST(req: Request) {
   }
   if (!Array.isArray(quote.lines) || quote.lines.some((l: any) => !l || !["product", "accessory", "lens", "service"].includes(l.line_type) || !Number.isInteger(l.qty) || l.qty < 1 || l.qty > 10) || quote.lines.filter((l:any)=>l.line_type==="service").some((l:any)=>l.description!=="Delivery fee"||l.qty!==1||Number(l.unit_price)!==Number(quote.delivery_fee)||Number(l.tax_pct)!==0)) return NextResponse.json({ error: "Saved checkout lines are invalid." }, { status: 400 });
 
-  const address = quote.address ?? {};
-  const phone = clean(address.phone, 20).replace(/\D/g, "").slice(-10);
-  if (phone.length !== 10) return NextResponse.json({ error: "A valid 10-digit customer phone is required." }, { status: 400 });
-  const email = typeof address.email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address.email.trim()) ? address.email.trim().toLowerCase() : null;
-
-  if (paymentId) {
-    const { data: previous } = await sb.from("online_payments").select("sale_id,sales(code)").eq("razorpay_payment_id", paymentId).not("sale_id", "is", null).maybeSingle();
-    if (previous?.sale_id) return NextResponse.json({ code: (previous as any).sales?.code, id: previous.sale_id });
-  }
   const { data: { user } } = await supabaseServer().auth.getUser();
-  let customerId: string | null = null;
-  if (user) { const { data: customer } = await sb.from("customers").select("id").eq("auth_user_id", user.id).eq("org_id", orgId).maybeSingle(); if (customer) customerId = customer.id; }
-  if (!customerId && email) { const { data: customer } = await sb.from("customers").select("id").eq("org_id", orgId).ilike("email", email).limit(1).maybeSingle(); if (customer) customerId = customer.id; }
-  if (!customerId) { const { data: customer } = await sb.from("customers").select("id").eq("org_id", orgId).eq("phone", phone).limit(1).maybeSingle(); if (customer) customerId = customer.id; }
-  if (!customerId) {
-    const { data: customer } = await sb.from("customers").insert({ org_id: orgId, full_name: clean(address.name, 80) || "Online Customer", phone, email, city: clean(address.city, 60) || "Chennai", state: clean(address.state, 60) || "Tamil Nadu", pincode: clean(address.pincode, 10) || "600000" }).select("id").single();
-    customerId = customer?.id ?? null;
+  try {
+    const finalized = await finalizeStorefrontQuote(sb, q, {
+      method: paymentId ? "razorpay" : "cash",
+      amount: paidAmount,
+      paymentId,
+      orderId: razorpay_order_id,
+      signature: razorpay_signature,
+    }, user?.id ?? null);
+    return NextResponse.json({ code: finalized.code, id: finalized.id });
+  } catch (error: any) {
+    console.error("Storefront order finalization failed:", error?.message ?? error);
+    return NextResponse.json({ error: dbError(error?.message ?? "Could not finalize order.") }, { status: 500 });
   }
-  if (!customerId) return NextResponse.json({ error: "Could not identify customer." }, { status: 500 });
-  const notes = `Online order.${quote.coupon_code ? ` Coupon ${clean(quote.coupon_code, 40)} applied.` : ""} ${quote.delivery === "pickup" ? `Pickup: ${clean(quote.branch_name, 100)}` : `Deliver to ${clean(address.line1, 200)}, ${clean(address.city, 60)} ${clean(address.pincode, 10)}`}. Razorpay: ${clean(razorpay_order_id, 80)}`;
-  const payment = paymentId ? { amount: Number(quote.subtotal), method: "razorpay", reference: paymentId } : { amount: 0, method: "cash" };
-  const { data: sale, error } = await sb.rpc("place_sale", { p: { org_id: orgId, idempotency_key: q.id, kind: "order", channel: "storefront", customer_id: customerId, branch_id: quote.branch_id, lines: quote.lines, notes, payment } });
-  if (error) { console.error("place_sale error:", error.message); return NextResponse.json({ error: dbError(error.message) }, { status: 500 }); }
-  if (paymentId) {
-    const { error: pErr } = await sb.from("online_payments").upsert({ org_id: orgId, sale_id: sale.id, customer_id: customerId, razorpay_order_id, razorpay_payment_id: paymentId, razorpay_signature, amount: paidAmount, status: "paid" }, { onConflict: "razorpay_payment_id" });
-    if (pErr) return NextResponse.json({ error: "Order was created; payment recording needs reconciliation." }, { status: 500 });
-  }
-  const { error: consumeError } = await sb.from("checkout_quotes").update({ status: "consumed", consumed_at: new Date().toISOString(), sale_id: sale.id }).eq("id", q.id).eq("status", "created");
-  if (consumeError) console.error("Checkout quote consumption failed", consumeError.message);
-  return NextResponse.json({ code: sale.code, id: sale.id });
 }

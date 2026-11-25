@@ -36,6 +36,8 @@ export default function ProductPage({ params }: Params) {
   const { id } = params;
   const { whatsappNumber } = useSite();
   const [product,  setProduct]  = useState<any>(null);
+  const [productLoading, setProductLoading] = useState(true);
+  const [productError, setProductError] = useState<string | null>(null);
   const [reviews,  setReviews]  = useState<any[]>([]);
   const [related,  setRelated]  = useState<any[]>([]);
   const [imgIdx,   setImgIdx]   = useState(0);
@@ -69,17 +71,21 @@ export default function ProductPage({ params }: Params) {
 
   useEffect(() => {
     if (!id) return;
-    // Track view immediately
+    let alive = true;
+    setProductLoading(true); setProductError(null); setProduct(null);
     trackView(id);
-
     const sb = supabaseBrowser();
-    // Load product
-    sb.from("public_catalog").select("*").eq("id",id).single()
-      .then(({ data }) => setProduct(data));
-    // Load approved reviews
+    sb.from("public_catalog").select("*").eq("id", id).single()
+      .then(({ data, error }) => {
+        if (!alive) return;
+        if (error || !data) { setProductError("We couldn't load this product. It may be unavailable or the connection may have failed."); setProduct(null); }
+        else setProduct(data);
+        setProductLoading(false);
+      }).catch(() => { if (alive) { setProductError("We couldn't load this product. Please try again."); setProductLoading(false); } });
     sb.from("product_reviews").select("id,reviewer_name,rating,title,body,verified_purchase,created_at")
       .eq("product_id",id).eq("status","approved").order("created_at",{ascending:false}).limit(20)
-      .then(({ data }) => setReviews(data ?? []));
+      .then(({ data, error }) => { if (alive && !error) setReviews(data ?? []); });
+    return () => { alive = false; };
   }, [id]);
 
   useEffect(() => {
@@ -92,9 +98,8 @@ export default function ProductPage({ params }: Params) {
 
   if (!product) return (
     <div className="min-h-screen bg-slate-50 overflow-x-hidden">
-      {/* Same shell as the loaded page — detail.tsx renders <Header/> too */}
       <Header />
-      <ProductPageSkeleton />
+      {productLoading ? <ProductPageSkeleton /> : <main className="mx-auto max-w-3xl px-4 py-20 text-center"><div className="card p-8 sm:p-12"><div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-full bg-amber-50 text-amber-700"><X size={22}/></div><h1 className="text-xl font-bold text-navy-900">Product unavailable</h1><p role="alert" className="mt-2 text-sm text-slate-600">{productError || "This product could not be found."}</p><button onClick={() => { setProductLoading(true); setProductError(null); const sb=supabaseBrowser(); sb.from("public_catalog").select("*").eq("id",id).single().then(({data,error})=>{if(error||!data){setProductError("Product is unavailable or failed to load. Please retry.");setProductLoading(false);}else{setProduct(data);setProductLoading(false);}}).catch(()=>{setProductError("Unable to connect. Please retry.");setProductLoading(false);}); }} className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-navy-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-700">Retry</button><a href="/eyeglasses" className="mt-3 block text-sm font-medium text-navy-800 underline">Browse eyewear</a></div></main>}
       <Footer/>
     </div>);
 

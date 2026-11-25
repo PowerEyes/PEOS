@@ -1,10 +1,33 @@
 @tailwind base; @tailwind components; @tailwind utilities;
-:root { --font-general-sans: "General Sans", system-ui, sans-serif; }
-body { @apply bg-canvas text-navy-900 antialiased; }
-.field { @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-navy-700 focus:ring-2 focus:ring-navy-700/10; }
-.btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-[.97] disabled:opacity-50; }
-.btn-primary { @apply bg-navy-800 text-white hover:bg-navy-700; }
-.btn-gold { @apply bg-gold-500 text-white hover:bg-gold-600; }
+:root {
+  --font-general-sans: "General Sans", system-ui, sans-serif;
+  --poweros-canvas: #f5f7fb;
+  --poweros-surface: #ffffff;
+  --poweros-border: #e5eaf1;
+  --poweros-text: #111827;
+  --poweros-muted: #64748b;
+  --poweros-primary: #123659;
+  --poweros-focus: #f59e0b;
+}
+html { color-scheme: light; scroll-behavior: smooth; }
+body { @apply bg-canvas text-navy-900 antialiased; background: var(--poweros-canvas); }
+button, input, select, textarea { font: inherit; }utton { -webkit-tap-highlight-color: transparent; }
+:where(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--poweros-focus); outline-offset: 2px; }
+.field { @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400; }
+.field:focus { @apply border-navy-700 ring-2 ring-navy-700/10; }
+.field:disabled { @apply cursor-not-allowed bg-slate-100 text-slate-500; }
+.btn { @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50; }
+.btn-primary { @apply bg-navy-800 text-white hover:bg-navy-700 focus-visible:ring-2 focus-visible:ring-navy-700 focus-visible:ring-offset-2; }
+.btn-gold { @apply bg-gold-500 text-white hover:bg-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2; }
 .btn-ghost { @apply border border-slate-200 bg-white text-navy-900 hover:bg-slate-50; }
-.card { @apply rounded-2xl border border-slate-100 bg-white shadow-[0_1px_2px_rgba(10,34,64,.04)]; }
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+.card { @apply rounded-2xl border border-slate-200/80 bg-white shadow-card; }
+.table-wrap { @apply w-full overflow-x-auto rounded-xl border border-slate-200 bg-white; }
+.table-wrap table { @apply min-w-full divide-y divide-slate-200; }
+.table-wrap thead { @apply bg-slate-50; }
+.table-wrap th { @apply whitespace-nowrap px-3 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
+.table-wrap td { @apply px-3 py-3 text-sm text-slate-700; }
+.table-wrap tbody tr { @apply border-b border-slate-100 last:border-b-0; }
+.table-wrap tbody tr:hover { @apply bg-slate-50/70; }
+.page-content { @apply mx-auto w-full max-w-[1600px]; }
+@media (max-width: 640px) { .table-wrap th, .table-wrap td { @apply px-2.5 py-2.5; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

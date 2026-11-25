@@ -9,6 +9,7 @@ import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { shrink } from "@/lib/image";
 import { advanceRepair, saveRepair } from "./actions";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 
 const STATUS_FLOW: Record<string,{next:string;label:string}[]> = {
   pending:[{next:"in_progress",label:"Start repair"},{next:"cancelled",label:"Cancel"}],
@@ -220,9 +221,12 @@ export function RepairsView({ repairs,customers,branches,openNew,initialCustomer
   const [q,setQ]=useState(""); const [sf,setSf]=useState(""); const [addOpen,setAddOpen]=useState(!!openNew); const [sel,setSel]=useState<any>(null);
   const rows=repairs.filter((r:any)=>(!sf||r.status===sf)&&`${r.code} ${r.customers?.full_name} ${r.customers?.phone} ${r.item_brand??""} ${r.item_model??""}`.toLowerCase().includes(q.toLowerCase()));
   const counts:any=repairs.reduce((a:any,r:any)=>{a[r.status]=(a[r.status]??0)+1;return a;},{});
+  const overdue = repairs.filter((r:any)=>r.due_date && new Date(r.due_date) < new Date() && r.status !== "delivered" && r.status !== "cancelled").length;
+  const repairValue = repairs.reduce((n:number,r:any)=>n+Number(r.total_amount||0),0);
   return(<div className="mx-auto max-w-5xl space-y-5">
     <div className="flex items-end justify-between"><div><h1 className="font-display text-3xl font-semibold">Repairs</h1><p className="text-slate-500">{repairs.length} total{counts.pending?` | ${counts.pending} pending`:""}{ counts.in_progress?` | ${counts.in_progress} in progress`:""}{counts.ready?` | ${counts.ready} ready`:""}</p></div>
       <button onClick={()=>setAddOpen(true)} className="btn btn-primary"><Plus size={16}/>New repair</button></div>
+    <ModuleKpiGrid items={[{label:"Total repairs",value:repairs.length,detail:"Records in current branch scope",icon:KPIIcons.package},{label:"Pending / in progress",value:(counts.pending||0)+(counts.in_progress||0),detail:"Work that has not reached ready",tone:"info",icon:KPIIcons.clock},{label:"Ready for collection",value:counts.ready||0,detail:"Awaiting customer pickup or delivery",tone:"success",icon:KPIIcons.check},{label:"Overdue",value:overdue,detail:"Past due date and not completed",tone:overdue?"danger":"success",icon:KPIIcons.warning}]} />
     <div className="flex flex-wrap gap-2">
       {[["","All"],["pending","Pending"],["in_progress","In Progress"],["ready","Ready"],["delivered","Delivered"],["cancelled","Cancelled"]].map(([v,l])=><button key={v} onClick={()=>setSf(v)} className={`rounded-full border px-3 py-1.5 text-sm font-medium transition ${sf===v?"border-navy-800 bg-navy-800 text-white":"border-slate-200 bg-white"}`}>{l}{v&&counts[v]?` (${counts[v]})`:""}</button>)}</div>
     <div className="relative"><Search size={16} className="absolute left-3 top-3.5 text-slate-400"/><input value={q} onChange={e=>setQ(e.target.value)} className="field pl-9" placeholder="Search by repair ID, customer, brand…"/></div>

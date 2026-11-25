@@ -1,50 +1,33 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-function getSupabase() {
-  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
-}
-
-async function getAuthContext(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) return null;
-  const token = authHeader.slice(7);
-  const sb = getSupabase();
-  const { data: { user }, error } = await sb.auth.getUser(token);
-  if (error || !user) return null;
-  const { data: profile } = await sb.from("staff_profiles").select("tenant_id, branch_id, role").eq("user_id", user.id).single();
-  if (!profile) return null;
-  return { user, profile, sb };
+// Search runs as the signed-in user (anon key + their JWT) so PostgREST
+// applies RLS — results are scoped to their organization the same way as
+// every other query in the app, with no manual tenant filter to drift.
+function getClient(token: string) {
+  return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 }
 
 export async function GET(request: Request) {
-  const ctx = await getAuthContext(request);
-  if (!ctx) return NextResponse.json({ error: { code: "AUTH_REQUIRED", message: "Not authenticated", recovery: "Log in again" } }, { status: 401 });
+  const authHeader = request.headers.get("authorization");
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  if (!token) return NextResponse.json({ error: { code: "AUTH_REQUIRED", message: "Not authenticated", recovery: "Log in again" } }, { status: 401 });
 
-  const url = new URL(request.url);
-  const q = url.searchParams.get("q")?.trim() || "";
+  const sb = getClient(token);
+  const { data: { user }, error } = await sb.auth.getUser(token);
+  if (error || !user) return NextResponse.json({ error: { code: "AUTH_REQUIRED", message: "Not authenticated", recovery: "Log in again" } }, { status: 401 });
 
-  if (!q) {
-    // Return first 6 customers when no search term
-    const { data, error } = await ctx.sb
-      .from("customers")
-      .select("id, full_name, phone, vision_id, family_id")
-      .eq("tenant_id", ctx.profile.tenant_id)
-      .order("full_name")
-      .limit(6);
-    if (error) return NextResponse.json({ error: { code: "UNKNOWN", message: error.message, recovery: "Try again" } }, { status: 500 });
-    return NextResponse.json({ data: data ?? [] });
+  const q = new URL(request.url).searchParams.get("q")?.trim() || "";
+  let query = sb.from("customers").select("id, full_name, phone, vision_id, customer_code");
+  if (q) {
+    // Strip ilike wildcards and the characters PostgREST uses to parse or= expressions
+    const term = q.replace(/[%_(),\\"]/g, "");
+    query = query.or(`full_name.ilike.%${term}%,phone.ilike.%${term}%,vision_id.ilike.%${term}%,customer_code.ilike.%${term}%`);
   }
-
-  // Search across all four fields with OR conditions
-  const term = q.replace(/[%_]/g, ""); // Sanitize special characters
-  const { data, error } = await ctx.sb
-    .from("customers")
-    .select("id, full_name, phone, vision_id, family_id")
-    .eq("tenant_id", ctx.profile.tenant_id)
-    .or(`full_name.ilike.%${term}%,phone.ilike.%${term}%,vision_id.ilike.%${term}%,family_id.ilike.%${term}%`)
-    .limit(10);
-
-  if (error) return NextResponse.json({ error: { code: "UNKNOWN", message: error.message, recovery: "Try again" } }, { status: 500 });
+  const { data, error: searchError } = await query.order("full_name").limit(q ? 10 : 6);
+  if (searchError) return NextResponse.json({ error: { code: "UNKNOWN", message: searchError.message, recovery: "Try again" } }, { status: 500 });
   return NextResponse.json({ data: data ?? [] });
 }

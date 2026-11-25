@@ -6,6 +6,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { ExaminationForm } from "./examination-form";
 import { Drawer } from "@poweros/ui";
 import { dbError } from "@poweros/business-rules";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 import { createAppointment, editAppointment, setAppointmentStatus } from "./actions";
 
 const dStr  = (d:string)  => d ? new Date(d).toLocaleDateString("en-IN",{weekday:"short",day:"numeric",month:"short"}) : "—";
@@ -145,6 +146,7 @@ export default function AppointmentsPage() {
         </div>
       </div>
 
+      <ModuleKpiGrid items={[{label:"Appointments",value:stats.total,detail:`For ${date}`,icon:KPIIcons.users},{label:"Confirmed / arrived",value:stats.confirmed+appts.filter(a=>a.status==="arrived").length,detail:"Expected or checked in",tone:"info",icon:KPIIcons.check},{label:"Completed",value:stats.completed,detail:"Completed visits",tone:"success",icon:KPIIcons.check},{label:"Pending / no-show",value:stats.pending+appts.filter(a=>a.status==="no_show").length,detail:"Requires follow-up",tone:stats.pending||appts.some(a=>a.status==="no_show")?"warning":"default",icon:KPIIcons.clock}]} />
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[["Total",stats.total,"bg-blue-50 text-blue-700"],["Confirmed",stats.confirmed,"bg-emerald-50 text-emerald-700"],["Completed",stats.completed,"bg-slate-50 text-slate-600"],["Pending",stats.pending,"bg-amber-50 text-amber-700"]].map(([l,v,cls])=>(

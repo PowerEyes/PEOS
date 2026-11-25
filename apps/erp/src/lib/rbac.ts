@@ -65,6 +65,8 @@ export const PERMISSIONS = [
   { key: "credit_notes.issue", label: "Issue credit notes and refunds" },
 ] as const;
 const SPECIAL_ROUTE_ROLES: Record<string, string[]> = {
+  // Role-specific landing pages only. Operational module access is governed
+  // by the shared permission grants below, not by a second hard-coded role list.
   "/owner-dashboard/branch-comparison": ["owner", "admin"],
   "/owner-dashboard/branch-inventory": ["owner", "admin", "branch_manager"],
   "/owner-dashboard": ["owner", "admin"],
@@ -75,35 +77,6 @@ const SPECIAL_ROUTE_ROLES: Record<string, string[]> = {
   "/sales/pos": ["sales_executive", "cashier", "owner", "admin", "branch_manager"],
   "/cashier": ["cashier", "owner", "admin", "branch_manager"],
   "/lab-tech": ["lab_technician", "owner", "admin", "branch_manager"],
-  "/consultations": ["optometrist", "owner", "admin", "branch_manager"],
-  "/lpims": ["optometrist", "inventory_manager", "owner", "admin", "branch_manager"],
-  "/appointments": ["optometrist", "receptionist", "sales_executive", "owner", "admin", "branch_manager"],
-  "/prescriptions": ["optometrist", "receptionist", "owner", "admin", "branch_manager"],
-  "/crm": ["owner", "admin", "branch_manager"],
-  "/sales": ["sales_executive", "cashier", "owner", "admin", "branch_manager"],
-  "/web-orders": ["sales_executive", "owner", "admin", "branch_manager"],
-  "/inventory": ["inventory_manager", "owner", "admin", "branch_manager"],
-  "/transfers/approvals": ["inventory_manager", "owner", "admin", "branch_manager"],
-  "/transfers": ["inventory_manager", "owner", "admin", "branch_manager"],
-  "/stock-audits": ["inventory_manager", "owner", "admin", "branch_manager"],
-  "/purchases": ["inventory_manager", "owner", "admin", "branch_manager"],
-  "/purchase-invoices": ["accountant", "inventory_manager", "owner", "admin", "branch_manager"],
-  "/suppliers": ["inventory_manager", "accountant", "owner", "admin", "branch_manager"],
-  "/workshop": ["lab_technician", "owner", "admin", "branch_manager"],
-  "/dispensing": ["lab_technician", "owner", "admin", "branch_manager"],
-  "/quality-control": ["lab_technician", "owner", "admin", "branch_manager"],
-  "/repairs": ["lab_technician", "receptionist", "sales_executive", "owner", "admin", "branch_manager"],
-  "/finance": ["accountant", "owner", "admin", "branch_manager"],
-  "/expenses": ["accountant", "owner", "admin", "branch_manager"],
-  "/payroll": ["accountant", "owner", "admin"],
-  "/communications": ["owner", "admin", "branch_manager"],
-  "/loyalty": ["sales_executive", "owner", "admin", "branch_manager"],
-  "/branches": ["owner", "admin", "branch_manager"],
-  "/reports": ["owner", "admin", "branch_manager"],
-  "/website": ["owner", "admin"],
-  "/staff": ["owner", "admin"],
-  "/settings": ["owner", "admin"],
-  "/subscription": ["owner", "admin"],
 };
 export function routeAllowed(role: string | null | undefined, path: string, perms: string[] = []): boolean {
   const tier = routeTier(role);

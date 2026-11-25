@@ -22,8 +22,14 @@ Deno.serve(async (req: Request) => {
   try { body = await req.json(); } catch { return new Response("Invalid JSON", { status:400 }); }
 
   const { orderId, status } = body;
-  { const { data: so } = await sb.from("sales").select("org_id").eq("id", orderId).maybeSingle(); if (so?.org_id) { ORG = so.org_id; tenant.org = so.org_id; } }
-  if (!orderId || !status) return new Response("orderId and status required", { status:400 });
+  if (typeof orderId !== "string" || !orderId || typeof status !== "string" || !status) {
+    return new Response("orderId and status required", { status:400 });
+  }
+  const { data: so, error: saleLookupError } = await sb
+    .from("sales").select("org_id").eq("id", orderId).maybeSingle();
+  if (saleLookupError || !so?.org_id) return new Response("Order not found", { status:404 });
+  ORG = so.org_id;
+  tenant.org = so.org_id;
 
   // Check if order updates are enabled
   const { data: settings } = await sb.from("crm_settings")

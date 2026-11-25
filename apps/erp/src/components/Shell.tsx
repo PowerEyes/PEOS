@@ -69,11 +69,10 @@ const NAV: NavEntry[] = [
     { label: "Expenses", href: "/expenses", icon: Receipt },
     { label: "Bank Reconciliation", href: "/bank-reconciliation", icon: Banknote },
   ]},
-  { label: "Staff & Payroll", icon: UserCheck, children: [
+  { label: "Staff Management", icon: UserCheck, children: [
     { label: "Staff", href: "/staff", icon: Users },
     { label: "Attendance", href: "/staff/attendance", icon: Activity },
     { label: "Leave", href: "/staff/leave", icon: CalendarDays },
-    { label: "Payroll", href: "/payroll", icon: Wallet },
   ]},
   { label: "Customer Engagement", icon: Heart, children: [
     { label: "Communications", href: "/communications", icon: Megaphone },
@@ -134,8 +133,30 @@ function activePath(path: string, href: string) {
   const target = href.split("?")[0];
   return target === "/" ? path === "/" : path === target || path.startsWith(target + "/");
 }
+const ROUTE_LABELS: Record<string, string> = {
+  "owner-dashboard": "Owner Dashboard", "branch-dashboard": "Branch Dashboard", "employee-dashboard": "Employee Dashboard",
+  "branch-comparison": "Branch Comparison", "branch-inventory": "Branch Inventory", "customers": "Customers",
+  "crm": "CRM", "inbox": "Inbox", "appointments": "Appointments", "prescriptions": "Prescriptions",
+  "consultations": "Eye Examinations", "lpims": "Lens Catalogue", "sales": "Sales & POS", "web-orders": "Web Orders",
+  "inventory": "Inventory", "transfers": "Stock Transfers", "stock-audits": "Stock Audits", "purchases": "Purchase Orders",
+  "purchase-invoices": "Purchase Invoices", "suppliers": "Suppliers", "workshop": "Workshop", "repairs": "Repairs",
+  "dispensing": "Dispensing", "quality-control": "Quality Control", "finance": "Finance", "reports": "Reports",
+  "gstr1": "GSTR-1", "accountant-export": "Accountant Export", "expenses": "Expenses", "bank-reconciliation": "Bank Reconciliation",
+  "staff": "Staff", "attendance": "Attendance", "leave": "Leave Management", "communications": "Communications", "loyalty": "Loyalty",
+  "branches": "Branches", "website": "Website Studio", "pages": "Website Pages", "coupons": "Coupons", "settings": "Settings",
+  "roles": "Roles & Permissions", "domains": "Domains", "security": "Security", "integrations": "Integrations", "backup": "Backups",
+  "audit": "Audit Log", "subscription": "Subscription", "usage": "Usage", "invoices": "Invoices", "company": "Company",
+  "platform": "Platform Administration", "support": "Support", "new": "New", "performance": "Performance", "cashbook": "Cashbook",
+};
 function titleCase(value: string) {
-  return value.split("/").filter(Boolean).map(s => s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())).join(" / ");
+  const segments = value.split("/").filter(Boolean);
+  return segments.map((s, i) => ROUTE_LABELS[s] ?? (s.match(/^[0-9a-f-]{8,}$/i) ? (i === segments.length - 1 ? "Details" : "Record") : s.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()))).join(" / ");
+}
+function pageLabel(path: string) {
+  if (path === "/") return "Dashboard";
+  const segments = path.split("/").filter(Boolean);
+  const last = segments[segments.length - 1] ?? "";
+  return ROUTE_LABELS[last] ?? titleCase(path);
 }
 
 function NavGroup({ item, path, collapsed, onNavigate, onExpand }: {
@@ -184,7 +205,7 @@ export function Shell({ children, user, branches, tenantName, scope = null, pend
   const path = usePathname();
   const router = useRouter();
 
-  useEffect(() => { try { setCollapsed(localStorage.getItem("poweros.sidebar.collapsed") === "true"); } catch {} }, []);
+  useEffect(() => { setCollapsed(localStorage.getItem("poweros.sidebar.collapsed") === "true"); }, []);
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); setPalOpen(v => !v); }
@@ -195,8 +216,7 @@ export function Shell({ children, user, branches, tenantName, scope = null, pend
   }, []);
   useEffect(() => { setSidebarOpen(false); setCreateOpen(false); setProfileOpen(false); }, [path]);
   const toggleCollapse = () => setCollapsed(v => {
-    try { localStorage.setItem("poweros.sidebar.collapsed", String(!v)); } catch {}
-    return !v;
+    localStorage.setItem("poweros.sidebar.collapsed", String(!v)); return !v;
   });
   const visibleNav = useMemo(() => NAV.map(entry => {
     if (!isGroup(entry)) return allowed(entry.href, user) ? entry : null;
@@ -212,13 +232,13 @@ export function Shell({ children, user, branches, tenantName, scope = null, pend
     { label: "New Repair", href: "/repairs?new=1", icon: Glasses },
     { label: "New Expense", href: "/expenses", icon: Receipt },
   ].filter(x => allowed(x.href, user));
-  const pageTitle = path === "/" ? "Dashboard" : titleCase(path);
+  const pageTitle = pageLabel(path);
   const crumbs = path.split("/").filter(Boolean);
   const roleLabel = (user?.role ?? "User").replace(/_/g, " ");
 
-  return <div className="flex h-[100dvh] overflow-hidden bg-slate-50 text-slate-900">
+  return <div className="flex h-[100dvh] overflow-hidden bg-slate-50 text-slate-900"><a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:shadow-lg">Skip to main content</a>
     {sidebarOpen && <button aria-label="Close navigation overlay" className="fixed inset-0 z-40 bg-slate-950/55 backdrop-blur-[2px] lg:hidden" onClick={() => setSidebarOpen(false)} />}
-    <aside className={`fixed inset-y-0 left-0 z-50 flex w-[272px] flex-col bg-[#101e32] text-white shadow-2xl transition-all duration-200 lg:static lg:translate-x-0 lg:shadow-none ${collapsed ? "lg:w-[76px]" : "lg:w-[272px]"} ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+    <aside id="poweros-sidebar" className={`fixed inset-y-0 left-0 z-50 flex w-[272px] flex-col bg-[#101e32] text-white shadow-2xl transition-all duration-200 lg:static lg:translate-x-0 lg:shadow-none ${collapsed ? "lg:w-[76px]" : "lg:w-[272px]"} ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
       <div className={`flex h-16 shrink-0 items-center border-b border-white/10 ${collapsed ? "justify-center px-2" : "justify-between px-4"}`}>
         <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="PowerOS home">
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-orange-500 text-lg font-black text-white">P</span>
@@ -228,7 +248,7 @@ export function Shell({ children, user, branches, tenantName, scope = null, pend
       </div>
       {!collapsed && user && <div className="border-b border-white/10 px-3 py-3"><BranchSwitcher branches={branches ?? []} scope={scope} /></div>}
       <nav aria-label="Main navigation" className="flex-1 space-y-1 overflow-y-auto px-2.5 py-3">
-        {visibleNav.map((item) => <NavGroup key={item.label} item={item} path={path} collapsed={collapsed} onNavigate={() => setSidebarOpen(false)} onExpand={() => { try { localStorage.setItem("poweros.sidebar.collapsed", "false"); } catch {} setCollapsed(false); }} />)}
+        {visibleNav.map((item) => <NavGroup key={item.label} item={item} path={path} collapsed={collapsed} onNavigate={() => setSidebarOpen(false)} onExpand={() => { localStorage.setItem("poweros.sidebar.collapsed", "false"); setCollapsed(false); }} />)}
       </nav>
       <div className="border-t border-white/10 p-2">
         <button onClick={toggleCollapse} className="hidden min-h-10 w-full items-center justify-center gap-2 rounded-lg px-3 text-xs text-slate-400 hover:bg-white/5 hover:text-white lg:flex" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
@@ -241,14 +261,14 @@ export function Shell({ children, user, branches, tenantName, scope = null, pend
     <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
       <header className="z-30 flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200/80 bg-white px-3 shadow-[0_1px_2px_rgba(15,23,42,.03)] sm:px-5">
         <div className="flex min-w-0 items-center gap-3">
-          <button onClick={() => setSidebarOpen(true)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 lg:hidden" aria-label="Open navigation"><Menu size={19} /></button>
+          <button onClick={() => setSidebarOpen(true)} className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 lg:hidden" aria-label="Open navigation menu" aria-controls="poweros-sidebar" aria-expanded={sidebarOpen}><Menu size={19} /></button>
           <button onClick={toggleCollapse} className="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:inline-flex" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>{collapsed ? <Menu size={18} /> : <ChevronLeft size={18} />}</button>
           <div className="min-w-0">
             <nav aria-label="Breadcrumb" className="hidden items-center gap-1 truncate text-[11px] text-slate-400 sm:flex">
               <Link href="/" className="hover:text-slate-700">PowerOS</Link>
               {crumbs.map((crumb, i) => <span key={`${crumb}-${i}`} className="inline-flex items-center gap-1"><ChevronRight size={12} /><span className={i === crumbs.length - 1 ? "font-medium text-slate-600" : ""}>{titleCase(crumb)}</span></span>)}
             </nav>
-            <h1 className="truncate text-sm font-semibold text-slate-900 sm:text-base">{pageTitle}</h1>
+            <h1 className="truncate text-sm font-semibold text-slate-900 sm:text-base" aria-current="page">{pageTitle}</h1>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -276,9 +296,9 @@ export function Shell({ children, user, branches, tenantName, scope = null, pend
           </div>}
         </div>
       </header>
-      <main className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-5 lg:p-7"><ScopeProvider value={scope}>{children}</ScopeProvider></main>
+      <main id="main-content" className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-5 lg:p-7"><div className="page-content"><ScopeProvider value={scope}>{children}</ScopeProvider></div></main>
       <footer className="flex min-h-10 shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-slate-200 bg-white px-3 py-2 text-[10px] text-slate-400 sm:px-5">
-        <div className="flex flex-wrap items-center gap-x-3"><span>© 2026 PowerOS</span><span className="hidden sm:inline">·</span><span className="max-w-48 truncate">{tenantName || "Power Eyes Opticals"}</span><span className="hidden md:inline">v{process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}</span></div>
+        <div className="flex flex-wrap items-center gap-x-3"><span>© {new Date().getFullYear()} PowerOS</span><span className="hidden sm:inline">·</span><span className="max-w-48 truncate">{tenantName || "Power Eyes Opticals"}</span><span className="hidden md:inline">v{process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0"}</span></div>
         <div className="flex items-center gap-3"><Link href="/support" className="hover:text-slate-700">Help & Support</Link><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />Application</span></div>
       </footer>
     </div>

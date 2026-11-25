@@ -10,6 +10,7 @@ import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { Pos } from "./pos";
 import { addPayment, cancelOrder, deliverOrder, markSent } from "./actions";
 import { createCreditNote } from "@/app/(app)/finance/actions";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 
 const TONE: any = { draft: "grey", sent: "blue", converted: "purple", rejected: "red", expired: "red", lab_pending: "gold", in_workshop: "blue", qc: "blue", ready: "green", delivered: "green", cancelled: "red", unpaid: "red", partial: "gold", paid: "green" };
 const eff = (s: any) => (s.kind === "quotation" && ["draft", "sent"].includes(s.status) && s.valid_until && new Date(s.valid_until) < new Date(new Date().toDateString()) ? "expired" : s.status);
@@ -111,10 +112,15 @@ export function SalesView(props: any) {
   const { sales } = props; const sp = useSearchParams(); const router = useRouter();
   const [tab, setTab] = useState<"order" | "quotation">("order"); const [q, setQ] = useState(""); const [pos, setPos] = useState<null | { customerId?: string; quotation?: any }>(null); const [openId, setOpenId] = useState<string | null>(null);
   useEffect(() => { if (sp.get("new")) setPos({ customerId: sp.get("customer") ?? undefined }); }, [sp]);
+  const orderRows = sales.filter((s:any) => s.kind === "order");
+  const quotationRows = sales.filter((s:any) => s.kind === "quotation");
+  const unpaid = orderRows.reduce((n:number,s:any)=>n+Math.max(0,Number(s.grand_total||0)-Number(s.paid_total||0)),0);
+  const orderValue = orderRows.reduce((n:number,s:any)=>n+Number(s.grand_total||0),0);
   const rows = sales.filter((s: any) => s.kind === tab && `${s.code} ${s.customers?.full_name} ${s.customers?.phone}`.toLowerCase().includes(q.toLowerCase()));
   return (<div className="mx-auto max-w-6xl space-y-5">
     <div className="flex items-end justify-between"><div><h1 className="font-display text-3xl font-semibold">POS & Orders</h1><p className="text-slate-500">Quotations, orders and payments in one place</p></div>
       <button onClick={() => setPos({})} className="btn btn-primary"><Plus size={16} />New sale</button></div>
+    <ModuleKpiGrid items={[{label:"Orders",value:orderRows.length,detail:"Loaded order records",icon:KPIIcons.check},{label:"Order value",value:inr(orderValue),detail:"Total value of loaded orders",icon:KPIIcons.money},{label:"Outstanding",value:inr(unpaid),detail:"Unpaid balance across loaded orders",tone:unpaid>0?"warning":"success",icon:KPIIcons.warning},{label:"Quotations",value:quotationRows.length,detail:"Active quotation history",tone:"info",icon:KPIIcons.trend}]} />
     <div className="flex gap-1 rounded-2xl bg-white p-1 shadow-sm sm:w-fit">{([["order", "Orders"], ["quotation", "Quotations"]] as const).map(([k, l]) => <button key={k} onClick={() => setTab(k)} className={`relative flex-1 rounded-xl px-5 py-2 text-sm font-medium ${tab === k ? "text-white" : "text-slate-600"}`}>
       {tab === k && <motion.span layoutId="saletab" className="absolute inset-0 rounded-xl bg-navy-800" />}<span className="relative">{l} {sales.filter((s: any) => s.kind === k).length}</span></button>)}</div>
     <div className="relative"><Search size={16} className="absolute left-3 top-3.5 text-slate-400" /><input className="field pl-9" placeholder="Search by number, name or phone" value={q} onChange={(e) => setQ(e.target.value)} /></div>

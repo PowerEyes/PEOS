@@ -16,6 +16,13 @@ begin begin execute sql; get diagnostics n = row_count; ok := n = 0;   -- RLS fi
       exception when others then ok := true; end;
   if not ok then raise exception 'FAIL (should be blocked): %', label; end if; raise notice 'ok   blocked: %', label; end $$;
 
+create or replace function pg_temp.expect_ok(sql text, label text) returns void language plpgsql as $$
+begin
+  begin execute sql;
+  exception when others then raise exception 'FAIL (should succeed): % (%).', label, sqlerrm; end;
+  raise notice 'ok   allowed: %', label;
+end $$;
+
 -- ══ Structural invariants ══════════════════════════════════════════════════
 -- 1. Every public table carries RLS. A future table must enable it (or be
 --    added to this audit consciously) — never by omission.
@@ -68,6 +75,24 @@ select pg_temp.expect_rows(
       and viewname in ('public_catalog','public_site_settings')
       and definition not ilike '%request_org()%'$q$,
   0, 'public views scope rows with request_org()');
+
+-- 7b. Public tenant pages and reviews must be host-scoped; the public tenant
+-- directory is not exposed as a direct table read.
+select pg_temp.expect_rows(
+  $q$select 1 from pg_policies where schemaname='public' and tablename='site_pages'
+      and policyname='sp_anon' and coalesce(qual,'') not ilike '%request_org()%'$q$,
+  0, 'public site pages are scoped to request_org()');
+select pg_temp.expect_rows(
+  $q$select 1 from pg_policies where schemaname='public' and tablename='product_reviews'
+      and policyname='reviews_insert'
+      and (coalesce(with_check,'') not ilike '%request_org()%'
+        or coalesce(with_check,'') not ilike '%customer_id IS NULL%'
+        or coalesce(with_check,'') not ilike '%verified_purchase%')$q$,
+  0, 'public reviews are tenant-bound and cannot self-assert verified purchase');
+select pg_temp.expect_rows(
+  $q$select 1 from pg_policies where schemaname='public'
+      and tablename='organizations' and policyname='org_anon'$q$,
+  0, 'organization directory is not publicly readable');
 
 -- 8. Every SECURITY DEFINER function pins its search_path (no hijackable
 --    unqualified references).
@@ -128,6 +153,12 @@ insert into organizations (id, name) select org, 'Audit Org A' from _a;
 insert into organizations (id, name) select org, 'Audit Org B' from _b;
 insert into branches (id, org_id, code, name) select ba, org, 'AUA', 'Audit Branch A' from _a;
 insert into branches (id, org_id, code, name) select ba, org, 'AUB', 'Audit Branch B' from _b;
+insert into org_domains (domain, org_id) select 'audit-a.test', org from _a;
+insert into org_domains (domain, org_id) select 'audit-b.test', org from _b;
+insert into site_pages (org_id, slug, kind, title, body, is_active)
+  select org, 'audit-page-a', 'page', 'Audit Page A', '{}'::jsonb, true from _a;
+insert into site_pages (org_id, slug, kind, title, body, is_active)
+  select org, 'audit-page-b', 'page', 'Audit Page B', '{}'::jsonb, true from _b;
 insert into auth.users (id, email) select user_id, 'audit-a@t.test' from _a;
 insert into auth.users (id, email) select user_id, 'audit-b@t.test' from _b;
 insert into profiles (id, org_id, branch_id, role_key, is_approved, full_name)
@@ -140,8 +171,8 @@ insert into profiles (id, org_id, branch_id, role_key, is_approved, full_name)
     role_key='owner', is_approved=true, deactivated=false;
 insert into customers (id, org_id, full_name, phone) select cust, org, 'Audit Customer', '9333333333' from _a;
 insert into customers (id, org_id, full_name, phone) select cust, org, 'Audit Customer B', '9333333334' from _b;
-insert into products (id, org_id, kind, model, selling_price) select prod, org, 'frame', 'Audit Frame', 1000 from _a;
-insert into products (id, org_id, kind, model, selling_price) select prod, org, 'frame', 'Audit Frame B', 1000 from _b;
+insert into products (id, org_id, kind, model, selling_price, visible_on_website) select prod, org, 'frame', 'Audit Frame', 1000, true from _a;
+insert into products (id, org_id, kind, model, selling_price, visible_on_website) select prod, org, 'frame', 'Audit Frame B', 1000, true from _b;
 insert into sales (id, org_id, branch_id, customer_id, grand_total, kind, status)
   select sale, org, ba, cust, 750, 'order', 'draft' from _a;
 insert into sales (id, org_id, branch_id, customer_id, grand_total, kind, status)
@@ -200,6 +231,27 @@ select set_config('request.jwt.claims', '{"role":"anon"}', true);
 -- request in PostgREST.
 select set_config('request.jwt.claim.sub', '', true);
 set local role anon;
+select set_config('request.headers', '{"x-site-host":"audit-a.test"}', true);
+
+select pg_temp.expect_rows($q$select 1 from site_pages where slug='audit-page-a'$q$, 1,
+  'anon sees active pages for the current storefront');
+select pg_temp.expect_rows($q$select 1 from site_pages where slug='audit-page-b'$q$, 0,
+  'anon cannot read another storefront''s pages');
+
+-- A legitimate public review for this storefront's public product is allowed,
+-- but a foreign product or client-asserted customer identity is rejected.
+select pg_temp.expect_ok(
+  format($q$insert into product_reviews (org_id, product_id, reviewer_name, rating, status, customer_id, verified_purchase)
+         values (%L, (select prod from _a), 'Public Reviewer', 5, 'pending', null, false)$q$, (select org from _a)),
+  'anon can submit an unverified review for this storefront''s active product');
+select pg_temp.expect_fail(
+  format($q$insert into product_reviews (org_id, product_id, reviewer_name, rating, status, customer_id, verified_purchase)
+         values (%L, (select prod from _b), 'Cross Product', 1, 'pending', null, false)$q$, (select org from _a)),
+  'anon cannot attach a review to another organisation''s product');
+select pg_temp.expect_fail(
+  format($q$insert into product_reviews (org_id, product_id, reviewer_name, rating, status, customer_id, verified_purchase)
+         values (%L, (select prod from _a), 'Spoofed Customer', 1, 'pending', (select cust from _b), false)$q$, (select org from _a)),
+  'anon cannot attach another organisation''s customer identity');
 
 -- Tightened review insert: anon cannot write into another organisation.
 select pg_temp.expect_fail(

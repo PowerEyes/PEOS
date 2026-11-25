@@ -1,5 +1,5 @@
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { CompareBar } from "@/components/CompareBar";
@@ -29,7 +29,10 @@ export const metadata: Metadata = {
     apple:[{ url:"/icon-192.png" }],
   },
   manifest:"/manifest.json",
-  themeColor:"#0B1B36",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0B1B36",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

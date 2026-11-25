@@ -11,6 +11,7 @@ import { PackagesView } from "./packages";
 import { OptionsView } from "./options";
 import { DisplayView } from "./display";
 import { CameraScanner } from "@/components/CameraScanner";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 
 const total = (p: any) => (p.stock ?? []).reduce((a: number, s: any) => a + s.qty, 0);
 const state = (p: any) => { const rows = p.stock ?? []; if (total(p) <= 0) return "out"; return rows.some((s: any) => stockState(s.qty, s.reorder_level) === "low") ? "low" : "in"; };
@@ -23,6 +24,9 @@ export function InventoryView({ products, brands, branches, packages, options, g
   useEffect(() => { if (sp.get("new")) setEditId("new"); }, [sp]);
   const counts = useMemo(() => Object.fromEntries(KINDS.map((k) => [k.key, products.filter((p) => p.kind === k.key).length])), [products]);
   const attention = products.filter((p) => state(p) !== "in").length;
+  const outOfStock = products.filter((p) => state(p) === "out").length;
+  const totalUnits = products.reduce((n:number,p:any)=>n+total(p),0);
+  const lowStockProducts = products.filter((p) => state(p) === "low").length;
   const rows = products.filter((p) => p.kind === tab && (!brand || p.brand_id === brand) && (!sf || (sf === "low" ? state(p) !== "in" : state(p) === sf)) &&
     `${p.brands?.name ?? ""} ${p.model} ${p.sku} ${p.barcode} ${p.collection ?? ""}`.toLowerCase().includes(q.toLowerCase()));
   const cur = editId && editId !== "new" ? products.find((p) => p.id === editId) ?? null : null;
@@ -33,6 +37,7 @@ export function InventoryView({ products, brands, branches, packages, options, g
   return (<div className="mx-auto max-w-6xl space-y-5">
     <div className="flex flex-wrap items-end justify-between gap-3"><div><h1 className="font-display text-3xl font-semibold">Inventory</h1><p className="text-slate-500">{products.length} products{attention > 0 && <button onClick={() => { setSf("low"); setTab("frame"); }} className="ml-2 font-medium text-amber-700 underline">{attention} need attention</button>}</p></div>
       {tab !== "packages" && tab !== "options" && tab !== "display" && <button onClick={() => setEditId("new")} className="btn btn-primary"><Plus size={16} />Add product</button>}</div>
+    <ModuleKpiGrid items={[{label:"Products",value:products.length,detail:"Products across loaded catalogue",icon:KPIIcons.package},{label:"Total stock units",value:totalUnits,detail:"Units in the selected branch scope",icon:KPIIcons.trend},{label:"Low stock",value:lowStockProducts,detail:"Below or at reorder attention",tone:lowStockProducts?"warning":"success",icon:KPIIcons.warning},{label:"Out of stock",value:outOfStock,detail:"No units currently available",tone:outOfStock?"danger":"success",icon:KPIIcons.warning}]} />
     <div className="flex gap-1 overflow-x-auto rounded-2xl bg-white p-1 shadow-sm">{[...KINDS.map((k) => ({ key: k.key as string, label: k.label, n: counts[k.key] })), { key: "packages", label: "Lens packages", n: packages.length }, { key: "options", label: "Lens options", n: options.length }, { key: "display", label: "Display & Shelf", n: products.length }].map((t) => (
       <button key={t.key} onClick={() => setTab(t.key as any)} className={`relative whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition ${tab === t.key ? "text-white" : "text-slate-600 hover:bg-slate-50"}`}>
         {tab === t.key && <motion.span layoutId="invtab" className="absolute inset-0 rounded-xl bg-navy-800" />}<span className="relative">{t.label} <span className="opacity-60">{t.n}</span></span></button>))}</div>

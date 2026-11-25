@@ -1,2 +1,7 @@
-// Per-run tenant context for edge functions (jobs run sequentially, one organisation at a time).
-export const tenant = { org: Deno.env.get("DEFAULT_ORG_ID") ?? "00000000-0000-0000-0000-000000000001" };
+// Edge-function tenant context.
+// Scheduled jobs must set this for each organization before querying or logging.
+// Request-driven jobs must resolve it from the authoritative business record.
+// Never fall back to a fixed organization ID in a multi-tenant deployment.
+export const tenant: { org: string | null } = {
+  org: Deno.env.get("DEFAULT_ORG_ID")?.trim() || null,
+};

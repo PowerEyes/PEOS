@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { supabaseServer } from "@/lib/supabase/server";
 import { normalizeDocuments } from "@/lib/company-profile";
+import { ModuleKpiGrid } from "@/components/ModuleKpiGrid";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,7 @@ export default async function CompanyPage() {
         {org?.timezone && <span className="text-slate-400">{org.timezone}</span>}
       </div>
 
+      <ModuleKpiGrid items={[{label:"Profile sections",value:TOPICS.length,detail:"Configuration sections"},{label:"Configured",value:Object.values(ready).filter(Boolean).length,tone:"success",detail:"Sections marked complete"},{label:"Needs setup",value:Object.values(ready).filter(v=>!v).length,tone:Object.values(ready).some(v=>!v)?"warning":"success",detail:"Sections incomplete"},{label:"Active branches",value:(branches ?? []).length,detail:"Branch locations in data"}]} />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {TOPICS.map((t) => {
           const done = ready[t.key];

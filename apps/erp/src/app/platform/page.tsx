@@ -45,6 +45,7 @@ export default async function PlatformDashboard() {
         ))}
       </div>
       <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
+        <p className="mb-2 text-xs text-slate-500">Revenue figures are estimates derived from active subscription plan prices; they are not recognized revenue or payment reconciliation.</p>
         <p className="mb-3 text-sm font-semibold">Newest companies</p>
         <table className="w-full text-sm">
           <thead className="text-left text-xs uppercase text-slate-500"><tr><th className="py-1">Company</th><th>Registered</th></tr></thead>

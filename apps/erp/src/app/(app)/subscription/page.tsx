@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { inr } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
+import { ModuleKpiGrid } from "@/components/ModuleKpiGrid";
 import { getEntitlements, type Entitlements } from "@/lib/entitlements";
 import { CheckoutButton } from "./checkout-button";
 import { SubscriptionActions } from "./change-plan";
@@ -128,6 +129,7 @@ export default async function SubscriptionPage() {
         </div>
       )}
 
+      <ModuleKpiGrid items={[{label:"Subscription status",value:status,tone:restricted?"warning":"success",detail:"Current entitlement status"},{label:"Branches",value:branchCount.count ?? 0,detail:"Organization branch usage"},{label:"Staff",value:employeeCount.count ?? 0,detail:"Organization profile usage"},{label:"Customers",value:customerCount.count ?? 0,detail:"Organization customer records"}]} />
       {/* Current plan */}
       <div className="card p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">

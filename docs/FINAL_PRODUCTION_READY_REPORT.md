@@ -1,3 +1,5 @@
+> **SUPERSEDED — NOT A VALID PRODUCTION SIGN-OFF.** This historical report's 171/171 claim conflicts with `PILOT_TEST_ROUND2.md` (19 PASS, 15 PARTIAL, 15 FAIL, 105 NOT TESTED) and the unchecked manual security sign-off. Do not use this document to authorize a commercial release. See `POWEROS_COMMERCIAL_PRODUCTION_AUDIT.md` for the current evidence-based decision.
+
 # PowerOS Final Production Readiness Report
 
 **Date:** 21 November 2026

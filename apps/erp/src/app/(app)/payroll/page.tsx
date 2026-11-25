@@ -1,42 +1,13 @@
-import { supabaseServer } from "@/lib/supabase/server";
+import Link from "next/link";
 
-export default async function PayrollPage() {
-  const sb = supabaseServer();
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) return null;
-  const { data: profile } = await sb.from("staff_profiles").select("tenant_id").eq("user_id", user.id).single();
-  const { data: staff } = await sb.from("staff_profiles").select("id, full_name, role, salary").eq("tenant_id", profile?.tenant_id).eq("is_active", true);
-
-  const totalSalary = staff?.reduce((s: number, e: any) => s + (e.salary || 0), 0) || 0;
-
+export default function PayrollPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-navy-900">Payroll</h1>
-          <p className="text-sm text-slate-500">Salary processing and payment</p>
-        </div>
-        <button className="btn btn-primary">Process Payroll</button>
-      </div>
-      <div className="card p-5">
-        <p className="text-sm text-slate-500">Total Monthly Salary</p>
-        <p className="text-3xl font-bold text-navy-900">₹{totalSalary.toLocaleString()}</p>
-      </div>
-      <div className="card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50"><tr><th className="text-left p-3">Employee</th><th className="text-left p-3">Role</th><th className="text-right p-3">Salary</th><th className="text-left p-3">Status</th></tr></thead>
-          <tbody>
-            {staff?.map((s: any) => (
-              <tr key={s.id} className="border-t">
-                <td className="p-3 font-medium">{s.full_name}</td>
-                <td className="p-3">{s.role}</td>
-                <td className="p-3 text-right">₹{s.salary?.toLocaleString() || "—"}</td>
-                <td className="p-3"><span className="px-2 py-1 rounded text-xs bg-slate-100 text-slate-600">Pending</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {(!staff || staff.length === 0) && <p className="p-6 text-sm text-slate-500 text-center">No active staff</p>}
+    <div className="mx-auto max-w-2xl space-y-4">
+      <h1 className="text-2xl font-bold text-navy-900">Payroll</h1>
+      <div className="card space-y-3 p-6">
+        <p className="font-semibold text-amber-800">Payroll is not enabled for production use.</p>
+        <p className="text-sm text-slate-600">The current database does not contain a verified payroll processing model. Salary totals and payment status must not be inferred from staff profile fields. This screen is intentionally read-only until payroll periods, earnings, statutory deductions, approvals and payment reconciliation are implemented and tested.</p>
+        <Link href="/staff" className="btn btn-ghost w-fit">Open staff management</Link>
       </div>
     </div>
   );

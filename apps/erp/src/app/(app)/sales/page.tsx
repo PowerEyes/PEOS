@@ -2,6 +2,7 @@ import { getScopeCtx } from "@/lib/branch-scope";
 import { supabaseServer } from "@/lib/supabase/server";
 import { SalesView } from "./view";
 import { getSettings } from "@/lib/settings";
+import { DataLoadError } from "@/components/DataLoadError";
 export default async function Page() {
   const sb = supabaseServer();
   const { only, scope } = await getScopeCtx();
@@ -43,6 +44,8 @@ export default async function Page() {
       .select("key, value")
       .eq("key", "quotation_valid_days"),
   ]);
+  const pageErrors = [s.error, p.error, c.error, b.error, lp.error, lo.error].filter(Boolean);
+  if (pageErrors.length) return <DataLoadError title="Sales workspace could not be loaded" message="Required sales, product, customer or lens catalogue data is unavailable. Retry after connectivity is restored." />;
   const set = await getSettings();
   const days = set.quoteDays;
   return (

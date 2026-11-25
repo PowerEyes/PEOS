@@ -5,6 +5,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { PortalLayout } from "@/components/PortalLayout";
 import { getSiteSettings } from "@/lib/site";
 import { waHref } from "@/lib/wa";
+import { PortalPageHeader } from "@/components/PortalPageHeader";
 
 const inr = (n:any) => `₹${Number(n||0).toLocaleString("en-IN")}`;
 
@@ -15,7 +16,7 @@ export default async function WarrantyPage() {
   if(!user) redirect("/my/login");
   const {data:c} = await sb.from("customers").select("id").eq("auth_user_id",user.id).maybeSingle();
   if(!c) redirect("/my/login");
-  const {data:orders} = await sb.from("sales")
+  const {data:orders, error:ordersError} = await sb.from("sales")
     .select("id,code,grand_total,created_at,sale_lines(description,line_total)")
     .eq("customer_id",c.id).eq("kind","order").in("status",["delivered"])
     .order("created_at",{ascending:false}).limit(20);
@@ -28,10 +29,7 @@ export default async function WarrantyPage() {
 
   return (
     <PortalLayout activePath="/my/warranty">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-700 to-emerald-500 text-white px-8 py-10 mb-6">
-        <h1 className="font-extrabold text-3xl">WARRANTY</h1>
-        <p className="text-white/80 mt-1">1-year manufacturing warranty on all frames purchased at Power Eyes Opticals.</p>
-      </div>
+<PortalPageHeader title="Warranty" description="Review warranty eligibility and expiry dates for delivered orders."/>
 
       <div className="grid sm:grid-cols-3 gap-4 mb-6">
         {[["🛡️","1 Year Warranty","On all frame purchases"],["🔧","Free Adjustments","Unlimited at our stores"],["🔄","Easy Claims","Visit any store with your receipt"]].map(([e,t,s])=>(
@@ -40,8 +38,14 @@ export default async function WarrantyPage() {
           </div>))}
       </div>
 
+      {ordersError && <div role="alert" className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Warranty history could not be loaded. Records may be incomplete; please refresh or contact support.</div>}
+      {orders && !ordersError && <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 mb-6">{[
+        ["Warranty records", orders.length],
+        ["Active", orders.filter((o:any)=>warrantyFor(o.created_at).active).length],
+        ["Expired", orders.filter((o:any)=>!warrantyFor(o.created_at).active).length],
+      ].map(([label,value])=><div key={String(label)} className="rounded-2xl border border-slate-200 bg-white p-4"><p className="text-xs text-slate-500">{label}</p><p className="mt-1 text-xl font-bold text-navy-900">{value}</p></div>)}</div>}
       <h2 className="font-bold text-xl text-navy-900 mb-4">My Warranty Cards</h2>
-      {(!orders||orders.length===0)
+      {ordersError ? null : (!orders||orders.length===0)
         ? <div className="rounded-2xl bg-white border border-slate-100 p-16 text-center">
             <div className="text-5xl mb-3">🛡️</div>
             <p className="font-semibold text-slate-600">No warranty records found</p>

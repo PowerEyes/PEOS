@@ -1,3 +1,4 @@
+import { PortalPageHeader } from "@/components/PortalPageHeader";
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/lib/customer";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -16,7 +17,7 @@ export default async function Page() {
   const next = TIERS[TIERS.indexOf(tier)+1];
   return (
     <div className="space-y-5">
-      <h1 className="font-display text-2xl font-bold text-navy-900">Loyalty & Rewards</h1>
+      <PortalPageHeader title="Loyalty & Rewards" description="View your points balance, membership tier, and recent rewards activity."/>
       <div className={`card bg-gradient-to-br ${tier.col} p-6 text-white`}>
         <div className="flex items-center justify-between"><div><p className="text-sm text-white/70">Your Points</p><p className="font-display text-5xl font-bold mt-1">{points}</p><p className="mt-1 font-semibold">{tier.n} Member</p></div>
           <Gift size={48} className="text-white/30"/></div>

@@ -8,6 +8,7 @@ import { fmt, inr } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { advanceLab, updateLab } from "./actions";
+import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 
 const COLS = [["to_buy", "To buy", "bg-amber-400"], ["ordered", "Ordered", "bg-blue-400"], ["received", "Received", "bg-indigo-400"], ["edging", "Edging", "bg-violet-400"], ["fitting", "Fitting", "bg-fuchsia-400"], ["qc", "Quality check", "bg-orange-400"], ["ready", "Ready", "bg-emerald-500"]] as const;
 const NEXT: Record<string, [string, string]> = { to_buy: ["ordered", "Mark as ordered"], ordered: ["received", "Lenses received"], received: ["edging", "Start edging"], edging: ["fitting", "Move to fitting"], fitting: ["qc", "Send to QC"] };
@@ -80,10 +81,12 @@ export function WorkshopView({ labs }: { labs: any[] }) {
   const [tab, setTab] = useState<"board" | "buy">("board"); const [openId, setOpenId] = useState<string | null>(null);
   const suppliers = useMemo(() => [...new Set(labs.map((l) => l.supplier_name).filter(Boolean))] as string[], [labs]);
   const late = labs.filter(overdue).length; const open = labs.find((l) => l.id === openId) ?? null;
+  const urgent = labs.filter((l) => l.priority === "urgent").length; const ready = labs.filter((l) => l.status === "ready").length; const qc = labs.filter((l) => l.status === "qc").length; const toBuyCount = labs.filter((l) => l.status === "to_buy").length;
   return (<div className="mx-auto max-w-[1400px] space-y-5">
     <div className="flex flex-wrap items-end justify-between gap-3"><div><h1 className="font-display text-3xl font-semibold">Workshop & Lab</h1><p className="text-slate-500">{labs.length} jobs in progress{late > 0 && <span className="ml-2 inline-flex items-center gap-1 font-medium text-rose-600"><AlertTriangle size={14} />{late} overdue</span>}</p></div>
       <div className="flex gap-1 rounded-2xl bg-white p-1 shadow-sm">{([["board", "Board", Wrench], ["buy", "Buying list", ShoppingBasket]] as const).map(([k, l, I]) => <button key={k} onClick={() => setTab(k)} className={`relative flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium ${tab === k ? "text-white" : "text-slate-600"}`}>
         {tab === k && <motion.span layoutId="wtab" className="absolute inset-0 rounded-xl bg-navy-800" />}<span className="relative flex items-center gap-2"><I size={15} />{l}{k === "buy" && labs.filter((x) => x.status === "to_buy").length > 0 && <span className="rounded-full bg-gold-500 px-1.5 text-[10px] text-white">{labs.filter((x) => x.status === "to_buy").length}</span>}</span></button>)}</div></div>
+    <ModuleKpiGrid items={[{label:"Active lab jobs",value:labs.length,detail:"Jobs currently in the workflow",icon:KPIIcons.package},{label:"Awaiting lens purchase",value:toBuyCount,detail:"Need supplier/order action",tone:toBuyCount?"warning":"success",icon:KPIIcons.warning},{label:"Awaiting QC",value:qc,detail:"Inspection/rework decision needed",tone:qc?"warning":"default",icon:KPIIcons.check},{label:"Ready for delivery",value:ready,detail:"Passed QC; next customer delivery step",tone:ready?"success":"default",icon:KPIIcons.check},{label:"Overdue / urgent",value:`${late} / ${urgent}`,detail:"Due-date and priority exceptions",tone:late||urgent?"danger":"success",icon:KPIIcons.clock}]} />
     {tab === "buy" ? <Buying labs={labs} suppliers={suppliers} /> : labs.length === 0 ? <div className="card p-10 text-center text-slate-500"><Wrench className="mx-auto mb-2" />No jobs yet. A lab order is created automatically when an order includes lenses.</div> :
       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-4 sm:mx-0 sm:px-0">{COLS.map(([k, label, dot]) => { const list = labs.filter((l) => l.status === k); return (
         <section key={k} className="w-72 shrink-0 snap-start rounded-2xl bg-slate-100/70 p-2"><header className="flex items-center gap-2 px-2 py-2 text-sm font-semibold"><span className={`h-2.5 w-2.5 rounded-full ${dot}`} />{label}<span className="ml-auto rounded-full bg-white px-2 text-xs">{list.length}</span></header>

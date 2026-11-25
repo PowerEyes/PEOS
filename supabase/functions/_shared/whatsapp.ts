@@ -93,9 +93,8 @@ export async function sendWhatsApp(
   if (accessToken && phoneNumId) {
     return sendMetaTemplate(phone, templateName, params, phoneNumId, accessToken);
   }
-  // Fallback: log only (useful for testing without credentials)
-  console.log(`[WA-MOCK] To:${phone} Template:${templateName} Params:${params.join("|")}`);
-  return { success:true, messageId:`mock-${Date.now()}` };
+  // Fail closed. A mock log must never be reported as a delivered customer message.
+  return { success:false, error:"WhatsApp provider is not configured. Set valid Meta or Interakt credentials before sending." };
 }
 
 // ── Log the result to whatsapp_log table ──────────────────────────────────────
@@ -108,6 +107,10 @@ export async function logWA(
   result: WAResult,
   metadata: Record<string, any> = {},
 ) {
+  if (!tenant.org) {
+    console.error("[whatsapp] Refusing to write a message log without an organization context.");
+    return;
+  }
   await sb.from("whatsapp_log").insert({
     org_id: tenant.org,
     customer_id: customerId,

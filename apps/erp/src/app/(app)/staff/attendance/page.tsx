@@ -1,4 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
+import { ModuleKpiGrid } from "@/components/ModuleKpiGrid";
 
 // Branch roster. A real attendance table (clock in/out) is not in the schema yet,
 // so this shows the data that does exist: who works here today and who is
@@ -20,12 +21,18 @@ export default async function AttendancePage() {
   ]);
   const covering = new Map((covers ?? []).map((c: any) => [c.profile_id, c]));
 
+  const roster = staff ?? [];
+  const active = roster.filter((s: any) => !s.deactivated && s.is_approved).length;
+  const pending = roster.filter((s: any) => !s.is_approved && !s.deactivated).length;
+  const coveringCount = covering.size;
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-navy-900">Attendance</h1>
         <p className="text-sm text-slate-500">Staff scheduled at your branch today</p>
       </div>
+      <ModuleKpiGrid items={[{label:"Branch roster",value:roster.length,detail:"Staff assigned to this branch"},{label:"Approved active",value:active,tone:"success",detail:"Active approved accounts"},{label:"Pending approval",value:pending,tone:pending?"warning":"default",detail:"Staff awaiting approval"},{label:"Temporary coverage",value:coveringCount,detail:"Active staff assignments"}]} />
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">This page currently shows the branch roster and temporary assignments. It is not a clock-in/clock-out attendance register; actual attendance tracking is not implemented in this data model.</div>
       <div className="card overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-slate-50"><tr><th className="text-left p-3">Employee</th><th className="text-left p-3">Role</th><th className="text-left p-3">Status</th><th className="text-left p-3">Covering</th><th className="text-right p-3">Joined</th></tr></thead>

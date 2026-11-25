@@ -6,6 +6,10 @@ create table if not exists product_costs (
   cost_price numeric(10,2) check (cost_price is null or cost_price >= 0),
   updated_by uuid default auth.uid(), updated_at timestamptz not null default now());
 alter table product_costs enable row level security;
+drop policy if exists pc_sel on product_costs;
+drop policy if exists pc_ins on product_costs;
+drop policy if exists pc_upd on product_costs;
+drop policy if exists pc_del on product_costs;
 create policy pc_sel on product_costs for select to authenticated using (org_id = public.current_org() and public.is_manager());
 create policy pc_ins on product_costs for insert to authenticated with check (org_id = public.current_org() and public.is_manager());
 create policy pc_upd on product_costs for update to authenticated using (org_id = public.current_org() and public.is_manager()) with check (org_id = public.current_org() and public.is_manager());
