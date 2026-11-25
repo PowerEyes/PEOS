@@ -30,7 +30,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { createPrescription } from "./actions";
 
-type Cust = { id: string; full_name: string; phone: string; vision_id: string };
+type Cust = { id: string; full_name: string; phone: string; vision_id: string; family_id?: string };
 const TONE = { active: "green", expiring: "gold", expired: "red" } as const;
 
 async function shrink(file: File): Promise<Blob> {
@@ -180,6 +180,9 @@ function RxDrawer({
   const [step, setStep] = useState<"start" | "scan" | "values">("start");
   const [cid, setCid] = useState<string | null>(presetId);
   const [q, setQ] = useState("");
+  const [searchResults, setSearchResults] = useState<Cust[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
   const [v, setV] = useState<RxValues>(emptyRx());
   const [check, setCheck] = useState<Set<string>>(new Set());
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -221,13 +224,42 @@ function RxDrawer({
     }
   }, [open, presetId]);
   const cust = customers.find((c) => c.id === cid);
-  const list = customers
-    .filter((c) =>
-      `${c.full_name} ${c.phone} ${c.vision_id}`
-        .toLowerCase()
-        .includes(q.toLowerCase()),
-    )
-    .slice(0, 6);
+  // Debounced search across name, phone, vision_id, and family_id
+  useEffect(() => {
+    if (!q.trim()) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      setSearchError("");
+      return;
+    }
+    setSearchLoading(true);
+    setSearchError("");
+    const timer = setTimeout(async () => {
+      try {
+        const sb = supabaseBrowser();
+        const term = q.trim().toLowerCase();
+        const { data, error } = await sb
+          .from("customers")
+          .select("id, full_name, phone, vision_id, family_id")
+          .or(`full_name.ilike.%${term}%,phone.ilike.%${term}%,vision_id.ilike.%${term}%,family_id.ilike.%${term}%`)
+          .limit(10);
+        if (error) {
+          setSearchError("Search failed. Try again.");
+          setSearchResults([]);
+        } else {
+          setSearchResults((data ?? []) as Cust[]);
+        }
+      } catch {
+        setSearchError("Search failed. Try again.");
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [q]);
+
+  const list = q.trim() ? searchResults : customers.slice(0, 6);
   const setEye = (s: "od" | "os") => (k: keyof Eye, val: any) => {
     setV((p) => ({ ...p, [s]: { ...p[s], [k]: val } }));
     setCheck((c) => {
@@ -394,13 +426,21 @@ function RxDrawer({
                       >
                         <div className="flex flex-col">
                           <b className="text-navy-900">{c.full_name}</b>
-                          <span className="text-xs text-slate-500">{c.phone} {c.vision_id ? `· ${c.vision_id}` : ""}</span>
+                          <span className="text-xs text-slate-500">
+                            {c.phone ? `📞 ${c.phone}` : ""} {c.vision_id ? `· ${c.vision_id}` : ""} {c.family_id ? `· Family: ${c.family_id}` : ""}
+                          </span>
                         </div>
                         {cid === c.id && <span className="text-gold-500 text-xs font-medium">Selected</span>}
                       </button>
                     ))}
                   </div>
-                  {list.length === 0 && q.trim() && (
+                  {searchLoading && (
+                    <p className="mt-2 text-sm text-slate-500 text-center py-2">Searching...</p>
+                  )}
+                  {searchError && (
+                    <p className="mt-2 text-sm text-red-600 text-center py-2">{searchError}</p>
+                  )}
+                  {!searchLoading && !searchError && list.length === 0 && q.trim() && (
                     <p className="mt-2 text-sm text-slate-500 text-center py-2">No customers found. <span className="text-navy-700 font-medium">Create a new customer →</span></p>
                   )}
                 </div>
