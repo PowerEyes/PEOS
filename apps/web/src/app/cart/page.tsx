@@ -63,7 +63,7 @@ export default function CartPage() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: c, orderTotal: total }),
       });
-      const d = await r.json().catch(() => ({}));
+      const d = await r.json();
       if (!r.ok || d.error) {
         setCouponErr(d.error || "Invalid or expired coupon code.");
         toast(d.error || "Invalid or expired coupon code.", "err");
@@ -128,7 +128,7 @@ export default function CartPage() {
                 </motion.div>))}
             </AnimatePresence>
             <div className="grid grid-cols-2 gap-3 mt-2">
-              {["🎁 Gift wrapping available","📋 Prescription guidance available","🚚 Free pickup from our stores","🔧 Free adjustments included"].map(t =>
+              {["🎁 Gift wrapping available","📋 Your prescription is saved","🚚 Free pickup from our stores","🔧 Free adjustments included"].map(t =>
                 <div key={t} className="rounded-xl bg-white border border-slate-100 px-3 py-2 text-xs text-slate-600">{t}</div>)}
             </div>
           </div>

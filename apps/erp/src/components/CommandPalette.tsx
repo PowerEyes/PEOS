@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@poweros/ui";
 import { Home, Users, FileText, UserPlus, FilePlus, Search, ShoppingCart, Boxes, Wrench, Glasses, Landmark, CalendarDays, Shield, Settings, Building2, Store } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { globalSearch } from "@/app/(app)/shell-actions";
 import { routeAllowed } from "@/lib/rbac";
 
 type Cmd = { label: string; hint?: string; icon: any; go: string };
@@ -38,16 +39,8 @@ export function CommandPalette({ open, onClose, role, perms }: { open: boolean; 
   useEffect(() => {
     if (q.trim().length < 2) return setFound([]);
     const t = setTimeout(async () => {
-      // Restrict filter syntax characters before composing the PostgREST OR expression.
-      const s = q.trim().replace(/[^\p{L}\p{N}\s@.+_-]/gu, "").slice(0, 80);
-      if (s.length < 2) return setFound([]);
-      const { data, error } = await supabaseBrowser()
-        .from("customers")
-        .select("id, full_name, phone, vision_id")
-        .or(`full_name.ilike.%${s}%,phone.ilike.%${s}%,vision_id.ilike.%${s}%`)
-        .limit(5);
-      if (error) { setFound([]); return; }
-      setFound((data ?? []).map((c) => ({ label: c.full_name, hint: `${c.vision_id ?? "No Vision ID"} | ${c.phone ?? ""}`, icon: Users, go: `/customers?open=${c.id}` })));
+      const hits = await globalSearch(q);
+      setFound(hits.map((h) => ({ label: h.label, hint: `${h.group}${h.hint ? " · " + h.hint : ""}`, icon: Search, go: h.href })));
     }, 200);
     return () => clearTimeout(t);
   }, [q]);
@@ -58,7 +51,7 @@ export function CommandPalette({ open, onClose, role, perms }: { open: boolean; 
   }, [found, q, role, perms]);
   const run = (c: Cmd) => { onClose(); router.push(c.go); };
   return (
-    <Modal open={open} onClose={onClose} title="Search PowerOS" subtitle="Search customer records and jump to permitted pages">
+    <Modal open={open} onClose={onClose} title="Search PowerOS" subtitle="Jump to any page, customer or action">
       <div className="p-4" onKeyDown={(e) => {
         if (e.key === "ArrowDown") { e.preventDefault(); setI((x) => Math.min(items.length - 1, x + 1)); }
         if (e.key === "ArrowUp") { e.preventDefault(); setI((x) => Math.max(0, x - 1)); }
@@ -67,7 +60,7 @@ export function CommandPalette({ open, onClose, role, perms }: { open: boolean; 
         <div className="relative">
           <Search size={16} className="absolute left-3 top-3.5 text-slate-400" />
           <input autoFocus value={q} onChange={(e) => { setQ(e.target.value); setI(0); }}
-            placeholder="Search customers or pages" className="field pl-9" />
+            placeholder="Type a name, page or action" className="field pl-9" />
         </div>
         <ul className="mt-3 max-h-80 space-y-0.5 overflow-y-auto">
           {items.map((c, n) => (

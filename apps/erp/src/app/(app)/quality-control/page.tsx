@@ -1,5 +1,3 @@
-import WorkshopPage from "../workshop/page";
-
-// QC is a stage inside the existing lab workflow. Reuse the canonical workflow
-// rather than maintaining a second screen with inert Pass/Fail controls.
-export default WorkshopPage;
+import { redirect } from "next/navigation";
+// Quality checks and hand-over happen on the Workshop board (QC and Ready stages).
+export default function Page() { redirect("/workshop"); }

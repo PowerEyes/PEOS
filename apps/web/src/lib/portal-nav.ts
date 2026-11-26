@@ -1,6 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
-  Eye, User, FileText, CalendarDays, ShoppingBag, Heart, RotateCcw, ClipboardList,
+  Eye, User, FileText, CalendarDays, ShoppingBag, Heart, RotateCcw,
   Wrench, Shield, Gift, Bell, FolderOpen, MapPin, CreditCard,
 } from "lucide-react";
 
@@ -19,7 +19,6 @@ export const PORTAL_NAV: PortalNavItem[] = [
   { href: "/my/vision-id", label: "Vision ID", icon: Eye },
   { href: "/my/family", label: "Family Members", icon: Heart },
   { href: "/my/prescriptions", label: "Prescriptions", icon: FileText },
-  { href: "/my/eye-examinations", label: "Eye Examinations", icon: ClipboardList },
   { href: "/my/appointments", label: "Eye Test Appointments", icon: CalendarDays },
   { href: "/my/orders", label: "My Orders", icon: ShoppingBag },
   { href: "/my/payments", label: "My Payments", icon: CreditCard },

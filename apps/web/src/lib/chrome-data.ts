@@ -39,14 +39,15 @@ export type SiteChrome = {
   logo: Logo | null;
   nav: NavItem[] | null;
   footer: FooterChrome | null;
+  storeName?: string;
 };
 
 /* ── Fallbacks: byte-for-byte what the site rendered before Phase 5 ─────── */
 
 export const DEFAULT_ANNOUNCEMENT: Announcement = {
-  text: "Mogappair East, Chennai · Your Family's Vision Partner Since 1998",
-  ctaLabel: "WhatsApp Support",
-  ctaHref: "", // resolved at render time from site settings (Header → waHref(whatsappNumber))
+  text: "",
+  ctaLabel: "",
+  ctaHref: "",
 };
 
 export const DEFAULT_LOGO: Logo = {
@@ -81,48 +82,12 @@ export const DEFAULT_NAV: NavItem[] = [
 
 export const DEFAULT_FOOTER: FooterChrome = {
   brand: {
-    title: "POWER EYES",
-    badge: "SINCE 1998",
-    tagline: "Your Family's Vision Partner. Expert eye care and premium eyewear for every generation.",
+    title: "",
+    badge: "",
+    tagline: "",
   },
-  contact: [
-    { icon: "map", label: "2/56 Velayapathi Salai, Mogappair East, Chennai – 600 037", href: "https://maps.google.com/?q=2%2F56+Velayapathi+Salai+Mogappair+East+Chennai" },
-    { icon: "phone", label: "98401 85186", href: "tel:+919840185186" },
-    { icon: "mail", label: "powereyes.chennai@gmail.com", href: "mailto:powereyes.chennai@gmail.com" },
-  ],
+  contact: [],
   social: [],
-  columns: [
-    { title: "Shop", items: [
-      { label: "Eyeglasses", href: "/eyeglasses" },
-      { label: "Sunglasses", href: "/sunglasses" },
-      { label: "Kids Eyewear", href: "/eyeglasses?gender=kids" },
-      { label: "Contact Lenses", href: "/contact-lenses" },
-      { label: "Lens Packages", href: "/lenses" },
-      { label: "Accessories", href: "/accessories" },
-    ]},
-    { title: "Eye Care", items: [
-      { label: "Book Eye Test", href: "/eye-test" },
-      { label: "EYES Consultation", href: "/help-me-choose" },
-      { label: "Upload Prescription", href: "/my/prescriptions" },
-      { label: "Lens Guide", href: "/lens-guide" },
-      { label: "Eye Care Blog", href: "/blog" },
-    ]},
-    { title: "My Account", items: [
-      { label: "My Power Eyes", href: "/my" },
-      { label: "Vision ID", href: "/my/vision-id" },
-      { label: "My Orders", href: "/my/orders" },
-      { label: "Track Order", href: "/my/orders" },
-      { label: "Loyalty Rewards", href: "/my/loyalty" },
-      { label: "Wishlist", href: "/wishlist" },
-    ]},
-    { title: "Support", items: [
-      { label: "Store Locator", href: "/store-locator" },
-      { label: "Warranty & Repairs", href: "/my/repairs" },
-      { label: "Easy Returns", href: "/returns" },
-      { label: "FAQs", href: "/faq" },
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
-    ]},
-  ],
-  trust: ["100% Genuine Products", "Prescription Verified", "Free Adjustments", "Easy Returns", "Secure Payments", "Dedicated Support"],
+  columns: [],
+  trust: [],
 };

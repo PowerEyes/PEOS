@@ -77,7 +77,7 @@ export default async function BlogPostPage({ params }: Params) {
           {post.excerpt && <p className="text-lg text-slate-500 leading-relaxed mb-5">{post.excerpt}</p>}
           {/* Meta */}
           <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500 pb-5 border-b border-slate-100">
-            <span className="flex items-center gap-1.5"><User size={14}/>{post.author_name ?? "Power Eyes Team"}</span>
+            <span className="flex items-center gap-1.5"><User size={14}/>{post.author_name ?? "Our team"}</span>
             <span className="flex items-center gap-1.5"><Calendar size={14}/>{publishDate}</span>
             {post.reading_time && <span className="flex items-center gap-1.5"><Clock size={14}/>{post.reading_time} min read</span>}
           </div>
@@ -120,7 +120,7 @@ export default async function BlogPostPage({ params }: Params) {
                     <div className="p-4">
                       <p className="font-semibold text-sm text-navy-900 leading-snug line-clamp-2 group-hover:text-gold-600 transition">{r.title}</p>
                       {r.excerpt && <p className="text-xs text-slate-500 mt-1 line-clamp-2">{r.excerpt}</p>}
-                      <p className="text-xs text-slate-400 mt-2">{r.author_name ?? "Power Eyes Team"}</p>
+                      <p className="text-xs text-slate-400 mt-2">{r.author_name ?? "Our team"}</p>
                     </div>
                   </Link>);})}
             </div>

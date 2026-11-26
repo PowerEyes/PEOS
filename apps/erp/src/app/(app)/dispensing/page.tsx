@@ -1,6 +1,3 @@
-import SalesPage from "../sales/page";
-
-// Delivery is completed through the existing order detail and deliverOrder
-// workflow. Keep this legacy URL as an alias rather than creating a second
-// delivery implementation.
-export default SalesPage;
+import { redirect } from "next/navigation";
+// Quality checks and hand-over happen on the Workshop board (QC and Ready stages).
+export default function Page() { redirect("/workshop"); }

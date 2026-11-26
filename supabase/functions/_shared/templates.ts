@@ -53,7 +53,6 @@ export const DB_FALLBACK: Record<string, string> = {
 // stays in the function code (Meta's approved param order). Falls back to the
 // constant above whenever the DB can't answer.
 export async function resolveTemplateName(sb: any, key: string): Promise<string> {
-  if (!tenant.org) return DB_FALLBACK[key] ?? key;
   try {
     const { data, error } = await sb
       .from("message_templates")

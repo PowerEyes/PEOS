@@ -6,7 +6,7 @@ import { BookOpen } from "lucide-react";
 import { getSiteSettings } from "@/lib/site";
 import { waHref } from "@/lib/wa";
 export const revalidate = 300;
-export const metadata = { title: "Eye Care Blog & Guides – Power Eyes Opticals" };
+export const metadata = { title: "Eye Care Blog & Guides" };
 const GUIDES = [
   { title:"How to read your spectacle prescription", slug:"read-prescription", tag:"Guide", excerpt:"OD, OS, SPH, CYL, AXIS, ADD — we decode every term on your Rx card.", emoji:"📋" },
   { title:"Progressive vs Bifocal lenses — which is right for you?", slug:"progressive-vs-bifocal", tag:"Comparison", excerpt:"Both correct near and far vision, but the experience is very different.", emoji:"🔭" },

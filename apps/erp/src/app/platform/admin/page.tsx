@@ -11,17 +11,12 @@ export default async function PlatformAdmin() {
     admin.from("platform_users").select("*").order("created_at", { ascending: false }).limit(100),
     admin.from("platform_audit_logs").select("*").order("created_at", { ascending: false }).limit(50),
   ]);
-  const platformUserCount = (users ?? []).length;
-  const auditCount = (logs ?? []).length;
-  const superAdmins = (users ?? []).filter((u: any) => u.platform_role === "super_admin").length;
-  const activeUsers = (users ?? []).filter((u: any) => u.is_active !== false).length;
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold">Platform administration</h2>
         <p className="text-sm text-slate-400">Platform users, roles and audit trail.</p>
       </div>
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[{label:"Platform users",value:platformUserCount},{label:"Active",value:activeUsers},{label:"Super admins",value:superAdmins},{label:"Audit events loaded",value:auditCount}].map(k=><div key={k.label} className="rounded-xl border border-slate-800 bg-slate-900/50 p-4"><p className="text-xs text-slate-400">{k.label}</p><p className="mt-1 text-xl font-semibold">{k.value}</p></div>)}</div>
       <PlatformUsersPanel users={users ?? []} canManage={pu.platform_role === "super_admin"} />
       <div className="rounded-xl border border-slate-800 p-4">
         <p className="mb-2 text-sm font-semibold">Audit log</p>

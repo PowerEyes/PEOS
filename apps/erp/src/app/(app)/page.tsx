@@ -3,10 +3,11 @@ import { supabaseServer } from "@/lib/supabase/server";
 import Link from "next/link";
 import { CountUp } from "@poweros/ui";
 import { resolveScope } from "@/lib/branch-scope";
+import { landingFor } from "@/lib/landing";
 import { routeAllowed } from "@/lib/rbac";
 import { inr } from "@poweros/business-rules";
 import { Users, UserPlus, AlertTriangle, IndianRupee, Wrench, CalendarDays } from "lucide-react";
-export default async function Dashboard() {
+export default async function Dashboard({ searchParams }: { searchParams: { d?: string; denied?: string } }) {
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/login");
@@ -15,6 +16,9 @@ export default async function Dashboard() {
     sb.from("branches").select("id, name").eq("is_active", true).order("name"),
     sb.rpc("my_permissions"),
   ]);
+  // Role landing: specialists open on their own work screen; "/?d=1" (the Dashboard menu item) and access-denied bounces stay here.
+  const home = landingFor(p?.role_key);
+  if (home !== "/" && !searchParams?.d && !searchParams?.denied) redirect(home);
   const isOwner = ['owner','admin'].includes(p?.role_key ?? '');
   const { data: liveRow } = isOwner ? await sb.from('org_settings').select('value').eq('key','go_live').maybeSingle() : { data: null };
   const scope = resolveScope(p?.role_key ?? "staff", p?.branch_id ?? null, (brs ?? []).map((b) => b.id));

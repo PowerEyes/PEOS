@@ -1,6 +1,5 @@
 "use client";
 import { useMemo, useState } from "react";
-import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Drawer, Modal, Pill, useToast } from "@poweros/ui";
@@ -342,7 +341,6 @@ export function PurchasesView({ pos, suppliers, branches, products }: { pos: any
         <button data-testid="new-po" onClick={() => setDrawer(true)} className="btn btn-gold gap-2"><Plus size={16} />New purchase order</button>
       </div>
 
-      <ModuleKpiGrid items={[{label:"Purchase orders",value:pos.length,detail:"Loaded purchase orders",icon:KPIIcons.package},{label:"Draft / awaiting approval",value:count("draft"),detail:"Approval queue",tone:count("draft")?"warning":"success",icon:KPIIcons.clock},{label:"Partially received",value:count("partially_received"),detail:"Receipts still outstanding",tone:count("partially_received")?"warning":"default",icon:KPIIcons.warning},{label:"Active suppliers",value:suppliers.length,detail:"Available supplier directory",icon:KPIIcons.users}]} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: "Awaiting approval", val: String(count("draft")), icon: ClipboardList, cls: "bg-slate-100 text-slate-600" },

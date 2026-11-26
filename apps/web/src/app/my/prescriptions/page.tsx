@@ -1,4 +1,3 @@
-import { PortalPageHeader } from "@/components/PortalPageHeader";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { getCustomer } from "@/lib/customer";
@@ -11,20 +10,13 @@ const fmt=(n:number|null|undefined)=>n==null?"—":`${n>=0?"+":""}${Math.abs(n).
 export default async function PrescriptionsPage() {
   const site = await getSiteSettings();
   const customer = await getCustomer(); if (!customer) redirect("/my/login");
-  const { data: rxs, error: rxError } = await supabaseServer().from("prescriptions").select("id,rx_code,rx_date,valid_till,rx_type,od_sph,od_cyl,od_axis,od_add,os_sph,os_cyl,os_axis,os_add,pd_far,pd_near,examined_by,status").eq("customer_id",customer.id).order("rx_date",{ascending:false}).limit(20);
-  const isActive=(r:any)=>r.status === "active" && (!r.valid_till || new Date(`${r.valid_till}T23:59:59`) >= new Date());
+  const { data: rxs } = await supabaseServer().from("prescriptions").select("id,rx_code,rx_date,valid_till,rx_type,od_sph,od_cyl,od_axis,od_add,os_sph,os_cyl,os_axis,os_add,pd_far,pd_near,examined_by,status").eq("customer_id",customer.id).order("rx_date",{ascending:false}).limit(20);
+  const isActive=(r:any)=>r.valid_till&&new Date(r.valid_till)>new Date();
   return (
     <div className="space-y-5">
-      <PortalPageHeader title="My Prescriptions" description="Review prescription details, validity, and download or use them when shopping." action={<a href={waHref(site.whatsappNumber, "I'd like to upload my prescription")} target="_blank" className="btn-gold text-sm"><Plus size={15}/>Upload Rx</a>}/>
-      {!rxError && rxs && rxs.length > 0 && <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{[
-        ["Total records", rxs.length],
-        ["Active", rxs.filter(isActive).length],
-        ["Expiring in 30 days", rxs.filter((r:any)=>isActive(r) && r.valid_till && new Date(`${r.valid_till}T23:59:59`) <= new Date(Date.now()+30*86400000)).length],
-        ["Expired", rxs.filter((r:any)=>!isActive(r)).length],
-      ].map(([label,value])=><div key={String(label)} className="rounded-2xl border border-slate-200 bg-white p-4"><p className="text-xs text-slate-500">{label}</p><p className="mt-1 text-xl font-bold text-navy-900">{value}</p></div>)}</div>}
-      {rxError ? (
-        <div role="alert" className="card border-amber-200 p-8 text-center"><p className="font-semibold text-amber-800">Prescription records unavailable</p><p className="mt-2 text-sm text-slate-500">We could not load your prescriptions. Please refresh or contact support.</p></div>
-      ) : !rxs?.length ? (
+      <div className="flex items-center justify-between"><h1 className="font-display text-2xl font-bold text-navy-900">My Prescriptions</h1>
+        <a href={waHref(site.whatsappNumber, "I'd like to upload my prescription")} target="_blank" className="btn-gold text-sm"><Plus size={15}/>Upload Rx</a></div>
+      {!rxs?.length ? (
         <div className="card p-16 text-center"><FileText size={40} className="mx-auto mb-3 text-slate-300"/><p className="font-semibold text-slate-600">No prescriptions yet</p><Link href="/eye-test" className="btn-gold mt-5 inline-flex">Book an Eye Test</Link></div>
       ) : (
         <div className="space-y-3">{rxs.map(r => (

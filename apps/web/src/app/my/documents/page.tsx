@@ -323,7 +323,7 @@ export default async function DocumentsPage() {
       </DocSection>
 
       <p className="text-xs text-slate-400">
-        Documents are generated from your account records at Power Eyes Opticals, Mogappair East, Chennai.
+        Documents are generated from your account records at Power Eyes Opticals.
         Need a copy by email or WhatsApp? <a href={waHref(site.whatsappNumber, "Please send me a copy of my documents")} target="_blank" rel="noopener noreferrer" className="font-semibold text-navy-700 hover:underline">Contact us</a>.
       </p>
     </PortalLayout>

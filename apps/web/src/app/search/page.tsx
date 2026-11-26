@@ -46,21 +46,17 @@ function Categories() {
 }
 
 export default async function Page({ searchParams }: { searchParams: { q?: string } }) {
-  const rawQuery = searchParams.q?.trim() ?? "";
-  // Restrict filter syntax characters so user input cannot alter PostgREST .or() expressions.
-  const q = rawQuery.replace(/[^\p{L}\p{N}\s_-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+  const q = searchParams.q?.trim() ?? "";
   let products: Product[] = [];
   let suggestion: string | null = null;
-  let searchError = false;
 
   if (q.length >= 2) {
     const sb = supabasePublic();
-    const { data, error } = await sb.from("public_catalog").select("*")
+    const { data } = await sb.from("public_catalog").select("*")
       .or(`model.ilike.%${q}%,brand.ilike.%${q}%,sku.ilike.%${q}%,short_desc.ilike.%${q}%`).limit(60);
-    searchError = Boolean(error);
     products = (data ?? []) as Product[];
 
-    if (!products.length && !error) {
+    if (!products.length) {
       // Zero results — find the closest brand name for "did you mean …?"
       const { data: rows } = await sb.from("public_catalog").select("brand").limit(300);
       const brands = [...new Set((rows ?? []).map((r: any) => r.brand).filter(Boolean))] as string[];
@@ -86,11 +82,9 @@ export default async function Page({ searchParams }: { searchParams: { q?: strin
       <Breadcrumb strip items={crumbs} />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <h1 className="font-display text-3xl font-bold text-navy-900 mb-2">{q ? `Results for “${q}”` : "Search"}</h1>
-        <p className="text-slate-500 mb-8">{q ? (searchError ? "Search could not be completed." : `${products.length} product${products.length === 1 ? "" : "s"} found`) : "Enter a search term above."}</p>
+        <p className="text-slate-500 mb-8">{q ? `${products.length} product${products.length === 1 ? "" : "s"} found` : "Enter a search term above."}</p>
 
-        {searchError ? (
-          <div className="card mx-auto max-w-xl p-8 text-center" role="alert"><p className="font-semibold text-navy-900">Search temporarily unavailable</p><p className="mt-2 text-sm text-slate-500">We couldn't retrieve products right now. Please refresh or try another search in a moment.</p><a href={`/search?q=${encodeURIComponent(q)}`} className="btn-gold mt-4 inline-flex">Retry search</a></div>
-        ) : products.length > 0 ? (
+        {products.length > 0 ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {products.map((p) => <ProductCard key={p.id} p={p} />)}
           </div>

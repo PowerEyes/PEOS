@@ -184,7 +184,7 @@ export function RegisterRepairForm({ customerId, orgId, branches }: { customerId
             <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)}
               className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-emerald-600" />
             <span className="text-xs leading-relaxed text-slate-600">
-              I'm not attaching photos, and I <b>consent</b> to Power Eyes Opticals recording this repair without a photo
+              I'm not attaching photos, and I <b>consent</b> to the store recording this repair without a photo
               of the item. <span className="text-slate-400">Your consent is stored with the ticket for reference.</span>
             </span>
           </label>

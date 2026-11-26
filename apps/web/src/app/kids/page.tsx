@@ -9,7 +9,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title:"Kids Eyewear & Children's Glasses — Power Eyes Opticals",
+  title:"Kids Eyewear & Children's Glasses",
   description:"Safe, durable and stylish glasses for children. Impact-resistant lenses, flexible frames and free eye tests for kids at our Mogappair store.",
 };
 export const revalidate = 300;
@@ -75,7 +75,7 @@ export default async function KidsPage({ searchParams }: { searchParams: Record<
         {/* Safety first */}
         <div>
           <h2 className="font-bold text-2xl text-navy-900 mb-2 text-center">Safety First</h2>
-          <p className="text-slate-500 text-sm text-center mb-5">Every kids frame at Power Eyes is sold with these standards — no exceptions.</p>
+          <p className="text-slate-500 text-sm text-center mb-5">Every kids frame we sell comes with these standards — no exceptions.</p>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {SAFETY.map(s=>(
               <div key={s.t} className="rounded-2xl bg-white border border-slate-100 shadow-sm p-5">

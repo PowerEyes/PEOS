@@ -60,18 +60,4 @@ grant execute on function public.my_org_usage() to authenticated;
 -- the insert to the same resolution the read policies use.
 drop policy if exists reviews_insert on product_reviews;
 create policy reviews_insert on product_reviews
-  for insert to anon, authenticated
-  with check (
-    org_id = public.request_org()
-    and customer_id is null
-    and verified_purchase = false
-    and status = 'pending'
-    and exists (
-      select 1 from public.products p
-      where p.id = product_id
-        and p.org_id = public.request_org()
-        and p.status = 'active'
-        and p.visible_on_website = true
-    )
-  );
-drop policy if exists org_anon on public.organizations;
+  for insert to anon with check (org_id = request_org());

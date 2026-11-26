@@ -5,24 +5,24 @@ import { useRouter } from "next/navigation";
 import { Modal, Pill, useToast } from "@poweros/ui";
 import { Pencil, ArrowLeft, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
+import { createPage, deletePage } from "./actions";
 import { ImageField } from "@/components/ImageField";
 
-const GROUPS: [string, string, string][] = [["page", "Enterprise pages", "About, Clinic, Lab and Clinical Homepage content shown on the website"], ["guide", "Buying & size guides", "Each category page has its own guide. The frame size guide shows only on Eyeglasses."], ["config", "Page headings & Eye consultation", "Listing-page hero text and the eye-test booking form"]];
+const GROUPS: [string, string, string][] = [["page", "Enterprise pages", "About, Clinic and Lab pages shown on the website"], ["guide", "Buying & size guides", "Each category page has its own guide. The frame size guide shows only on Eyeglasses."], ["config", "Page headings & Eye consultation", "Listing-page hero text and the eye-test booking form"]];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const lines = (v: string) => v.split("\n").map((x) => x.trim()).filter(Boolean);
 
 export function PagesStudio({ rows }: { rows: any[] }) {
   const router = useRouter(); const toast = useToast();
+  const [creating, setCreating] = useState(false); const [nw, setNw] = useState({ title: "", slug: "", subtitle: "", nav: false });
   const [edit, setEdit] = useState<any | null>(null); const [busy, setBusy] = useState(false);
   const open = (r: any) => { const b = r.body ?? {}; const { sections: _s, stats: _t, table: _b, ...rest } = b; setEdit({ ...r, extra: Object.keys(rest).length && r.kind !== "config" ? JSON.stringify(rest, null, 2) : "", sections: b.sections ?? [], stats: b.stats ?? [], thead: (b.table?.headers ?? []).join(" | "), trows: (b.table?.rows ?? []).map((x: string[]) => x.join(" | ")).join("\n"),
     price: b.price ?? "", duration: b.duration ?? "", intro: b.intro ?? "", types: (b.types ?? []).join("\n"), times: (b.times ?? []).join("\n"), cta: b.cta ?? "", note: b.note ?? "", closed: b.closed_weekdays ?? [] }); };
-  const create = () => setEdit({ id: null, kind: "page", slug: "", title: "", subtitle: "", hero_image: "", is_active: true, body: {}, extra: "{}", sections: [], stats: [], thead: "", trows: "", price: "", duration: "", intro: "", types: "", times: "", cta: "", note: "", closed: [] });
   const set = (k: string, v: any) => setEdit((e: any) => ({ ...e, [k]: v }));
   const move = (arr: string, i: number, d: number) => setEdit((e: any) => { const a = [...e[arr]]; const j = i + d; if (j < 0 || j >= a.length) return e; [a[i], a[j]] = [a[j], a[i]]; return { ...e, [arr]: a }; });
   const upd = (arr: string, i: number, k: string, v: string) => setEdit((e: any) => ({ ...e, [arr]: e[arr].map((x: any, n: number) => (n === i ? { ...x, [k]: v } : x)) }));
   async function save() {
     if (!edit.title.trim()) return toast("Title is required", "err");
-    if (!edit.slug?.trim()) return toast("URL slug is required", "err");
     const body: any = { ...(edit.body ?? {}) };
     if (edit.kind === "config" && edit.slug === "eye-consultation") Object.assign(body, { price: edit.price, duration: edit.duration, intro: edit.intro, types: lines(edit.types), times: lines(edit.times), cta: edit.cta, note: edit.note, closed_weekdays: edit.closed });
     else if (edit.kind !== "config") {
@@ -33,30 +33,41 @@ export function PagesStudio({ rows }: { rows: any[] }) {
       if (edit.kind === "guide") body.table = headers.length ? { headers, rows: lines(edit.trows).map((r) => r.split("|").map((c) => c.trim())) } : undefined;
     }
     setBusy(true);
-    const payload = { slug: edit.slug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-|-$/g, ""), kind: edit.kind, title: edit.title.trim(), subtitle: edit.subtitle?.trim() || null, hero_image: edit.hero_image || null, is_active: edit.is_active, body, display_order: Number(edit.display_order) || 0 };
-    const result = edit.id ? await supabaseBrowser().from("site_pages").update(payload).eq("id", edit.id) : await supabaseBrowser().from("site_pages").insert(payload);
-    setBusy(false); if (result.error) return toast(result.error.message, "err");
+    const { error } = await supabaseBrowser().from("site_pages").update({ title: edit.title.trim(), subtitle: edit.subtitle?.trim() || null, hero_image: edit.hero_image || null, is_active: edit.is_active, show_in_nav: !!edit.show_in_nav, body }).eq("id", edit.id);
+    setBusy(false); if (error) return toast(error.message, "err");
     toast("Saved. Live on the website within a minute."); setEdit(null); router.refresh();
   }
+  async function create() { setBusy(true); const r = await createPage({ title: nw.title, slug: nw.slug, subtitle: nw.subtitle, show_in_nav: nw.nav }); setBusy(false);
+    if (r.error) return toast(r.error, "err"); toast(r.ok ?? "Created."); setCreating(false); setNw({ title: "", slug: "", subtitle: "", nav: false }); router.refresh(); }
+  async function remove(r: any) { if (!window.confirm(`Delete "${r.title}" permanently? This cannot be undone.`)) return; const x = await deletePage(r.id); if (x.error) return toast(x.error, "err"); toast(x.ok ?? "Deleted."); router.refresh(); }
   const toggle = async (r: any) => { const { error } = await supabaseBrowser().from("site_pages").update({ is_active: !r.is_active }).eq("id", r.id); if (error) toast(error.message, "err"); router.refresh(); };
-  const remove = async (r: any) => { if (!confirm(`Delete page “${r.title}”?`)) return; const { error } = await supabaseBrowser().from("site_pages").delete().eq("id", r.id); if (error) toast(error.message, "err"); else { toast("Page deleted"); router.refresh(); } };
 
   return (<div className="space-y-6">
     <div className="flex items-center gap-3"><Link href="/website" className="rounded-xl border border-slate-200 p-2 hover:bg-slate-50" aria-label="Back to Website Studio"><ArrowLeft size={16} /></Link>
-      <div className="flex-1"><h1 className="text-xl font-bold text-slate-900">Pages &amp; Guides</h1><p className="text-sm text-slate-500">Everything here is read live by the website. Turn an item off to hide it.</p></div><button onClick={create} className="btn btn-primary"><Plus size={16}/>Add page</button></div>
+      <div><h1 className="text-xl font-bold text-slate-900">Pages &amp; Guides</h1><p className="text-sm text-slate-500">Everything here is read live by the website. Turn an item off to hide it.</p></div>
+      <button onClick={() => setCreating(true)} className="btn btn-primary ml-auto text-sm"><Plus size={14} className="mr-1 inline" />New page</button></div>
     {GROUPS.map(([kind, title, hint]) => (<section key={kind}><h2 className="font-semibold text-slate-800">{title}</h2><p className="mb-2 text-xs text-slate-500">{hint}</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{rows.filter((r) => r.kind === kind).map((r) => (
         <div key={r.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4"><div className="min-w-0 flex-1"><p className="truncate font-semibold text-slate-900">{r.title}</p><p className="truncate text-xs text-slate-500">/{r.slug}</p></div>
           <button onClick={() => toggle(r)} title="Show / hide"><Pill tone={r.is_active ? "green" : "red"}>{r.is_active ? "Live" : "Hidden"}</Pill></button>
-          <button onClick={() => open(r)} className="rounded-lg bg-slate-100 p-2 hover:bg-slate-200" aria-label={`Edit ${r.title}`}><Pencil size={14} /></button><button onClick={() => remove(r)} className="rounded-lg bg-rose-50 p-2 text-rose-600 hover:bg-rose-100" aria-label={`Delete ${r.title}`}><Trash2 size={14}/></button></div>))}</div></section>))}
-    {rows.length === 0 && <p className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">No pages yet. Run migration 20261125000000_site_pages.sql.</p>}
+          <button onClick={() => open(r)} className="rounded-lg bg-slate-100 p-2 hover:bg-slate-200" aria-label={`Edit ${r.title}`}><Pencil size={14} /></button>
+          {!r.is_system && r.kind === "page" && <button onClick={() => remove(r)} className="rounded-lg bg-rose-50 p-2 text-rose-600 hover:bg-rose-100" aria-label={`Delete ${r.title}`}><Trash2 size={14} /></button>}</div>))}</div></section>))}
+    {rows.length === 0 && <p className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">No pages yet. Run migration 20261219000000_site_pages_defaults.sql.</p>}
 
-    <Modal open={!!edit} onClose={() => setEdit(null)} title={edit ? (edit.id ? `Edit: ${edit.title}` : "Create Website Page") : ""}>
+    <Modal open={creating} onClose={() => setCreating(false)} title="New page">
+      <div className="space-y-3">
+        <label className="block text-sm font-medium">Title<input className="field mt-1" value={nw.title} onChange={(e) => setNw({ ...nw, title: e.target.value })} placeholder="e.g. Shipping & Delivery" /></label>
+        <label className="block text-sm font-medium">Web address (optional)<input className="field mt-1" value={nw.slug} onChange={(e) => setNw({ ...nw, slug: e.target.value })} placeholder="shipping-delivery" /><span className="text-xs text-slate-500">Letters, numbers and dashes. Created from the title if left empty.</span></label>
+        <label className="block text-sm font-medium">Subtitle<input className="field mt-1" value={nw.subtitle} onChange={(e) => setNw({ ...nw, subtitle: e.target.value })} /></label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={nw.nav} onChange={(e) => setNw({ ...nw, nav: e.target.checked })} />Show in website menu</label>
+        <div className="flex justify-end gap-2 pt-2"><button onClick={() => setCreating(false)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm">Cancel</button><button onClick={create} disabled={busy || nw.title.trim().length < 2} className="btn btn-primary text-sm">{busy ? "Creating…" : "Create page"}</button></div>
+      </div></Modal>
+    <Modal open={!!edit} onClose={() => setEdit(null)} title={edit ? `Edit: ${edit.title}` : ""}>
       {edit && (<div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
-        <div className="grid gap-3 sm:grid-cols-2"><label className="block text-sm font-medium">Title<input className="field mt-1" value={edit.title} onChange={(e) => set("title", e.target.value)} /></label><label className="block text-sm font-medium">URL slug<input className="field mt-1" value={edit.slug ?? ""} onChange={(e) => set("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, "-"))} /></label></div>
-        {!edit.id && <label className="block text-sm font-medium">Page type<select className="field mt-1" value={edit.kind} onChange={(e) => set("kind", e.target.value)}><option value="page">Page</option><option value="guide">Guide</option><option value="config">Config</option></select></label>}
+        <label className="block text-sm font-medium">Title<input className="field mt-1" value={edit.title} onChange={(e) => set("title", e.target.value)} /></label>
         <label className="block text-sm font-medium">Subtitle<input className="field mt-1" value={edit.subtitle ?? ""} onChange={(e) => set("subtitle", e.target.value)} /></label>
         {edit.kind !== "guide" && <ImageField value={edit.hero_image ?? ""} onChange={(p) => set("hero_image", p)} label="Hero image (optional)" aspect="aspect-[21/9]" crop />}
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!edit.show_in_nav} onChange={(e) => set("show_in_nav", e.target.checked)} />Show in website menu</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={edit.is_active} onChange={(e) => set("is_active", e.target.checked)} />Visible on website</label>
 
         {edit.slug === "eye-consultation" ? (<>

@@ -8,10 +8,6 @@ export async function middleware(req: NextRequest) {
   // Customer document links: /d/<token> and /print/*?dt=<token> are validated server-side (HMAC + expiry + revocation).
   const pth = req.nextUrl.pathname;
   if (pth.startsWith("/d/") || (pth.startsWith("/print/") && req.nextUrl.searchParams.has("dt"))) return NextResponse.next();
-  // API handlers return their own JSON 401/403 responses and perform their own
-  // server-side authorization. Do not turn unauthenticated fetches into HTML
-  // login redirects at middleware level.
-  if (pth.startsWith("/api/")) return NextResponse.next();
   let res = NextResponse.next({ request: req });
   const sb = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     cookies: { getAll: () => req.cookies.getAll(),
@@ -31,23 +27,6 @@ export async function middleware(req: NextRequest) {
   // enforces platform_users. Do not apply tenant RBAC route rules there.
   if (pth === "/platform" || pth.startsWith("/platform/")) return res;
   if (!routeAllowed(p!.role_key, pth, (perms as string[]) ?? [])) return NextResponse.redirect(new URL("/?denied=1", req.url));
-  // Role landing is resolved server-side so the first authenticated navigation is
-  // deterministic and does not briefly render the wrong dashboard.
-  if (pth === "/") {
-    const landing: Record<string, string> = {
-      owner: "/owner-dashboard",
-      admin: "/",
-      branch_manager: "/branch-dashboard",
-      optometrist: "/optometrist",
-      receptionist: "/receptionist",
-      sales_executive: "/sales/pos",
-      cashier: "/cashier",
-      lab_technician: "/lab-tech",
-      accountant: "/finance",
-    };
-    const destination = landing[p!.role_key];
-    if (destination && destination !== "/") return NextResponse.redirect(new URL(destination, req.url));
-  }
   return res;
 }
 export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] };

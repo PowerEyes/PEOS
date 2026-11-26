@@ -1,4 +1,6 @@
 import { supabaseFresh } from "@/lib/supabase/server";
+import { getOrgId } from "@/lib/tenant";
+import { getStoreName } from "@/lib/site";
 import {
   DEFAULT_ANNOUNCEMENT, DEFAULT_LOGO, DEFAULT_NAV, DEFAULT_FOOTER,
   type SiteChrome, type Announcement, type Logo, type FooterChrome, type NavItem, type FooterContact,
@@ -131,5 +133,12 @@ export async function getSiteChrome(): Promise<SiteChrome> {
     }
   }
 
-  return { announcement, logo, nav, footer };
+  // Pages created in ERP > Website > Pages with "Show in website menu" are listed in the footer under "More" (database-driven).
+  if (footer) {
+    try {
+      const { data: extra } = await sb.from("site_pages").select("slug,title").eq("org_id", await getOrgId()).eq("kind", "page").eq("is_active", true).eq("show_in_nav", true).order("display_order");
+      if (extra?.length) footer = { ...footer, columns: [...footer.columns, { title: "More", items: extra.map((x: any) => ({ label: x.title, href: `/${x.slug}` })) }] };
+    } catch { /* keep the footer as is */ }
+  }
+  return { announcement, logo, nav, footer, storeName: await getStoreName() };
 }

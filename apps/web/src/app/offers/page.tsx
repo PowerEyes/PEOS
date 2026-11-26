@@ -8,7 +8,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title:"Current Offers & Deals — Power Eyes Opticals",
+  title:"Current Offers & Deals",
   description:"Latest discounts, coupon codes and promotions at Power Eyes Opticals, Mogappair Chennai. Eyeglasses, sunglasses, contact lenses and lens upgrades.",
 };
 export const revalidate = 60;
@@ -145,7 +145,7 @@ export default async function OffersPage() {
         <div className="rounded-2xl bg-gradient-to-r from-navy-900 to-navy-700 p-8 text-white text-center">
           <h3 className="font-bold text-xl mb-2">Get Exclusive Offers on WhatsApp</h3>
           <p className="text-slate-300 text-sm mb-5">Be the first to know about new arrivals, flash sales and seasonal promotions.</p>
-          <a href={waHref(site.whatsappNumber, "I want to receive offers and updates from Power Eyes Opticals")}
+          <a href={waHref(site.whatsappNumber, "I want to receive your latest offers and updates")}
             target="_blank" className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-7 py-3.5 text-sm font-bold text-white hover:bg-emerald-700 transition">
             💬 Subscribe on WhatsApp
           </a>

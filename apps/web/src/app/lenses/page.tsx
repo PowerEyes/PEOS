@@ -7,7 +7,7 @@ import { ChevronRight } from "lucide-react";
 import { LensPackageList } from "@/components/LensPackageList";
 import { GuideButton } from "@/components/SizeGuide";
 import { getPage } from "@/lib/pages";
-export const metadata = { title: "Lens Packages – Power Eyes" };
+export const metadata = { title: "Lens Packages" };
 export const dynamic = "force-dynamic";
 export default async function Page() {
   const hero = await getPage("hero-lenses");

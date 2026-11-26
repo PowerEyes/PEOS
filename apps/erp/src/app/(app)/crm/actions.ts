@@ -32,3 +32,33 @@ export async function updateCRMSettings(fd: FormData) {
   return { ok: true };
 }
 
+export async function triggerFunction(fnName: string) {
+  const gate = await subscriptionGate(); if (gate) return gate;
+  if (!(await canManageCRM())) return { error: "You do not have permission to run CRM automation." };
+  { const { data: ok } = await supabaseServer().rpc("is_admin"); if (!ok) return { error: "Only owners and admins can do this." }; }
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/${fnName}`;
+  const key  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  try {
+    const r = await fetch(url, { method:"POST", headers:{ "Authorization":`Bearer ${key}`, "Content-Type":"application/json" }, body:"{}" });
+    const d = await r.json();
+    revalidatePath("/crm");
+    return { ok:r.ok, result:d };
+  } catch(e:any) { return { error:e.message }; }
+}
+
+export async function sendTestMessage(phone: string, template: string) {
+  const gate = await subscriptionGate(); if (gate) return gate;
+  if (!(await canManageCRM())) return { error: "You do not have permission to send CRM messages." };
+  { const { data: ok } = await supabaseServer().rpc("is_admin"); if (!ok) return { error: "Only owners and admins can do this." }; }
+  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/order-whatsapp`;
+  const key  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  try {
+    const r = await fetch(url, {
+      method:"POST",
+      headers:{ "Authorization":`Bearer ${key}`, "Content-Type":"application/json" },
+      body: JSON.stringify({ phone, template, customerName:"Test Customer", orderCode:"TEST-001", storeName:"Mogappair East" }),
+    });
+    const d = await r.json();
+    return { ok:r.ok, result:d };
+  } catch(e:any) { return { error:e.message }; }
+}

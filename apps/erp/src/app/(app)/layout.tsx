@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Shell } from "@/components/Shell";
 import { AnnouncementBanner } from "@/components/announcement-banner";
 import { TemplatesProvider } from "@/components/templates-context";
+import { getPlatformUser } from "@/lib/platform-guard";
 import { getSettings } from "@/lib/settings";
 import { getAnnouncements, getSubscriptionStatus } from "@/lib/announcements";
 
@@ -20,8 +21,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     sb.from("message_templates").select("*").order("sort_order"),
     getSettings(),
   ]);
-  const { data: tenantData } = p?.org_id ? await sb.from("organizations").select("name").eq("id", p.org_id).single() : { data: null };
-  const tenantName = tenantData?.name || "Power Eyes Opticals";
+  const { data: tenantData } = p?.org_id ? await sb.from("organizations").select("name").eq("id", p.org_id).maybeSingle() : { data: null };
+  const tenantName = tenantData?.name ?? undefined;
+  const isPlatform = !!(await getPlatformUser().catch(() => null));
   if (!p?.is_approved) {
     return (
       <main className="grid min-h-screen place-items-center p-6 text-center">
@@ -39,18 +41,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   // past_due | expired), shown as a dismissible banner above the page content.
   const status = p.org_id ? await getSubscriptionStatus(sb, p.org_id) : "none";
   const announcements = p.org_id ? await getAnnouncements(sb, status) : [];
-  const scope = resolveScope(p.role_key, p.branch_id ?? null, (branches ?? []).map((b: any) => b.id));
-  const canSeeApprovals = ["owner", "admin"].includes(p.role_key) || (perms ?? []).includes("transfers_approve");
-  let pendingApprovals = 0;
-  if (canSeeApprovals) {
-    let approvalQuery = sb.from("branch_transfers").select("id", { count: "exact", head: true }).eq("status", "requested");
-    if (scope) approvalQuery = approvalQuery.or(`from_branch.eq.${scope},to_branch.eq.${scope}`);
-    const { count } = await approvalQuery;
-    pendingApprovals = count ?? 0;
-  }
   return (
-    <TemplatesProvider templates={tmpls ?? []} storeName={branches?.[0]?.name ?? "our store"}>
-      <Shell user={{ name: p.full_name ?? user.email!, role: p.role_key, perms: perms ?? [] }} branches={branches ?? []} settings={settings} tenantName={tenantName} scope={scope} pendingApprovals={pendingApprovals} canSeeApprovals={canSeeApprovals}>
+    <TemplatesProvider templates={tmpls ?? []} storeName={tenantName ?? branches?.[0]?.name ?? ""}>
+      <Shell user={{ name: p.full_name ?? user.email!, role: p.role_key, perms: perms ?? [] }} branches={branches ?? []} settings={settings} tenantName={tenantName} platform={isPlatform} version={process.env.NEXT_PUBLIC_APP_VERSION ?? process.env.npm_package_version} webUrl={process.env.NEXT_PUBLIC_WEB_URL} scope={resolveScope(p.role_key, p.branch_id ?? null, (branches ?? []).map((b: any) => b.id))}>
         <AnnouncementBanner items={announcements} />
         {children}
       </Shell>

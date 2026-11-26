@@ -8,7 +8,7 @@ export default async function Page() {
       <h1 className="font-display text-2xl font-bold text-navy-900">My Vision ID</h1>
       <div className="card bg-gradient-to-br from-navy-900 to-navy-700 p-6 text-white">
         <div className="flex items-start justify-between"><div><p className="text-gold-400 text-sm font-semibold">Vision ID</p><p className="font-display text-3xl font-bold mt-1">{c.vision_id}</p><p className="text-slate-300 text-sm mt-1">{c.full_name}</p><p className="text-slate-400 text-xs mt-0.5">Customer ID: {c.customer_code}</p></div><Eye size={40} className="text-white/20"/></div>
-        <div className="mt-4 pt-4 border-t border-white/10 text-xs text-slate-400">Your permanent Vision ID links your entire optical health history with Power Eyes Opticals since 1998.</div>
+        <div className="mt-4 pt-4 border-t border-white/10 text-xs text-slate-400">Your permanent Vision ID links your entire optical health history with Power Eyes Opticals.</div>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[[Eye,"Vision ID","Your permanent optical ID"],[FileText,"Prescriptions","All your Rx on record"],[CalendarDays,"Appointments","Eye test history"],[Users,"Family","Manage family members"]].map(([I,l,d]:any)=>(

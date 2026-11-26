@@ -1,5 +1,6 @@
 
-import type { Metadata, Viewport } from "next";
+import { getStoreName } from "@/lib/site";
+import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { CompareBar } from "@/components/CompareBar";
@@ -16,24 +17,20 @@ import { getSiteChrome } from "@/lib/chrome";
 // static generation with revalidation where appropriate.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: { default:"Power Eyes Opticals — Mogappair, Chennai", template:"%s — Power Eyes Opticals" },
-  description:"Expert eye care and premium eyewear since 1998. Eyeglasses, sunglasses, contact lenses and free eye testing at Mogappair East and West, Chennai.",
-  keywords:["eyeglasses","sunglasses","contact lenses","eye test","opticals","Mogappair","Chennai","Power Eyes"],
-  openGraph:{
-    type:"website", locale:"en_IN", siteName:"Power Eyes Opticals",
-    images:[{ url:"/og-image.jpg", width:1200, height:630, alt:"Power Eyes Opticals" }],
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const name = await getStoreName();
+  return {
+  title: { default: name, template: `%s — ${name}` },
+  description: `Eyeglasses, sunglasses, contact lenses and eye tests at ${name}.`,
+  openGraph:{ type:"website", locale:"en_IN", siteName: name, images:[{ url:"/og-image.jpg", width:1200, height:630, alt: name }] },
   icons:{
     icon:"/favicon.ico",
     apple:[{ url:"/icon-192.png" }],
   },
   manifest:"/manifest.json",
-};
-
-export const viewport: Viewport = {
-  themeColor: "#0B1B36",
-};
+  themeColor:"#0B1B36",
+  };
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const [site, chrome] = await Promise.all([getSiteSettings(), getSiteChrome()]);

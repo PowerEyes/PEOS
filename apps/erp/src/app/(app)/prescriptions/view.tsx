@@ -29,7 +29,6 @@ import {
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
 import { createPrescription } from "./actions";
-import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 
 type Cust = { id: string; full_name: string; phone: string; vision_id: string };
 const TONE = { active: "green", expiring: "gold", expired: "red" } as const;
@@ -822,8 +821,6 @@ export function RxView({
   useEffect(() => {
     if (sp.get("new")) setOpen(true);
   }, [sp]);
-  const expired = rows.filter((r:any) => rxStatus(r.valid_till) === "expired").length;
-  const expiring = rows.filter((r:any) => rxStatus(r.valid_till) === "expiring").length;
   const f = rows.filter((r) =>
     `${r.rx_code} ${r.customers?.full_name} ${r.customers?.phone}`
       .toLowerCase()
@@ -848,7 +845,6 @@ export function RxView({
           New prescription
         </button>
       </div>
-      <ModuleKpiGrid className="mb-1" items={[{label:"Prescription records",value:rows.length,detail:"Loaded records",icon:KPIIcons.check},{label:"Active",value:rows.length-expired-expiring,detail:"Not expired or near expiry",tone:"success",icon:KPIIcons.check},{label:"Expiring soon",value:expiring,detail:"Review and follow up",tone:expiring?"warning":"default",icon:KPIIcons.clock},{label:"Expired",value:expired,detail:"Review before dispensing",tone:expired?"danger":"default",icon:KPIIcons.warning}]} />
       <div className="relative">
         <Search size={16} className="absolute left-3 top-3.5 text-slate-400" />
         <input

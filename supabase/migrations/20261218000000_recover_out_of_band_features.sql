@@ -12,9 +12,9 @@
 --     guards + validators, sequences)
 --   * portal read policies on catalogue tables (appointments, cart_items,
 --     loyalty_ledger, payments, prescriptions, sale_lines, sales)
---   * legacy numbering sequences (customer/prescription/vision/household/
+--   * legacy numbering sequences (customer/prescription/vision/household/;
 --     eye-examination)
--- plus their columns, constraints, indexes, triggers, RLS policies, functions,
+-- plus their columns, constraints, indexes, triggers, RLS policies, functions,;
 -- grants and sequences.
 --
 -- EXCLUDED on purpose (see docs/sql/OPEN_ISSUES.md):
@@ -256,6 +256,12 @@ ALTER TABLE "public"."palre_recommendation_events" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."palre_recommendation_runs" ENABLE ROW LEVEL SECURITY;
 
 -- columns added to existing tables ────────────────────────────────────────────
+-- family_members was created in 0016 with a different shape; the family-link features below use these columns.
+alter table public.family_members add column if not exists primary_customer_id uuid references public.customers(id) on delete cascade;
+alter table public.family_members add column if not exists member_customer_id uuid references public.customers(id) on delete cascade;
+alter table public.family_members add column if not exists member_label text;
+alter table public.family_members add column if not exists is_active boolean not null default true;
+create unique index if not exists family_members_primary_member_uq on public.family_members (primary_customer_id, member_customer_id);
 alter table public.brands add column if not exists manufacturer_status text default 'unverified'::text not null;
 alter table public.brands add column if not exists manufacturer_source_ref text;
 alter table public.brands add column if not exists manufacturer_verified_at timestamp with time zone;
@@ -416,6 +422,15 @@ do $$ begin
     ALTER TABLE ONLY "public"."palre_recommendation_runs" ADD CONSTRAINT "palre_recommendation_runs_pkey" PRIMARY KEY ("id");
   end if;
 end $$;
+-- Composite (org_id, id) foreign keys below need a matching unique index on each referenced table. Create it first when missing.
+do $$ declare t text; begin
+  foreach t in array array['brands', 'lens_compatibility_evaluation_runs', 'lens_options', 'lens_package_compatibility_rules', 'lens_package_option_combinations', 'lens_package_option_eligibility', 'lens_packages', 'palre_recommendation_runs', 'prescriptions'] loop
+    if to_regclass('public.' || t) is not null and exists (select 1 from information_schema.columns where table_schema='public' and table_name=t and column_name='org_id') then
+      execute format('create unique index if not exists %I on public.%I (org_id, id)', 'ux_' || t || '_org_id_id', t);
+    end if;
+  end loop;
+end $$;
+
 do $$ begin
   if not exists (select 1 from pg_constraint where conname = 'cart_items_lens_package_id_fkey' and conrelid = 'cart_items'::regclass) then
     ALTER TABLE ONLY "public"."cart_items" ADD CONSTRAINT "cart_items_lens_package_id_fkey" FOREIGN KEY ("lens_package_id") REFERENCES "public"."lens_packages"("id");
@@ -598,67 +613,67 @@ do $$ begin
 end $$;
 
 -- indexes ─────────────────────────────────────────────────────────────────────
-CREATE UNIQUE INDEX IF NOT EXISTS "brands_org_id_id_uq" ON "public"."brands" USING "btree" ("org_id", "id")
-CREATE INDEX IF NOT EXISTS "customer_notifications_feed_idx" ON "public"."customer_notifications" USING "btree" ("customer_id", "created_at" DESC)
-CREATE INDEX IF NOT EXISTS "family_member_requests_customer_idx" ON "public"."family_member_requests" USING "btree" ("customer_id", "created_at" DESC)
-CREATE UNIQUE INDEX IF NOT EXISTS "family_member_requests_one_pending_idx" ON "public"."family_member_requests" USING "btree" ("customer_id", "member_phone") WHERE ("status" = 'pending'::"text")
-CREATE INDEX IF NOT EXISTS "lab_orders_patient_customer_idx" ON "public"."lab_orders" USING "btree" ("patient_customer_id")
-CREATE UNIQUE INDEX IF NOT EXISTS "lens_options_org_id_id_uq" ON "public"."lens_options" USING "btree" ("org_id", "id")
-CREATE INDEX IF NOT EXISTS "lens_package_compatibility_lookup_idx" ON "public"."lens_package_compatibility_rules" USING "btree" ("org_id", "lens_package_id", "design_family", "verification_status")
-CREATE UNIQUE INDEX IF NOT EXISTS "lens_package_compatibility_rules_org_id_id_uq" ON "public"."lens_package_compatibility_rules" USING "btree" ("org_id", "id")
-CREATE INDEX IF NOT EXISTS "lens_package_option_eligibility_lookup_idx" ON "public"."lens_package_option_eligibility" USING "btree" ("org_id", "lens_package_id", "verification_status")
-CREATE UNIQUE INDEX IF NOT EXISTS "lens_package_option_eligibility_org_id_id_uq" ON "public"."lens_package_option_eligibility" USING "btree" ("org_id", "id")
-CREATE UNIQUE INDEX IF NOT EXISTS "lens_packages_manufacturer_sku_uq" ON "public"."lens_packages" USING "btree" ("org_id", "manufacturer_brand_id", "lower"(TRIM(BOTH FROM "manufacturer_sku"))) WHERE (("manufacturer_brand_id" IS NOT NULL) AND ("manufacturer_sku" IS NOT NULL) AND (TRIM(BOTH FROM "manufacturer_sku") <> ''::"text"))
-CREATE UNIQUE INDEX IF NOT EXISTS "lens_packages_org_id_id_uq" ON "public"."lens_packages" USING "btree" ("org_id", "id")
-CREATE INDEX IF NOT EXISTS "lens_packages_palre_gate_idx" ON "public"."lens_packages" USING "btree" ("org_id", "catalog_verification_status", "status", "design")
-CREATE INDEX IF NOT EXISTS "palre_evaluation_candidates_run_idx" ON "public"."lens_compatibility_evaluation_candidates" USING "btree" ("org_id", "evaluation_run_id", "candidate_position")
-CREATE INDEX IF NOT EXISTS "palre_evaluation_runs_rx_idx" ON "public"."lens_compatibility_evaluation_runs" USING "btree" ("org_id", "prescription_id", "evaluated_at" DESC)
-CREATE INDEX IF NOT EXISTS "palre_fulfilment_lookup_idx" ON "public"."palre_fulfilment_snapshots" USING "btree" ("org_id", "prescription_fingerprint", "lens_package_id", "snapshot_at" DESC)
-CREATE INDEX IF NOT EXISTS "palre_option_combination_items_parent_idx" ON "public"."lens_package_option_combination_items" USING "btree" ("org_id", "combination_id")
-CREATE INDEX IF NOT EXISTS "palre_option_combinations_package_idx" ON "public"."lens_package_option_combinations" USING "btree" ("org_id", "lens_package_id", "verification_status")
-CREATE INDEX IF NOT EXISTS "palre_recommendation_candidates_run_idx" ON "public"."palre_recommendation_candidates" USING "btree" ("org_id", "recommendation_run_id", "candidate_position")
-CREATE INDEX IF NOT EXISTS "palre_recommendation_runs_review_idx" ON "public"."palre_recommendation_runs" USING "btree" ("org_id", "status", "created_at" DESC)
-CREATE UNIQUE INDEX IF NOT EXISTS "prescriptions_org_id_id_uq" ON "public"."prescriptions" USING "btree" ("org_id", "id")
-CREATE INDEX IF NOT EXISTS "sales_patient_customer_idx" ON "public"."sales" USING "btree" ("patient_customer_id")
+CREATE UNIQUE INDEX IF NOT EXISTS "brands_org_id_id_uq" ON "public"."brands" USING "btree" ("org_id", "id");
+CREATE INDEX IF NOT EXISTS "customer_notifications_feed_idx" ON "public"."customer_notifications" USING "btree" ("customer_id", "created_at" DESC);
+CREATE INDEX IF NOT EXISTS "family_member_requests_customer_idx" ON "public"."family_member_requests" USING "btree" ("customer_id", "created_at" DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS "family_member_requests_one_pending_idx" ON "public"."family_member_requests" USING "btree" ("customer_id", "member_phone") WHERE ("status" = 'pending'::"text");
+CREATE INDEX IF NOT EXISTS "lab_orders_patient_customer_idx" ON "public"."lab_orders" USING "btree" ("patient_customer_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "lens_options_org_id_id_uq" ON "public"."lens_options" USING "btree" ("org_id", "id");
+CREATE INDEX IF NOT EXISTS "lens_package_compatibility_lookup_idx" ON "public"."lens_package_compatibility_rules" USING "btree" ("org_id", "lens_package_id", "design_family", "verification_status");
+CREATE UNIQUE INDEX IF NOT EXISTS "lens_package_compatibility_rules_org_id_id_uq" ON "public"."lens_package_compatibility_rules" USING "btree" ("org_id", "id");
+CREATE INDEX IF NOT EXISTS "lens_package_option_eligibility_lookup_idx" ON "public"."lens_package_option_eligibility" USING "btree" ("org_id", "lens_package_id", "verification_status");
+CREATE UNIQUE INDEX IF NOT EXISTS "lens_package_option_eligibility_org_id_id_uq" ON "public"."lens_package_option_eligibility" USING "btree" ("org_id", "id");
+CREATE UNIQUE INDEX IF NOT EXISTS "lens_packages_manufacturer_sku_uq" ON "public"."lens_packages" USING "btree" ("org_id", "manufacturer_brand_id", "lower"(TRIM(BOTH FROM "manufacturer_sku"))) WHERE (("manufacturer_brand_id" IS NOT NULL) AND ("manufacturer_sku" IS NOT NULL) AND (TRIM(BOTH FROM "manufacturer_sku") <> ''::"text"));
+CREATE UNIQUE INDEX IF NOT EXISTS "lens_packages_org_id_id_uq" ON "public"."lens_packages" USING "btree" ("org_id", "id");
+CREATE INDEX IF NOT EXISTS "lens_packages_palre_gate_idx" ON "public"."lens_packages" USING "btree" ("org_id", "catalog_verification_status", "status", "design");
+CREATE INDEX IF NOT EXISTS "palre_evaluation_candidates_run_idx" ON "public"."lens_compatibility_evaluation_candidates" USING "btree" ("org_id", "evaluation_run_id", "candidate_position");
+CREATE INDEX IF NOT EXISTS "palre_evaluation_runs_rx_idx" ON "public"."lens_compatibility_evaluation_runs" USING "btree" ("org_id", "prescription_id", "evaluated_at" DESC);
+CREATE INDEX IF NOT EXISTS "palre_fulfilment_lookup_idx" ON "public"."palre_fulfilment_snapshots" USING "btree" ("org_id", "prescription_fingerprint", "lens_package_id", "snapshot_at" DESC);
+CREATE INDEX IF NOT EXISTS "palre_option_combination_items_parent_idx" ON "public"."lens_package_option_combination_items" USING "btree" ("org_id", "combination_id");
+CREATE INDEX IF NOT EXISTS "palre_option_combinations_package_idx" ON "public"."lens_package_option_combinations" USING "btree" ("org_id", "lens_package_id", "verification_status");
+CREATE INDEX IF NOT EXISTS "palre_recommendation_candidates_run_idx" ON "public"."palre_recommendation_candidates" USING "btree" ("org_id", "recommendation_run_id", "candidate_position");
+CREATE INDEX IF NOT EXISTS "palre_recommendation_runs_review_idx" ON "public"."palre_recommendation_runs" USING "btree" ("org_id", "status", "created_at" DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS "prescriptions_org_id_id_uq" ON "public"."prescriptions" USING "btree" ("org_id", "id");
+CREATE INDEX IF NOT EXISTS "sales_patient_customer_idx" ON "public"."sales" USING "btree" ("patient_customer_id");
 
 -- sequences ───────────────────────────────────────────────────────────────────
-CREATE SEQUENCE IF NOT EXISTS IF NOT EXISTS "public"."customer_number_seq"
+CREATE SEQUENCE IF NOT EXISTS "public"."customer_number_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 1
-CREATE SEQUENCE IF NOT EXISTS IF NOT EXISTS "public"."eye_examination_number_seq"
+    CACHE 1;
+CREATE SEQUENCE IF NOT EXISTS "public"."eye_examination_number_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 1
-CREATE SEQUENCE IF NOT EXISTS IF NOT EXISTS "public"."household_number_seq"
+    CACHE 1;
+CREATE SEQUENCE IF NOT EXISTS "public"."household_number_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 1
-CREATE SEQUENCE IF NOT EXISTS IF NOT EXISTS "public"."palre_recommendation_events_id_seq"
+    CACHE 1;
+CREATE SEQUENCE IF NOT EXISTS "public"."palre_recommendation_events_id_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 1
-ALTER SEQUENCE "public"."palre_recommendation_events_id_seq" OWNED BY "public"."palre_recommendation_events"."id"
-CREATE SEQUENCE IF NOT EXISTS IF NOT EXISTS "public"."prescription_number_seq"
+    CACHE 1;
+ALTER SEQUENCE "public"."palre_recommendation_events_id_seq" OWNED BY "public"."palre_recommendation_events"."id";
+CREATE SEQUENCE IF NOT EXISTS "public"."prescription_number_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 1
-CREATE SEQUENCE IF NOT EXISTS IF NOT EXISTS "public"."vision_number_seq"
+    CACHE 1;
+CREATE SEQUENCE IF NOT EXISTS "public"."vision_number_seq"
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
-    CACHE 1
+    CACHE 1;
 
 -- views ───────────────────────────────────────────────────────────────────────
 CREATE OR REPLACE VIEW "public"."palre_verified_lens_catalogue" WITH ("security_invoker"='true') AS
@@ -681,7 +696,7 @@ CREATE OR REPLACE VIEW "public"."palre_verified_lens_catalogue" WITH ("security_
      JOIN "public"."brands" "b" ON ((("b"."id" = "lp"."manufacturer_brand_id") AND ("b"."org_id" = "lp"."org_id"))))
   WHERE (("lp"."status" = 'active'::"text") AND ("lp"."catalog_verification_status" = 'verified'::"text") AND ("b"."manufacturer_status" = 'verified'::"text") AND (EXISTS ( SELECT 1
            FROM "public"."lens_package_compatibility_rules" "cr"
-          WHERE (("cr"."org_id" = "lp"."org_id") AND ("cr"."lens_package_id" = "lp"."id") AND ("cr"."verification_status" = 'verified'::"text") AND ("cr"."manufacturer_source_ref" IS NOT NULL) AND ("cr"."verified_at" IS NOT NULL) AND ("cr"."verified_by" IS NOT NULL) AND (("cr"."effective_from" IS NULL) OR ("cr"."effective_from" <= CURRENT_DATE)) AND (("cr"."effective_to" IS NULL) OR ("cr"."effective_to" >= CURRENT_DATE))))))
+          WHERE (("cr"."org_id" = "lp"."org_id") AND ("cr"."lens_package_id" = "lp"."id") AND ("cr"."verification_status" = 'verified'::"text") AND ("cr"."manufacturer_source_ref" IS NOT NULL) AND ("cr"."verified_at" IS NOT NULL) AND ("cr"."verified_by" IS NOT NULL) AND (("cr"."effective_from" IS NULL) OR ("cr"."effective_from" <= CURRENT_DATE)) AND (("cr"."effective_to" IS NULL) OR ("cr"."effective_to" >= CURRENT_DATE))))));
 
 -- functions ───────────────────────────────────────────────────────────────────
 -- CREATE OR REPLACE — idempotent
@@ -764,7 +779,7 @@ begin
     'vision_id', v_member.vision_id
   );
 end
-$$
+$$;
 CREATE OR REPLACE FUNCTION "public"."approve_family_member_request"("p_request_id" "uuid", "p_member_customer_id" "uuid") RETURNS "void"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_temp'
@@ -793,13 +808,13 @@ begin
   do update set relationship=excluded.relationship,member_label=excluded.member_label,is_active=true;
   update public.family_member_requests set status='approved',reviewed_at=now(),reviewed_by=auth.uid()
   where id=v_request.id;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."current_portal_customer_id"() RETURNS "uuid"
     LANGUAGE "sql" STABLE SECURITY DEFINER
     SET "search_path" TO 'public', 'auth', 'pg_temp'
     AS $$
   select c.id from public.customers c where c.auth_user_id = auth.uid() limit 1
-$$
+$$;
 CREATE OR REPLACE FUNCTION "public"."palre_guard_verified_catalogue_evidence"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     SET "search_path" TO 'public', 'pg_temp'
@@ -821,7 +836,7 @@ begin
   end if;
   return new;
 end
-$$
+$$;
 CREATE OR REPLACE FUNCTION "public"."palre_guard_verified_option_combination"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     SET "search_path" TO 'public', 'pg_temp'
@@ -863,11 +878,11 @@ begin
   end if;
   return new;
 end
-$$
+$$;
 CREATE OR REPLACE FUNCTION "public"."palre_recommendation_event_no_mutation"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     SET "search_path" TO 'public', 'pg_temp'
-    AS $$ begin raise exception 'PALRE recommendation events are append-only'; end $$
+    AS $$ begin raise exception 'PALRE recommendation events are append-only'; end $$;
 CREATE OR REPLACE FUNCTION "public"."palre_validate_compatibility_design_family"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     SET "search_path" TO 'public', 'pg_temp'
@@ -885,7 +900,7 @@ begin
     raise exception 'Compatibility rule design family does not match lens package design';
   end if;
   return new;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."palre_validate_option_combination"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     SET "search_path" TO 'public', 'pg_temp'
@@ -929,7 +944,7 @@ begin
   end if;
   return new;
 end
-$$
+$$;
 CREATE OR REPLACE FUNCTION "public"."portal_family_members"() RETURNS TABLE("id" "uuid", "full_name" "text", "vision_id" "text", "relationship" "text")
     LANGUAGE "sql" STABLE SECURITY DEFINER
     SET "search_path" TO 'public', 'auth', 'pg_temp'
@@ -945,7 +960,7 @@ CREATE OR REPLACE FUNCTION "public"."portal_family_members"() RETURNS TABLE("id"
   join me on me.id = fm.primary_customer_id
   join public.customers member on member.id = fm.member_customer_id
   where fm.is_active = true
-$$
+$$;
 CREATE OR REPLACE FUNCTION "public"."portal_notify_appointment"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_temp'
@@ -964,7 +979,7 @@ begin
   values (new.org_id, new.customer_id, 'appointment', v_title, v_body, '/my/appointments', v_key)
   on conflict (customer_id, source_key) do nothing;
   return new;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."portal_notify_loyalty"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_temp'
@@ -977,7 +992,7 @@ begin
     replace(new.reason, '_', ' '), '/my/loyalty', 'loyalty:' || new.id::text)
   on conflict (customer_id, source_key) do nothing;
   return new;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."portal_notify_order"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_temp'
@@ -1013,7 +1028,7 @@ begin
   values (new.org_id, new.customer_id, 'order', v_title, v_body, '/my/orders/' || new.id::text, v_key)
   on conflict (customer_id, source_key) do nothing;
   return new;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."portal_notify_prescription"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_temp'
@@ -1026,7 +1041,7 @@ begin
     '/my/prescriptions', 'prescription:' || new.id::text)
   on conflict (customer_id, source_key) do nothing;
   return new;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."record_palre_compatibility_evaluation"("p_prescription_id" "uuid", "p_design_family" "text", "p_result_status" "text", "p_preferred_index" numeric, "p_measurements" "jsonb", "p_candidates" "jsonb") RETURNS "uuid"
     LANGUAGE "plpgsql"
     SET "search_path" TO 'public', 'pg_temp'
@@ -1071,7 +1086,7 @@ begin
   if p_result_status='exact_match' and not exists(select 1 from public.lens_compatibility_evaluation_candidates where org_id=v_org_id and evaluation_run_id=v_run_id and eligible and match_type='exact') then raise exception 'Exact-match run must contain an exact eligible candidate'; end if;
   if p_result_status='nearest_eligible_match' and (not exists(select 1 from public.lens_compatibility_evaluation_candidates where org_id=v_org_id and evaluation_run_id=v_run_id and eligible and match_type='nearest_eligible') or exists(select 1 from public.lens_compatibility_evaluation_candidates where org_id=v_org_id and evaluation_run_id=v_run_id and eligible and match_type='exact')) then raise exception 'Nearest-match run must contain eligible nearest candidates and no exact candidate'; end if;
   return v_run_id;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."record_palre_recommendation_run"("p_prescription_id" "uuid", "p_compatibility_run_ids" "uuid"[], "p_status" "text", "p_snapshot" "jsonb", "p_candidates" "jsonb") RETURNS "uuid"
     LANGUAGE "plpgsql"
     SET "search_path" TO 'public', 'pg_temp'
@@ -1125,7 +1140,7 @@ begin
   values(v_org,v_run,case when p_status='awaiting_optometrist_review' then 'recommendation_prepared_for_optometrist_review' else 'no_eligible_match' end,v_user,
     jsonb_build_object('candidate_count',v_pos,'compatibility_run_ids',p_compatibility_run_ids));
   return v_run;
-end $$
+end $$;
 CREATE OR REPLACE FUNCTION "public"."reject_family_member_request"("p_request_id" "uuid", "p_reason" "text" DEFAULT NULL::"text") RETURNS "void"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'auth', 'pg_temp'
@@ -1146,7 +1161,7 @@ begin
   where id = p_request_id and org_id = v_org and status = 'pending';
   if not found then raise exception 'Pending family request not found'; end if;
 end
-$$
+$$;
 CREATE OR REPLACE FUNCTION "public"."validate_family_member_org"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public', 'pg_temp'
@@ -1159,7 +1174,7 @@ begin
     raise exception 'Family member must belong to the same organisation';
   end if;
   return new;
-end $$
+end $$;
 
 -- triggers ────────────────────────────────────────────────────────────────────
 -- CREATE OR REPLACE TRIGGER — idempotent
@@ -1185,7 +1200,7 @@ drop policy if exists "appointments_customer_read" on "public"."appointments";
 CREATE POLICY "appointments_customer_read" ON "public"."appointments" FOR SELECT TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 drop policy if exists "cart_own" on "public"."cart_items";
 CREATE POLICY "cart_own" ON "public"."cart_items" TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
@@ -1193,7 +1208,7 @@ CREATE POLICY "cart_own" ON "public"."cart_items" TO "authenticated" USING (("cu
  LIMIT 1))) WITH CHECK (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 drop policy if exists "customer_notification_preferences_own" on "public"."customer_notification_preferences";
 CREATE POLICY "customer_notification_preferences_own" ON "public"."customer_notification_preferences" TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
@@ -1201,12 +1216,12 @@ CREATE POLICY "customer_notification_preferences_own" ON "public"."customer_noti
  LIMIT 1))) WITH CHECK (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 drop policy if exists "customer_notifications_read_own" on "public"."customer_notifications";
 CREATE POLICY "customer_notifications_read_own" ON "public"."customer_notifications" FOR SELECT TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 drop policy if exists "customer_notifications_update_own" on "public"."customer_notifications";
 CREATE POLICY "customer_notifications_update_own" ON "public"."customer_notifications" FOR UPDATE TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
@@ -1214,7 +1229,7 @@ CREATE POLICY "customer_notifications_update_own" ON "public"."customer_notifica
  LIMIT 1))) WITH CHECK (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 drop policy if exists "family_member_requests_customer_insert" on "public"."family_member_requests";
 CREATE POLICY "family_member_requests_customer_insert" ON "public"."family_member_requests" FOR INSERT TO "authenticated" WITH CHECK ((("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
@@ -1222,132 +1237,132 @@ CREATE POLICY "family_member_requests_customer_insert" ON "public"."family_membe
  LIMIT 1)) AND ("org_id" = ( SELECT "customers"."org_id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)) AND ("status" = 'pending'::"text")))
+ LIMIT 1)) AND ("status" = 'pending'::"text")));
 drop policy if exists "family_member_requests_customer_read" on "public"."family_member_requests";
 CREATE POLICY "family_member_requests_customer_read" ON "public"."family_member_requests" FOR SELECT TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 drop policy if exists "family_member_requests_staff_read" on "public"."family_member_requests";
-CREATE POLICY "family_member_requests_staff_read" ON "public"."family_member_requests" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()))
+CREATE POLICY "family_member_requests_staff_read" ON "public"."family_member_requests" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()));
 drop policy if exists "family_member_requests_staff_update" on "public"."family_member_requests";
-CREATE POLICY "family_member_requests_staff_update" ON "public"."family_member_requests" FOR UPDATE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND "public"."is_admin"())) WITH CHECK ((("org_id" = "public"."current_org"()) AND "public"."is_admin"()))
+CREATE POLICY "family_member_requests_staff_update" ON "public"."family_member_requests" FOR UPDATE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND "public"."is_admin"())) WITH CHECK ((("org_id" = "public"."current_org"()) AND "public"."is_admin"()));
 drop policy if exists "lens_package_compatibility_rules_i" on "public"."lens_package_compatibility_rules";
 CREATE POLICY "lens_package_compatibility_rules_i" ON "public"."lens_package_compatibility_rules" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_compatibility_rules"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_compatibility_rules"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "lens_package_compatibility_rules_s" on "public"."lens_package_compatibility_rules";
-CREATE POLICY "lens_package_compatibility_rules_s" ON "public"."lens_package_compatibility_rules" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()))
+CREATE POLICY "lens_package_compatibility_rules_s" ON "public"."lens_package_compatibility_rules" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()));
 drop policy if exists "lens_package_compatibility_rules_u" on "public"."lens_package_compatibility_rules";
 CREATE POLICY "lens_package_compatibility_rules_u" ON "public"."lens_package_compatibility_rules" FOR UPDATE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
   WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_compatibility_rules"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"]))))))) WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_compatibility_rules"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_compatibility_rules"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "lens_package_option_eligibility_i" on "public"."lens_package_option_eligibility";
 CREATE POLICY "lens_package_option_eligibility_i" ON "public"."lens_package_option_eligibility" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_eligibility"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_eligibility"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "lens_package_option_eligibility_s" on "public"."lens_package_option_eligibility";
-CREATE POLICY "lens_package_option_eligibility_s" ON "public"."lens_package_option_eligibility" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()))
+CREATE POLICY "lens_package_option_eligibility_s" ON "public"."lens_package_option_eligibility" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()));
 drop policy if exists "lens_package_option_eligibility_u" on "public"."lens_package_option_eligibility";
 CREATE POLICY "lens_package_option_eligibility_u" ON "public"."lens_package_option_eligibility" FOR UPDATE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
   WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_eligibility"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"]))))))) WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_eligibility"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_eligibility"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "loyalty_customer_read" on "public"."loyalty_ledger";
 CREATE POLICY "loyalty_customer_read" ON "public"."loyalty_ledger" FOR SELECT TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 drop policy if exists "palre_evaluation_candidates_i" on "public"."lens_compatibility_evaluation_candidates";
 CREATE POLICY "palre_evaluation_candidates_i" ON "public"."lens_compatibility_evaluation_candidates" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_candidates"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = 'optometrist'::"text"))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_candidates"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = 'optometrist'::"text"))))));
 drop policy if exists "palre_evaluation_candidates_s" on "public"."lens_compatibility_evaluation_candidates";
 CREATE POLICY "palre_evaluation_candidates_s" ON "public"."lens_compatibility_evaluation_candidates" FOR SELECT TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_candidates"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_candidates"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_evaluation_runs_i" on "public"."lens_compatibility_evaluation_runs";
 CREATE POLICY "palre_evaluation_runs_i" ON "public"."lens_compatibility_evaluation_runs" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND ("evaluated_by" = "auth"."uid"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_runs"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = 'optometrist'::"text"))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_runs"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = 'optometrist'::"text"))))));
 drop policy if exists "palre_evaluation_runs_s" on "public"."lens_compatibility_evaluation_runs";
 CREATE POLICY "palre_evaluation_runs_s" ON "public"."lens_compatibility_evaluation_runs" FOR SELECT TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_runs"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_compatibility_evaluation_runs"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_fulfilment_snapshots_i" on "public"."palre_fulfilment_snapshots";
 CREATE POLICY "palre_fulfilment_snapshots_i" ON "public"."palre_fulfilment_snapshots" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_fulfilment_snapshots"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text", 'inventory_manager'::"text", 'lab_technician'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_fulfilment_snapshots"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text", 'inventory_manager'::"text", 'lab_technician'::"text"])))))));
 drop policy if exists "palre_fulfilment_snapshots_s" on "public"."palre_fulfilment_snapshots";
 CREATE POLICY "palre_fulfilment_snapshots_s" ON "public"."palre_fulfilment_snapshots" FOR SELECT TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_fulfilment_snapshots"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text", 'inventory_manager'::"text", 'lab_technician'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_fulfilment_snapshots"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text", 'inventory_manager'::"text", 'lab_technician'::"text"])))))));
 drop policy if exists "palre_option_combination_items_d" on "public"."lens_package_option_combination_items";
 CREATE POLICY "palre_option_combination_items_d" ON "public"."lens_package_option_combination_items" FOR DELETE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combination_items"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combination_items"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_option_combination_items_i" on "public"."lens_package_option_combination_items";
 CREATE POLICY "palre_option_combination_items_i" ON "public"."lens_package_option_combination_items" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combination_items"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combination_items"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_option_combination_items_s" on "public"."lens_package_option_combination_items";
-CREATE POLICY "palre_option_combination_items_s" ON "public"."lens_package_option_combination_items" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()))
+CREATE POLICY "palre_option_combination_items_s" ON "public"."lens_package_option_combination_items" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()));
 drop policy if exists "palre_option_combination_items_u" on "public"."lens_package_option_combination_items";
 CREATE POLICY "palre_option_combination_items_u" ON "public"."lens_package_option_combination_items" FOR UPDATE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
   WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combination_items"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"]))))))) WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combination_items"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combination_items"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_option_combinations_d" on "public"."lens_package_option_combinations";
 CREATE POLICY "palre_option_combinations_d" ON "public"."lens_package_option_combinations" FOR DELETE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combinations"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combinations"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_option_combinations_i" on "public"."lens_package_option_combinations";
 CREATE POLICY "palre_option_combinations_i" ON "public"."lens_package_option_combinations" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combinations"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combinations"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_option_combinations_s" on "public"."lens_package_option_combinations";
-CREATE POLICY "palre_option_combinations_s" ON "public"."lens_package_option_combinations" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()))
+CREATE POLICY "palre_option_combinations_s" ON "public"."lens_package_option_combinations" FOR SELECT TO "authenticated" USING (("org_id" = "public"."current_org"()));
 drop policy if exists "palre_option_combinations_u" on "public"."lens_package_option_combinations";
 CREATE POLICY "palre_option_combinations_u" ON "public"."lens_package_option_combinations" FOR UPDATE TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
   WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combinations"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"]))))))) WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combinations"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "lens_package_option_combinations"."org_id") AND ("p"."is_approved" = true) AND ("p"."deactivated" = false) AND ("p"."role_key" = ANY (ARRAY['owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_recommendation_candidates_i" on "public"."palre_recommendation_candidates";
 CREATE POLICY "palre_recommendation_candidates_i" ON "public"."palre_recommendation_candidates" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_candidates"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = 'optometrist'::"text"))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_candidates"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = 'optometrist'::"text"))))));
 drop policy if exists "palre_recommendation_candidates_s" on "public"."palre_recommendation_candidates";
 CREATE POLICY "palre_recommendation_candidates_s" ON "public"."palre_recommendation_candidates" FOR SELECT TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_candidates"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_candidates"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_recommendation_events_i" on "public"."palre_recommendation_events";
 CREATE POLICY "palre_recommendation_events_i" ON "public"."palre_recommendation_events" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND ("actor_id" = "auth"."uid"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_events"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = 'optometrist'::"text"))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_events"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = 'optometrist'::"text"))))));
 drop policy if exists "palre_recommendation_events_s" on "public"."palre_recommendation_events";
 CREATE POLICY "palre_recommendation_events_s" ON "public"."palre_recommendation_events" FOR SELECT TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_events"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_events"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "palre_recommendation_runs_i" on "public"."palre_recommendation_runs";
 CREATE POLICY "palre_recommendation_runs_i" ON "public"."palre_recommendation_runs" FOR INSERT TO "authenticated" WITH CHECK ((("org_id" = "public"."current_org"()) AND ("created_by" = "auth"."uid"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_runs"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = 'optometrist'::"text"))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_runs"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = 'optometrist'::"text"))))));
 drop policy if exists "palre_recommendation_runs_s" on "public"."palre_recommendation_runs";
 CREATE POLICY "palre_recommendation_runs_s" ON "public"."palre_recommendation_runs" FOR SELECT TO "authenticated" USING ((("org_id" = "public"."current_org"()) AND (EXISTS ( SELECT 1
    FROM "public"."profiles" "p"
-  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_runs"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))))
+  WHERE (("p"."id" = "auth"."uid"()) AND ("p"."org_id" = "palre_recommendation_runs"."org_id") AND "p"."is_approved" AND (NOT "p"."deactivated") AND ("p"."role_key" = ANY (ARRAY['optometrist'::"text", 'owner'::"text", 'admin'::"text"])))))));
 drop policy if exists "payments_customer_read" on "public"."payments";
 CREATE POLICY "payments_customer_read" ON "public"."payments" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
    FROM "public"."sales" "s"
   WHERE (("s"."id" = "payments"."sale_id") AND ("s"."customer_id" = ( SELECT "customers"."id"
            FROM "public"."customers"
           WHERE ("customers"."auth_user_id" = "auth"."uid"())
-         LIMIT 1))))))
+         LIMIT 1))))));
 drop policy if exists "prescriptions_customer_read" on "public"."prescriptions";
 CREATE POLICY "prescriptions_customer_read" ON "public"."prescriptions" FOR SELECT TO "authenticated" USING ((("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
@@ -1357,27 +1372,27 @@ CREATE POLICY "prescriptions_customer_read" ON "public"."prescriptions" FOR SELE
   WHERE (("fm"."primary_customer_id" = ( SELECT "customers"."id"
            FROM "public"."customers"
           WHERE ("customers"."auth_user_id" = "auth"."uid"())
-         LIMIT 1)) AND ("fm"."member_customer_id" = "prescriptions"."customer_id") AND ("fm"."is_active" = true))))))
+         LIMIT 1)) AND ("fm"."member_customer_id" = "prescriptions"."customer_id") AND ("fm"."is_active" = true))))));
 drop policy if exists "sale_lines_customer_read" on "public"."sale_lines";
 CREATE POLICY "sale_lines_customer_read" ON "public"."sale_lines" FOR SELECT TO "authenticated" USING ((EXISTS ( SELECT 1
    FROM "public"."sales" "s"
   WHERE (("s"."id" = "sale_lines"."sale_id") AND ("s"."customer_id" = ( SELECT "customers"."id"
            FROM "public"."customers"
           WHERE ("customers"."auth_user_id" = "auth"."uid"())
-         LIMIT 1))))))
+         LIMIT 1))))));
 drop policy if exists "sales_customer_read" on "public"."sales";
 CREATE POLICY "sales_customer_read" ON "public"."sales" FOR SELECT TO "authenticated" USING (("customer_id" = ( SELECT "customers"."id"
    FROM "public"."customers"
   WHERE ("customers"."auth_user_id" = "auth"."uid"())
- LIMIT 1)))
+ LIMIT 1)));
 
--- grants ──────────────────────────────────────────────────────────────────────
+-- grants ──────────────────────────────────────────────────────────────────────;
 -- GRANT/REVOKE are idempotent
 GRANT ALL ON TABLE "public"."customer_notification_preferences" TO "anon";
 GRANT ALL ON TABLE "public"."customer_notification_preferences" TO "authenticated";
 GRANT ALL ON TABLE "public"."customer_notification_preferences" TO "service_role";
 GRANT ALL ON TABLE "public"."customer_notifications" TO "anon";
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."customer_notifications" TO "authenticated";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE ON TABLE "public"."customer_notifications" TO "authenticated";
 GRANT ALL ON TABLE "public"."customer_notifications" TO "service_role";
 GRANT UPDATE("read_at") ON TABLE "public"."customer_notifications" TO "authenticated";
 GRANT ALL ON SEQUENCE "public"."customer_number_seq" TO "anon";

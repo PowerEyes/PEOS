@@ -29,16 +29,21 @@ export function ReviewForm({ productId, productName, onClose }: {
     const sb = supabaseBrowser();
     // Check if logged in to link verified purchase
     const { data: { user } } = await sb.auth.getUser();
+    let customerId: string | null = null;
+    if (user) {
+      const { data: c } = await sb.from("customers").select("id").eq("auth_user_id", user.id).maybeSingle();
+      customerId = c?.id ?? null;
+    }
     const { error } = await sb.from("product_reviews").insert({
       product_id: productId,
       org_id: await getTenantOrg(),
       reviewer_name: name.trim() || (user?.user_metadata?.full_name ?? "Customer"),
       reviewer_email: email.trim() || user?.email || null,
-      customer_id: null,
+      customer_id: customerId,
       rating,
       title: title.trim() || null,
       body: body.trim(),
-      verified_purchase: false,
+      verified_purchase: !!customerId,
       status: "pending",
     });
     setBusy(false);

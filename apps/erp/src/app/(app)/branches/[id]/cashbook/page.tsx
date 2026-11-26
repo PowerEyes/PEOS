@@ -10,7 +10,9 @@ export default async function BranchCashbookPage({ params }: { params: { id: str
       <h1 className="text-2xl font-bold text-navy-900">{branch?.name} — Cashbook</h1>
       <div className="card overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50"><tr><th className="text-left p-3">Date</th><th className="text-left p-3">Method</th><th className="text-right p-3">Amount</th></tr></thead>
+          <thead className="bg-slate-50">
+            <tr><th className="text-left p-3">Date</th><th className="text-left p-3">Method</th><th className="text-right p-3">Amount</th></tr>
+          </thead>
           <tbody>
             {payments?.map((p: any) => (
               <tr key={p.id} className="border-t">

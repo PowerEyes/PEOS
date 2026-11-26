@@ -45,7 +45,7 @@ export function ContactView({ stores: STORES, faqs: FAQS, hours, title, subtitle
             {icon:"📞",t:"Call Us",l1:STORES[0]?.phone??"",l2:STORES[1]?.phone??"",l3:hours,href:`tel:${STORES[0]?.phone??""}`},
             {icon:"✉️",t:"Email Us",l1:STORES.find(x=>x.email)?.email??"",l2:"",l3:"We typically respond within 24 hours.",href:`mailto:${STORES.find(x=>x.email)?.email??""}`},
             {icon:"💬",t:"WhatsApp",l1:whatsappNumber.replace(/\D/g,"").slice(-10),l2:"",l3:"Quick support on WhatsApp for faster assistance.",href:waHref(whatsappNumber)},
-            {icon:"🏪",t:"Visit Our Store",l1:"Mogappair East, Chennai",l2:"",l3:"Mon-Sun: 10:00 AM - 9:00 PM",href:"/store-locator"},
+            {icon:"🏪",t:"Visit Our Store",l1:STORES[0]?.name??"Store",l2:STORES[0]?.address??"",l3:hours,href:"/store-locator"},
           ].map(c=>(
             <a key={c.t} href={c.href} target={c.href.startsWith("http")?"_blank":undefined} className="block rounded-2xl bg-white border border-slate-100 shadow-sm p-5 hover:border-navy-300 hover:shadow-md transition">
               <div className="text-3xl mb-3">{c.icon}</div>

@@ -57,7 +57,6 @@ drop trigger if exists trg_po_touch on purchase_orders;
 create trigger trg_po_touch before update on purchase_orders
   for each row execute function public.touch_po_updated();
 
-drop trigger if exists trg_po_audit on purchase_orders;
 create trigger trg_po_audit after insert or update or delete on purchase_orders
   for each row execute function audit_row();
 

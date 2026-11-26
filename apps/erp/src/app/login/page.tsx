@@ -22,7 +22,7 @@ export default function Login() {
     <main className="grid min-h-screen place-items-center bg-navy-900 p-4">
       <form onSubmit={submit} className="w-full max-w-sm space-y-4 rounded-3xl bg-white p-8 shadow-2xl">
         <div className="flex items-center gap-2"><Eye className="text-gold-500" /><span className="font-display text-2xl font-semibold">PowerOS</span></div>
-        <p className="text-sm text-slate-500">{mode === "in" ? "Sign in to Power Eyes Opticals" : "Request staff access. An owner must approve you."}</p>
+        <p className="text-sm text-slate-500">{mode === "in" ? "Sign in to PowerOS" : "Request staff access. An owner must approve you."}</p>
         {mode === "up" && <input name="name" required placeholder="Full name" className="field" />}
         <input name="email" type="email" required placeholder="Email" className="field" />
         <div className="relative">

@@ -23,7 +23,7 @@ export function ProductFilters({ facets, bounds, total, shown }: { facets: Facet
   const setOne = (k: string, v: string) => push((p) => (v ? p.set(k, v) : p.delete(k)));
   useEffect(() => { const t = setTimeout(() => { if (lo !== (Number(sp.get("min")) || bounds.min) || hi !== (Number(sp.get("max")) || bounds.max)) push((p) => { lo > bounds.min ? p.set("min", String(lo)) : p.delete("min"); hi < bounds.max ? p.set("max", String(hi)) : p.delete("max"); }); }, 350); return () => clearTimeout(t); /* eslint-disable-next-line */ }, [lo, hi]);
   useEffect(() => { setLo(Number(sp.get("min")) || bounds.min); setHi(Number(sp.get("max")) || bounds.max); /* eslint-disable-next-line */ }, [sp.get("min"), sp.get("max")]);
-  useEffect(() => { if (!open) return; const prev = document.body.style.overflow; if (window.innerWidth < 768) document.body.style.overflow = "hidden"; const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); }; window.addEventListener("keydown", onKey); return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); }; }, [open]);
+  useEffect(() => { if (!open) return; const prev = document.body.style.overflow; if (window.innerWidth < 768) document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = prev; }; }, [open]);
 
   const active: { k: string; v: string; label: string }[] = [];
   facets.forEach((f) => sel(f.key).forEach((v) => active.push({ k: f.key, v, label: f.options.find((o) => norm(o.value) === v)?.value ?? v })));
@@ -87,7 +87,7 @@ export function ProductFilters({ facets, bounds, total, shown }: { facets: Facet
       <AnimatePresence>{open && (
         <div className="fixed inset-0 z-[60] md:hidden">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)} className="absolute inset-0 bg-navy-900/50 backdrop-blur-sm" />
-          <motion.div role="dialog" aria-modal="true" aria-label="Product filters" initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 30, stiffness: 320 }} className="absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-3xl bg-white shadow-2xl">
+          <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 30, stiffness: 320 }} className="absolute inset-x-0 bottom-0 flex max-h-[88dvh] flex-col rounded-t-3xl bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4"><span className="font-bold text-navy-900">Filters {n > 0 && `(${n})`}</span><button onClick={() => setOpen(false)} aria-label="Close filters" className="rounded-full bg-slate-100 p-2"><X size={16} /></button></div>
             <div className="flex-1 overflow-y-auto p-5">{body}</div>
             <div className="flex items-center gap-3 border-t border-slate-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">

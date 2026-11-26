@@ -10,7 +10,7 @@ const inr = (n:any) => `₹${Number(n||0).toLocaleString("en-IN")}`;
 export default function GSTR1Page() {
   const now   = new Date();
   const [year,  setYear]  = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth()+1); // current calendar month (1–12)
+  const [month, setMonth] = useState(now.getMonth()); // prev month
   const [busy,  setBusy]  = useState(false);
   const [data,  setData]  = useState<any>(null);
   const [err,   setErr]   = useState("");
@@ -59,8 +59,6 @@ export default function GSTR1Page() {
           <p className="mt-1">This generates GSTR-1 Section CSVs (B2B, B2CS, B2CL, HSN Summary, Document Summary) compatible with the GST Offline Tool. Verify before filing. Due date: 11th of the following month.</p>
         </div>
       </div>
-
-      {data && <div className="grid grid-cols-2 gap-3 sm:grid-cols-4"><div className="rounded-xl border bg-white p-3"><p className="text-xs text-slate-500">B2B records</p><p className="text-xl font-bold">{data.b2b?.length ?? 0}</p></div><div className="rounded-xl border bg-white p-3"><p className="text-xs text-slate-500">B2C records</p><p className="text-xl font-bold">{(data.b2cs?.length ?? 0)+(data.b2cl?.length ?? 0)}</p></div><div className="rounded-xl border bg-white p-3"><p className="text-xs text-slate-500">HSN rows</p><p className="text-xl font-bold">{data.hsn?.length ?? 0}</p></div><div className="rounded-xl border bg-white p-3"><p className="text-xs text-slate-500">Document summary</p><p className="text-xl font-bold">{data.docs?.length ?? 0}</p></div></div>}
 
       {/* Period selector */}
       <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-5 space-y-4">

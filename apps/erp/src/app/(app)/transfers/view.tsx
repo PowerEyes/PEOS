@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { ModuleKpiGrid, KPIIcons } from "@/components/ModuleKpiGrid";
 import { useRouter } from "next/navigation";
 import { requestTransfer, approveTransfer, receiveTransfer, closeTransfer } from "./actions";
 export function TransfersView({ transfers, branches, products }: { transfers: any[]; branches: any[]; products: any[]; me: string }) {
@@ -9,7 +8,6 @@ export function TransfersView({ transfers, branches, products }: { transfers: an
   const bn = (id: string) => branches.find((b) => b.id === id)?.name ?? "—";
   async function run(fn: () => Promise<{ error?: string; ok?: string }>) { setBusy(true); const r = await fn(); setBusy(false); setMsg(r.error ?? r.ok ?? ""); router.refresh(); }
   return (<div className="space-y-6"><h1 className="font-display text-3xl font-semibold">Branch stock transfers</h1>
-    <ModuleKpiGrid items={[{label:"Transfer records",value:transfers.length,detail:"Visible in current branch scope",icon:KPIIcons.package},{label:"Requested",value:transfers.filter((t:any)=>t.status==="requested").length,detail:"Awaiting processing",tone:"warning",icon:KPIIcons.clock},{label:"In transit",value:transfers.filter((t:any)=>t.status==="in_transit").length,detail:"Stock movement underway",tone:"info",icon:KPIIcons.trend},{label:"Completed",value:transfers.filter((t:any)=>t.status==="completed").length,detail:"Received/closed transfers",tone:"success",icon:KPIIcons.check}]} />
     {msg && <p className="rounded bg-slate-100 px-3 py-2 text-sm">{msg}</p>}
     <div className="card grid gap-2 p-4 sm:grid-cols-5">
       <select className="field" value={f.from} onChange={(e) => setF({ ...f, from: e.target.value })}><option value="">From branch</option>{branches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}</select>

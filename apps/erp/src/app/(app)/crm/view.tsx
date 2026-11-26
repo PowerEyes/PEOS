@@ -1,8 +1,8 @@
 
 "use client";
-import { useState } from "react";
-import { MessageCircle, Bell, Gift, ShoppingCart, Settings, Zap, CheckCircle, XCircle, Clock } from "lucide-react";
-import { updateCRMSettings } from "./actions";
+import { useState, useTransition } from "react";
+import { MessageCircle, Zap, Clock, CheckCircle, XCircle, Bell, Gift, ShoppingCart, Package, Play, Settings, ChevronDown, ChevronUp } from "lucide-react";
+import { updateCRMSettings, triggerFunction } from "./actions";
 
 const TEMPLATE_PREVIEW: Record<string,string> = {};
 
@@ -10,9 +10,22 @@ const dStr = (d:string) => d ? new Date(d).toLocaleString("en-IN",{dateStyle:"sh
 
 export function CRMView({ settings, logs, cronRuns, stats, tplPreview }: any) {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [triggering, setTriggering]     = useState<string|null>(null);
+  const [trigMsg, setTrigMsg]           = useState("");
+  const [,start] = useTransition();
+
+  async function trigger(fn: string) {
+    setTriggering(fn); setTrigMsg("");
+    const r = await triggerFunction(fn);
+    setTriggering(null);
+    setTrigMsg(r.ok ? `✓ ${fn} ran: ${JSON.stringify(r.result)}` : `✗ ${r.error ?? "Failed"}`);
+    setTimeout(()=>setTrigMsg(""),8000);
+  }
+
   const AUTOMATIONS = [
     { id:"rx-expiry-reminder",  label:"Rx Expiry Reminder",   icon:Bell,         color:"bg-purple-50 text-purple-700 border-purple-100", stat:stats.rxReminders, next:"Daily 9:00 AM", enabled:settings?.rx_reminder_enabled },
     { id:"birthday-greeting",   label:"Birthday Greetings",    icon:Gift,         color:"bg-rose-50 text-rose-700 border-rose-100",       stat:stats.birthdays,   next:"Daily 9:00 AM", enabled:settings?.birthday_enabled },
+    { id:"order-whatsapp",      label:"Order Status Updates",  icon:Package,      color:"bg-blue-50 text-blue-700 border-blue-100",       stat:stats.orderUpdates,next:"On status change",enabled:settings?.order_updates_enabled },
     { id:"abandoned-cart",      label:"Cart Recovery",         icon:ShoppingCart, color:"bg-amber-50 text-amber-700 border-amber-100",    stat:stats.cartRecovery,next:"Every 4 hours",  enabled:settings?.cart_recovery_enabled },
   ];
 
@@ -77,9 +90,14 @@ export function CRMView({ settings, logs, cronRuns, stats, tplPreview }: any) {
                 <span className="font-bold text-lg">{a.stat}</span>
               </div>
             </div>
-            <span className="text-xs font-medium opacity-70">Runs on the configured schedule</span>
+            <button onClick={()=>trigger(a.id)} disabled={triggering===a.id}
+              className="flex items-center gap-1.5 rounded-lg bg-white/60 border border-current/20 px-3 py-1.5 text-xs font-bold hover:bg-white/80 transition disabled:opacity-40">
+              <Play size={12}/>{triggering===a.id?"Running…":"Test Run Now"}
+            </button>
           </div>))}
       </div>
+      {trigMsg && <div className={`rounded-xl p-3 text-sm font-medium ${trigMsg.startsWith("✓")?"bg-emerald-50 text-emerald-700 border border-emerald-200":"bg-rose-50 text-rose-700 border border-rose-200"}`}>{trigMsg}</div>}
+
       {/* Settings panel */}
       {settingsOpen && (
         <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-5">
@@ -90,10 +108,10 @@ export function CRMView({ settings, logs, cronRuns, stats, tplPreview }: any) {
               <div className="sm:col-span-2 space-y-2 pb-3 border-b border-slate-100">
                 <p className="text-sm font-semibold text-slate-700">WhatsApp Provider</p>
                 <div className="flex gap-3">
-                  {["meta","interakt"].map(p=>(
+                  {["meta","interakt","wati"].map(p=>(
                     <label key={p} className="flex items-center gap-2 cursor-pointer">
                       <input type="radio" name="wa_provider" value={p} defaultChecked={settings?.wa_provider===p} className="accent-navy-700"/>
-                      <span className="text-sm capitalize">{p==="meta"?"Meta Cloud API (Official)":"Interakt (India)"}</span>
+                      <span className="text-sm capitalize">{p==="meta"?"Meta Cloud API (Official)":p==="interakt"?"Interakt (India)":"WATI"}</span>
                     </label>))}
                 </div>
                 <p className="text-xs text-slate-400">Set WA_ACCESS_TOKEN, WA_PHONE_NUMBER_ID (Meta) or WA_INTERAKT_API_KEY in Supabase Secrets.</p>

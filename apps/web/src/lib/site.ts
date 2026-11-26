@@ -1,3 +1,4 @@
+import { getOrgId } from "@/lib/tenant";
 import { cache } from "react";
 import { supabasePublic } from "./supabase/server";
 
@@ -50,4 +51,9 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   } catch {
     return DEFAULT_SITE;
   }
+});
+
+/** Display name of this website's organisation (database-driven; the anon key can no longer read the organizations table). */
+export const getStoreName = cache(async (): Promise<string> => {
+  try { const { data } = await supabasePublic().rpc("public_store_name", { p_org: await getOrgId() }); return (data as string) || "Our store"; } catch { return "Our store"; }
 });

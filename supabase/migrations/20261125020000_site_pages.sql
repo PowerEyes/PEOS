@@ -8,27 +8,12 @@ create table if not exists site_pages (
   is_active boolean not null default true, show_in_nav boolean not null default false, display_order int not null default 0,
   updated_at timestamptz not null default now(), unique (org_id, slug));
 alter table site_pages enable row level security;
--- Re-runnable policies. Public page reads must be restricted to the tenant
--- resolved from the storefront host; `is_active` alone leaks other shops' pages.
-drop policy if exists sp_anon on site_pages;
-drop policy if exists sp_staff on site_pages;
-drop policy if exists sp_ins on site_pages;
-drop policy if exists sp_upd on site_pages;
-drop policy if exists sp_del on site_pages;
-create policy sp_anon on site_pages for select to anon, authenticated
-  using (is_active and org_id = public.request_org());
-create policy sp_staff on site_pages for select to authenticated
-  using (org_id = public.current_org());
-create policy sp_ins on site_pages for insert to authenticated
-  with check (org_id = public.current_org() and public.is_admin());
-create policy sp_upd on site_pages for update to authenticated
-  using (org_id = public.current_org() and public.is_admin())
-  with check (org_id = public.current_org());
-create policy sp_del on site_pages for delete to authenticated
-  using (org_id = public.current_org() and public.is_admin());
-create or replace function public.sp_touch() returns trigger language plpgsql as $$
-begin new.updated_at := now(); return new; end $$;
-drop trigger if exists trg_sp_touch on site_pages;
+create policy sp_anon on site_pages for select to anon, authenticated using (is_active);
+create policy sp_staff on site_pages for select to authenticated using (org_id = public.current_org());
+create policy sp_ins on site_pages for insert to authenticated with check (org_id = public.current_org() and public.is_admin());
+create policy sp_upd on site_pages for update to authenticated using (org_id = public.current_org() and public.is_admin()) with check (org_id = public.current_org());
+create policy sp_del on site_pages for delete to authenticated using (org_id = public.current_org() and public.is_admin());
+create or replace function public.sp_touch() returns trigger language plpgsql as $$ begin new.updated_at := now(); return new; end $$;
 create trigger trg_sp_touch before update on site_pages for each row execute function public.sp_touch();
 
 -- Starter content (editable). Inserted once per organisation.

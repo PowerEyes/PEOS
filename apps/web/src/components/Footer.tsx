@@ -46,7 +46,7 @@ export function Footer() {
             <ul className="space-y-2">{g.items.map(i => <li key={i.label}><Link href={i.href} className="text-sm hover:text-gold-400 transition">{i.label}</Link></li>)}</ul></div>))}
       </div>
       <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs sm:flex-row">
-        <p>© {new Date().getFullYear()} Power Eyes Opticals. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} {chrome?.storeName ?? "Power Eyes Opticals"}. All rights reserved.</p>
         <div className="flex flex-wrap gap-4 justify-center">
           {f.trust.map(t => <span key={t} className="flex items-center gap-1">✓ {t}</span>)}</div>
       </div>

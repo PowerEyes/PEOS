@@ -1,6 +1,5 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import Link from "next/link";
-import { ModuleKpiGrid } from "@/components/ModuleKpiGrid";
 
 export default async function BranchesPage() {
   const sb = supabaseServer();
@@ -19,10 +18,6 @@ export default async function BranchesPage() {
     .eq("org_id", profile.org_id)
     .order("name");
 
-  const rows = branches ?? [];
-  const activeCount = rows.filter((b: any) => b.is_active).length;
-  const defaultCount = rows.filter((b: any) => b.is_default).length;
-  const missingContact = rows.filter((b: any) => !b.phone && !b.email).length;
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -33,7 +28,6 @@ export default async function BranchesPage() {
         {canCreate && <Link href="/branches/new" className="btn btn-primary">+ New Branch</Link>}
       </div>
 
-      <ModuleKpiGrid items={[{label:"Total branches",value:rows.length,detail:"Branches in your organization"},{label:"Active",value:activeCount,tone:"success",detail:"Currently enabled locations"},{label:"Default branch",value:defaultCount,detail:"Default location configured"},{label:"Missing contact",value:missingContact,tone:missingContact?"warning":"success",detail:"Branches without phone or email"}]} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {branches?.map((b: any) => (
           <Link key={b.id} href={`/branches/${b.id}`} className="card p-5 hover:shadow-md transition-shadow">

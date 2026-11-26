@@ -37,20 +37,15 @@ export default function TrackOrderPage() {
 
   async function track(e: React.FormEvent) {
     e.preventDefault();
-    setOrder(null); setErr("");
-    const normalizedPhone = phone.trim().replace(/\D/g, "");
-    if (!code.trim() || normalizedPhone.length !== 10) {
-      setErr("Enter your order number and a valid 10-digit registered phone number.");
-      return;
-    }
-    setBusy(true);
+    if (!code.trim() || !phone.trim()) return setErr("Please enter both your order number and phone number.");
+    setBusy(true); setErr(""); setOrder(null);
     try {
-      const r = await fetch(`/api/track-order?code=${encodeURIComponent(code.trim().toUpperCase())}&phone=${encodeURIComponent(normalizedPhone)}`, { cache: "no-store" });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok || d.error) setErr(d.error || "Order not found. Please check your order number and phone number.");
-      else setOrder(d);
-    } catch { setErr("Something went wrong. Please check your connection and try again."); }
-    finally { setBusy(false); }
+      const r = await fetch(`/api/track-order?code=${encodeURIComponent(code.trim().toUpperCase())}&phone=${encodeURIComponent(phone.trim().replace(/\D/g,""))}`);
+      const d = await r.json();
+      if (!r.ok || d.error) return setErr(d.error || "Order not found. Please check your order number and phone number.");
+      setOrder(d);
+    } catch { setErr("Something went wrong. Please try again or contact us on WhatsApp."); }
+    setBusy(false);
   }
 
   const st = order?.status ?? "draft";
@@ -89,7 +84,7 @@ export default function TrackOrderPage() {
               </div>
               <p className="text-xs text-slate-400 mt-1">The phone number used when placing your order.</p>
             </label>
-            {err && <div role="alert" className="rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-sm text-rose-700">{err}</div>}
+            {err && <div className="rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-sm text-rose-700">{err}</div>}
             <button disabled={busy} className="w-full rounded-xl bg-navy-800 py-4 text-sm font-bold text-white hover:bg-navy-700 transition disabled:opacity-60 flex items-center justify-center gap-2">
               <Search size={16}/>{busy ? "Tracking…" : "Track My Order"}
             </button>

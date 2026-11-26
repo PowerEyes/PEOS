@@ -6,7 +6,6 @@ import { PortalLayout } from "@/components/PortalLayout";
 import { LiveRefresh } from "@/components/LiveRefresh";
 import { getSiteSettings } from "@/lib/site";
 import { waHref } from "@/lib/wa";
-import { PortalPageHeader } from "@/components/PortalPageHeader";
 
 const STATUS_LABEL: Record<string,string> = {pending:"Pending",in_progress:"In Progress",ready:"Ready",delivered:"Delivered",cancelled:"Cancelled"};
 const STATUS_COLOR: Record<string,string> = {pending:"bg-amber-100 text-amber-700",in_progress:"bg-blue-100 text-blue-700",ready:"bg-emerald-100 text-emerald-700",delivered:"bg-slate-100 text-slate-600",cancelled:"bg-rose-100 text-rose-600"};
@@ -18,21 +17,19 @@ export default async function RepairsPage() {
   if(!user) redirect("/my/login");
   const {data:c} = await sb.from("customers").select("id").eq("auth_user_id",user.id).maybeSingle();
   if(!c) redirect("/my/login");
-  const {data:repairs, error:repairsError} = await sb.from("repairs")
+  const {data:repairs} = await sb.from("repairs")
     .select("id,code,problem,item_type,status,priority,total_amount,paid,due_date,created_at,item_brand,item_model,branches(name)")
     .eq("customer_id",c.id).order("created_at",{ascending:false}).limit(30);
 
   return (
     <PortalLayout activePath="/my/repairs">
       <LiveRefresh seconds={30} />
-      <PortalPageHeader title="Repairs & Service" description="Track service requests, repair progress, collection readiness, and estimated due dates." action={<Link href="/my/repairs/new" className="rounded-lg bg-navy-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-700 transition">+ Register Repair</Link>}/>
-      {repairsError && <div role="alert" className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">Repair history could not be loaded. The list below is unavailable, not empty. Please refresh or contact support.</div>}
-      {repairs && !repairsError && <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-6">{[
-        ["Total tickets", repairs.length, "default"],
-        ["In progress", repairs.filter((r:any)=>r.status==="in_progress").length, "info"],
-        ["Ready to collect", repairs.filter((r:any)=>r.status==="ready").length, "success"],
-        ["Overdue", repairs.filter((r:any)=>r.due_date && new Date(`${r.due_date}T23:59:59`) < new Date() && !["ready","delivered","cancelled"].includes(r.status)).length, "warning"],
-      ].map(([label,value,t])=><div key={String(label)} className={`rounded-2xl border p-3.5 sm:p-4 ${t==="success"?"border-emerald-200 bg-emerald-50":t==="warning"?"border-amber-200 bg-amber-50":t==="info"?"border-blue-200 bg-blue-50":"border-slate-200 bg-white"}`}><p className="text-xs text-slate-500">{label}</p><p className="mt-1 text-xl font-bold text-navy-900">{value}</p></div>)}</div>}
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-800 to-navy-800 text-white px-8 py-10 mb-6">
+        <h1 className="font-extrabold text-3xl">REPAIRS & SERVICE</h1>
+        <p className="text-slate-300 mt-1">Track your eyewear repairs and service requests.</p>
+        <div className="absolute right-8 top-5 text-5xl opacity-20">🔧</div>
+      </div>
 
       {/* Submit new repair CTA */}
       <div className="rounded-2xl border border-slate-100 bg-white shadow-sm p-5 mb-6">
@@ -59,7 +56,7 @@ export default async function RepairsPage() {
       </div>
 
       <h2 className="font-bold text-xl text-navy-900 mb-4">My Repair Tickets</h2>
-      {repairsError ? null : (!repairs||repairs.length===0)
+      {(!repairs||repairs.length===0)
         ? <div className="rounded-2xl bg-white border border-slate-100 p-16 text-center">
             <div className="text-5xl mb-3">🔧</div>
             <p className="font-semibold text-slate-600">No repair tickets yet</p>

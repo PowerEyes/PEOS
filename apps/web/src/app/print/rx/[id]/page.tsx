@@ -22,7 +22,7 @@ export default async function PrintRxPage({ params }: { params: { id: string } }
       "id, rx_code, rx_date, valid_till, examined_by, rx_type, purpose, " +
       "od_sph, od_cyl, od_axis, od_add, od_va_dist, od_va_near, " +
       "os_sph, os_cyl, os_axis, os_add, os_va_dist, os_va_near, " +
-      "pd_far, pd_near, remarks, status, " +
+      "pd_far, pd_near, remarks, status, branch_id, " +
       "customers(full_name, phone, customer_code, vision_id)"
     )
     .eq("id", params.id)
@@ -31,6 +31,30 @@ export default async function PrintRxPage({ params }: { params: { id: string } }
   if (!rx) notFound();
   const r = rx as any;
   const patient = (r.customers ?? null) as any;
+
+  // Fetch branch/store info from database
+  let storeName = "Power Eyes Opticals";
+  let storeAddress = "";
+  let storePhone = "";
+  let storeEmail = "";
+  if (r.branch_id) {
+    const { data: branch } = await sb.from("branches").select("name, address, phone, email").eq("id", r.branch_id).maybeSingle();
+    if (branch) {
+      storeName = branch.name || storeName;
+      storeAddress = branch.address || "";
+      storePhone = branch.phone || "";
+      storeEmail = branch.email || "";
+    }
+  }
+  // Fallback to site settings if branch not found
+  if (!storePhone) {
+    const { data: settings } = await sb.from("public_site_settings").select("key, value");
+    const siteMap: Record<string, string> = {};
+    for (const s of settings ?? []) { siteMap[s.key] = typeof s.value === "string" ? s.value : ""; }
+    if (siteMap.whatsapp_number) storePhone = siteMap.whatsapp_number;
+    if (siteMap.store_email) storeEmail = siteMap.store_email;
+    if (siteMap.store_address) storeAddress = siteMap.store_address;
+  }
   const patientName = patient?.full_name || "Customer";
   const rxNo = r.rx_code ?? `RX-${String(r.id).slice(0, 8).toUpperCase()}`;
 
@@ -155,10 +179,10 @@ export default async function PrintRxPage({ params }: { params: { id: string } }
             </p>
           </div>
           <div className="text-right">
-            <p className="font-semibold text-navy-900">Power Eyes Opticals</p>
-            <p>Mogappair East, Chennai</p>
-            <p>📞 98404 96404 · 63833 01802</p>
-            <p>powereyes.chennai@gmail.com</p>
+            <p className="font-semibold text-navy-900">{storeName}</p>
+            {storeAddress && <p>{storeAddress}</p>}
+            {storePhone && <p>📞 {storePhone}</p>}
+            {storeEmail && <p>{storeEmail}</p>}
           </div>
         </footer>
 

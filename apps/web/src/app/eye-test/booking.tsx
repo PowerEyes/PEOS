@@ -26,7 +26,7 @@ export function EyeTestBooking({ cfg, branches }: { cfg: any; branches: string[]
         <div className="flex flex-wrap gap-2">{TIMES.map(t=><button key={t} onClick={()=>setTime(t)} className={`rounded-xl border px-3 py-2 text-xs font-medium transition ${time===t?"border-gold-500 bg-amber-50 text-gold-700":"border-slate-200 hover:border-navy-700"}`}>{t}</button>)}</div></div>}
       <div className="grid gap-3 sm:grid-cols-2">
         <div><p className="mb-2 flex items-center gap-2 text-sm font-semibold text-navy-700"><User size={15}/>Your name</p><input value={name} onChange={e=>setName(e.target.value)} placeholder="Full name" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/></div>
-        <div><p className="mb-2 text-sm font-semibold text-navy-700">Phone</p><input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+91 98401 85186" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/></div>
+        <div><p className="mb-2 text-sm font-semibold text-navy-700">Phone</p><input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Enter your phone number" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/></div>
       </div>
       <button onClick={submit} disabled={!branch||!type||!date||!time||!name||!phone} className="btn-gold w-full py-4 text-base disabled:opacity-50">💬 {cfg.cta || "Confirm via WhatsApp"}</button>
       <p className="text-center text-xs text-slate-400">Opens WhatsApp with your appointment details. {cfg.note}</p>

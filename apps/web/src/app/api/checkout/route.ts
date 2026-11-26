@@ -10,15 +10,7 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
   if (!body || !Array.isArray(body.items) || body.items.length < 1 || body.items.length > 50) return NextResponse.json({ error: "Your cart is empty or invalid." }, { status: 400 });
   const items = body.items;
-  if (!items.every((i: any) => i && (i.productId == null || UUID.test(i.productId)) && (i.lensPackageId == null || UUID.test(i.lensPackageId)) && (Boolean(i.productId) || Boolean(i.lensPackageId)) && Number.isInteger(i.qty) && i.qty > 0 && i.qty <= 10 && (i.optionIds == null || (Array.isArray(i.optionIds) && i.optionIds.length <= 20 && i.optionIds.every((id: string) => UUID.test(id)) && new Set(i.optionIds).size === i.optionIds.length)) && (!i.productId || !i.optionIds?.length) && (!i.addons?.length || (Array.isArray(i.optionIds) && i.optionIds.length > 0)))) return NextResponse.json({ error: "Your cart has an invalid item. Refresh and try again." }, { status: 400 });
-  // The storefront configurator currently collects Rx values client-side but
-  // does not persist an approved prescription into the ERP. Never create a
-  // paid lens order that would skip the optometrist approval and lab workflow.
-  if (items.some((item: any) => Boolean(item?.lensPackageId))) {
-    return NextResponse.json({
-      error: "Prescription lens checkout is not available online yet. An optometrist must verify and approve your prescription before lens production. Please place this order in store or book an appointment.",
-    }, { status: 409 });
-  }
+  if (!items.every((i: any) => i && (i.productId == null || UUID.test(i.productId)) && (i.lensPackageId == null || UUID.test(i.lensPackageId)) && (Boolean(i.productId) !== Boolean(i.lensPackageId)) && Number.isInteger(i.qty) && i.qty > 0 && i.qty <= 10 && (i.optionIds == null || (Array.isArray(i.optionIds) && i.optionIds.length <= 20 && i.optionIds.every((id: string) => UUID.test(id)) && new Set(i.optionIds).size === i.optionIds.length)) && (!i.productId || !i.optionIds?.length) && (!i.addons?.length || (Array.isArray(i.optionIds) && i.optionIds.length > 0)))) return NextResponse.json({ error: "Your cart has an invalid item. Refresh and try again." }, { status: 400 });
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return NextResponse.json({ error: "Online checkout is not configured." }, { status: 503 });
 
   try {
@@ -87,19 +79,13 @@ export async function POST(req: Request) {
       line1: clean(body.address?.line1, 200), city: clean(body.address?.city, 60), state: clean(body.address?.state, 60), pincode: clean(body.address?.pincode, 10),
     } : null;
     if (address && (address.phone.length !== 10 || !address.line1 || !address.city || !address.pincode)) return NextResponse.json({ error: "Complete the delivery address before paying." }, { status: 400 });
-    const contactName = clean(body.notes?.name, 80) || clean(address?.name, 80);
-    const contactPhone = clean(body.notes?.phone, 20).replace(/\D/g, "").slice(-10) || clean(address?.phone, 20).replace(/\D/g, "").slice(-10);
-    const contactEmailRaw = (clean(body.notes?.email, 120) || clean(address?.email, 120)).toLowerCase();
-    const contactEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmailRaw) ? contactEmailRaw : null;
-    if (contactPhone.length !== 10) return NextResponse.json({ error: "Enter a valid 10-digit customer phone number." }, { status: 400 });
-    const customer = { name: contactName || "Online Customer", phone: contactPhone, email: contactEmail };
-    const quote = { lines: saleLines, subtotal: saleTotal, goods_subtotal: netSubtotal, gross_subtotal: Math.round(subtotal * 100) / 100, coupon_code: couponCode || null, discount, delivery_fee: deliveryFee, delivery: body.delivery === "delivery" ? "delivery" : "pickup", branch_id: branch.id, branch_name: branch.name, customer, address };
+    const quote = { lines: saleLines, subtotal: saleTotal, goods_subtotal: netSubtotal, gross_subtotal: Math.round(subtotal * 100) / 100, coupon_code: couponCode || null, discount, delivery_fee: deliveryFee, delivery: body.delivery === "delivery" ? "delivery" : "pickup", branch_id: branch.id, branch_name: branch.name, address };
     const { data: saved, error: qe } = await db.from("checkout_quotes").insert({ org_id: orgId, quote, amount_minor: amountMinor }).select("id").single();
     if (qe || !saved) throw new Error("Could not save the secure checkout quote.");
     if (body.payMethod === "cash") return NextResponse.json({ quoteId: saved.id, amount: amountMinor, currency: "INR" });
     const key = process.env.RAZORPAY_KEY_ID, secret = process.env.RAZORPAY_KEY_SECRET;
     if (!key || !secret) { await db.from("checkout_quotes").update({ status: "failed" }).eq("id", saved.id); return NextResponse.json({ error: "Online payment is not available right now. Please choose Pay at store." }, { status: 503 }); }
-    const notes = { name: customer.name, phone: customer.phone, email: customer.email ?? "", quote_id: saved.id };
+    const notes = { name: clean(body.notes?.name, 80), phone: clean(body.notes?.phone, 15).replace(/\D/g, ""), email: clean(body.notes?.email, 120), quote_id: saved.id };
     const response = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST", signal: AbortSignal.timeout(15000), headers: { Authorization: `Basic ${Buffer.from(`${key}:${secret}`).toString("base64")}`, "Content-Type": "application/json" },
       body: JSON.stringify({ amount: amountMinor, currency: "INR", notes, payment_capture: 1 }),

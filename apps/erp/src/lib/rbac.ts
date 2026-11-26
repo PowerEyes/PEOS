@@ -48,7 +48,7 @@ const RULES: [string, Role[]][] = [
   ["/audit", ADMIN],
 ];
 // Routes gated by a configurable permission (Staff → Permissions). Owners/admins always pass.
-const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"], ["/transfers/approvals", "transfers_approve"]];
+const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"]];
 export const PERMISSIONS = [
   { key: "finance_view", label: "View finance, cashbook & purchase invoices" },
   { key: "expenses", label: "Record expenses" },
@@ -64,25 +64,26 @@ export const PERMISSIONS = [
   { key: "web_orders", label: "Manage online order fulfilment" },
   { key: "credit_notes.issue", label: "Issue credit notes and refunds" },
 ] as const;
-const SPECIAL_ROUTE_ROLES: Record<string, string[]> = {
-  // Role-specific landing pages only. Operational module access is governed
-  // by the shared permission grants below, not by a second hard-coded role list.
-  "/owner-dashboard/branch-comparison": ["owner", "admin"],
-  "/owner-dashboard/branch-inventory": ["owner", "admin", "branch_manager"],
-  "/owner-dashboard": ["owner", "admin"],
-  "/branch-dashboard": ["owner", "admin", "branch_manager"],
-  "/employee-dashboard": ["optometrist", "receptionist", "sales_executive", "cashier", "inventory_manager", "lab_technician", "accountant", "staff", "owner", "admin", "branch_manager"],
-  "/optometrist": ["optometrist", "owner", "admin", "branch_manager"],
-  "/receptionist": ["receptionist", "owner", "admin", "branch_manager"],
-  "/sales/pos": ["sales_executive", "cashier", "owner", "admin", "branch_manager"],
-  "/cashier": ["cashier", "owner", "admin", "branch_manager"],
-  "/lab-tech": ["lab_technician", "owner", "admin", "branch_manager"],
+// MENU FOCUS ONLY: which sidebar groups a specialist role sees. Route access stays grant-based (routeAllowed + RLS), by design —
+// specialists reach modules through role_permissions grants, not role names.
+const COMMON = ["/", "/customers", "/inbox", "/support", "/print", "/staff/attendance", "/staff/leave"];
+export const ROLE_AREAS: Record<string, string[]> = {
+  optometrist: ["/appointments", "/prescriptions", "/consultations", "/lpims"],
+  receptionist: ["/appointments", "/prescriptions", "/sales", "/repairs", "/communications", "/loyalty"],
+  sales_executive: ["/sales", "/prescriptions", "/appointments", "/web-orders", "/inventory", "/repairs", "/loyalty"],
+  cashier: ["/sales", "/web-orders", "/repairs", "/expenses", "/finance"],
+  inventory_manager: ["/inventory", "/transfers", "/stock-audits", "/purchases", "/purchase-invoices", "/suppliers", "/web-orders", "/lpims"],
+  lab_technician: ["/workshop", "/repairs", "/dispensing", "/workshop", "/web-orders", "/inventory"],
+  accountant: ["/finance", "/accountant-export", "/expenses", "/bank-reconciliation", "/purchase-invoices", "/purchases", "/suppliers", "/reports", "/sales", "/payroll"],
 };
+const under = (path: string, p: string) => p === "/" ? path === "/" : path === p || path.startsWith(p + "/");
+export function specialistAllowed(role: string | null | undefined, path: string): boolean {
+  const areas = role ? ROLE_AREAS[role] : undefined;
+  return !areas || [...COMMON, ...areas].some((p) => under(path, p));
+}
 export function routeAllowed(role: string | null | undefined, path: string, perms: string[] = []): boolean {
   const tier = routeTier(role);
   if (!tier) return false;
-  const specialistRoute = Object.entries(SPECIAL_ROUTE_ROLES).sort((a, b) => b[0].length - a[0].length).find(([p]) => path === p || path.startsWith(p + "/"));
-  if (specialistRoute && !specialistRoute[1].includes(role ?? "")) return false;
   const pr = PERM_ROUTES.find(([p]) => path === p || path.startsWith(p + "/"));
   if (pr && !isAdminRole(role) && !perms.includes(pr[1])) return false;
   const hit = RULES.filter(([p]) => path === p || path.startsWith(p + "/")).sort((a, b) => b[0].length - a[0].length)[0];
