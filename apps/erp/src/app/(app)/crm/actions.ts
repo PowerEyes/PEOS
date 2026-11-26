@@ -52,11 +52,13 @@ export async function sendTestMessage(phone: string, template: string) {
   { const { data: ok } = await supabaseServer().rpc("is_admin"); if (!ok) return { error: "Only owners and admins can do this." }; }
   const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/order-whatsapp`;
   const key  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const { data: branch } = await supabaseServer().from("branches").select("name").eq("is_active", true).limit(1).single();
+  const storeName = branch?.name || "Store";
   try {
     const r = await fetch(url, {
       method:"POST",
       headers:{ "Authorization":`Bearer ${key}`, "Content-Type":"application/json" },
-      body: JSON.stringify({ phone, template, customerName:"Test Customer", orderCode:"TEST-001", storeName:"Mogappair East" }),
+      body: JSON.stringify({ phone, template, customerName:"Test Customer", orderCode:"TEST-001", storeName }),
     });
     const d = await r.json();
     return { ok:r.ok, result:d };

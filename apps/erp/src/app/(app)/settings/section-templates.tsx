@@ -13,7 +13,7 @@ import { L, SectionCard, Switch } from "./ui";
 const SAMPLE: Record<string, string> = {
   Name: "Ananya",
   Item: "your Titan frame",
-  Store: "Mogappair East",
+  Store: "Your Store",
   Code: "ORD-0042",
   Amount: "₹4,500",
   "Valid Till": "25 Nov 2026",

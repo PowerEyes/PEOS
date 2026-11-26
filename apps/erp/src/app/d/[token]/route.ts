@@ -32,9 +32,13 @@ export async function GET(req: Request, { params }: { params: { token: string } 
     return page("Link expired", "This document link is no longer active. Please ask the store to send a fresh link.", 410);
   }
   const l = v.link, cfg = DOCS[l.doc_type];
+  // Fetch org name from database
+  const sb2 = serviceClient();
+  const { data: org } = await sb2.from("organizations").select("name").eq("id", l.org_id).single();
+  const orgName = org?.name || "Power Eyes Opticals";
   // WhatsApp / social link-preview crawlers: no view count, no PDF render, no content.
   if (/WhatsApp|facebookexternalhit|Twitterbot|TelegramBot|Slackbot|bot|crawler/i.test(req.headers.get("user-agent") ?? ""))
-    return new Response(`<!doctype html><meta charset="utf-8"><meta property="og:title" content="${cfg.label} — Power Eyes Opticals"><meta property="og:description" content="Tap to view your document securely."><meta name="robots" content="noindex">`, { headers: { "Content-Type": "text/html; charset=utf-8", ...NOINDEX } });
+    return new Response(`<!doctype html><meta charset="utf-8"><meta property="og:title" content="${cfg.label} — ${orgName}"><meta property="og:description" content="Tap to view your document securely."><meta name="robots" content="noindex">`, { headers: { "Content-Type": "text/html; charset=utf-8", ...NOINDEX } });
 
   const sb = serviceClient();
   await sb.from("document_links").update({ view_count: l.view_count + 1, last_viewed_at: new Date().toISOString() }).eq("id", l.id);
