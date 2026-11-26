@@ -17,7 +17,7 @@ function StarBar({ pct, count }: { pct: number; count: number }) {
 }
 
 export function ProductDetail({ product: p, reviews, summary, similar }: { product: Product; reviews: any[]; summary: any; similar: Product[] }) {
-  const { whatsappNumber } = useSite();
+  const { whatsappNumber, storeName, branchNames, phones } = useSite();
   const [imgIdx, setImgIdx] = useState(0);
   const [tab, setTab] = useState<(typeof TABS)[number]>("Description");
   const [withLens, setWithLens] = useState(p.power_eligible);
@@ -130,7 +130,7 @@ export function ProductDetail({ product: p, reviews, summary, similar }: { produ
             {/* Store availability */}
             <div className="rounded-2xl border border-slate-100 p-4 space-y-2 text-sm">
               <p className="font-semibold text-slate-700">Available at your nearest store</p>
-              {["Mogappair East","Mogappair West"].map(s=>(
+              {(branchNames.length > 0 ? branchNames : ["Mogappair East","Mogappair West"]).map(s=>(
                 <div key={s} className="flex items-center justify-between"><span className="flex items-center gap-2 text-slate-600">📍 {s}</span><span className="text-emerald-600 font-medium">{p.in_stock?"In Stock":"Check in store"}</span></div>))}
             </div>
 

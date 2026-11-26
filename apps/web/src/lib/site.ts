@@ -9,6 +9,8 @@ export type SiteSettings = {
   whatsappNumber: string;
   instagram: string;
   analyticsId: string;
+  storeName: string;
+  branchNames: string[];
   /** Store phone numbers (digits only) from active branches, main store first. */
   phones: string[];
   hours: string;
@@ -18,6 +20,8 @@ export const DEFAULT_SITE: SiteSettings = {
   whatsappNumber: "",
   instagram: "",
   analyticsId: "",
+  storeName: "",
+  branchNames: [],
   phones: [],
   hours: "Mon–Sun 10 AM – 9 PM",
 };
@@ -41,7 +45,9 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
       }
     }
     try {
-      const { data: br } = await supabasePublic().from("branches").select("phone,opening_hours,is_default_pickup").eq("is_active", true).order("is_default_pickup",{ascending:false}).order("name");
+      const { data: br } = await supabasePublic().from("branches").select("name,phone,opening_hours,is_default_pickup").eq("is_active", true).order("is_default_pickup",{ascending:false}).order("name");
+      if (br && br.length > 0) s.storeName = br[0].name || "";
+      s.branchNames = (br ?? []).map((b: any) => String(b.name ?? "")).filter(Boolean);
       s.phones = (br ?? []).map((b: any) => String(b.phone ?? "").replace(/\D/g, "").slice(-10)).filter((x: string) => x.length === 10);
       const firstHours=(br??[])[0]?.opening_hours;
       if(firstHours&&typeof firstHours==="object")s.hours=Object.entries(firstHours).map(([day,h]:[string,any])=>`${day.slice(0,3)} ${h.closed?"Closed":`${h.open}–${h.close}`}`).join(" · ");

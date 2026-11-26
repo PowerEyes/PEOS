@@ -6,6 +6,8 @@ export type SiteSettings = {
   whatsappNumber: string;
   instagram: string;
   analyticsId: string;
+  storeName: string;
+  branchNames: string[];
   phones: string[];
   hours: string;
 };
@@ -14,6 +16,8 @@ const SiteCtx = createContext<SiteSettings>({
   whatsappNumber: "",
   instagram: "",
   analyticsId: "",
+  storeName: "",
+  branchNames: [],
   phones: [],
   hours: "",
 });

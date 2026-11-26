@@ -52,7 +52,7 @@ function trackIndex(status?: string) {
 
 export default function CheckoutPage() {
   const { state, total, subtotal, clear, count, loaded } = useCart();
-  const { whatsappNumber } = useSite();
+  const { whatsappNumber, storeName } = useSite();
   const router = useRouter();
   const [step, setStep] = useState<"details" | "payment" | "success">(
     "details",
@@ -211,7 +211,7 @@ export default function CheckoutPage() {
         order_id: data.orderId,
         amount: data.amount,
         currency: data.currency,
-        name: "Power Eyes Opticals",
+        name: storeName || "Power Eyes Opticals",
         description: "Eyewear Purchase",
         prefill: { name: addr.name, email: addr.email, contact: addr.phone },
         theme: { color: "#C48A3F" },

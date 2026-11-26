@@ -220,7 +220,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
                 <MapPin size={15} className="text-gold-500 mt-0.5 shrink-0"/>
                 <div>
                   <p className="font-medium text-slate-700">Fulfilment</p>
-                  <p className="text-slate-500">{order.supply_type === "delivery" ? "Home Delivery" : "Store Pickup — Mogappair East"}</p>
+                  <p className="text-slate-500">{order.supply_type === "delivery" ? "Home Delivery" : `Store Pickup — ${site.storeName || "Store"}`}</p>
                 </div>
               </div>
               <div className="flex items-start gap-2.5">

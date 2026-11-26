@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, Heart, Star, ChevronRight, ExternalLink } from "lucide-react";
+import { useSite } from "@/lib/site-context";
 import { useToast } from "@poweros/ui";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { LensConfigurator } from "./LensConfigurator";
@@ -11,6 +12,7 @@ import { imgUrl, inr, disc } from "@/lib/types";
 type Props = { productId: string | null; onClose: () => void };
 
 export function QuickView({ productId, onClose }: Props) {
+  const { storeName } = useSite();
   const [product, setProduct] = useState<any>(null);
   const [imgIdx, setImgIdx] = useState(0);
   const [liked, setLiked] = useState(false);
@@ -95,7 +97,7 @@ export function QuickView({ productId, onClose }: Props) {
                   <div className="flex items-center gap-2 text-sm">
                     <span className={`h-2 w-2 rounded-full ${product.in_stock?"bg-emerald-500":"bg-rose-500"}`}/>
                     <span className={product.in_stock ? "text-emerald-700" : "text-rose-600"}>
-                      {product.in_stock ? "In stock at Mogappair" : "Currently out of stock"}
+                      {product.in_stock ? `In stock at ${storeName || "store"}` : "Currently out of stock"}
                     </span>
                   </div>
                   {/* Features */}
