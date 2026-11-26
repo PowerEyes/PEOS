@@ -1,0 +1,31 @@
+ set_config 
+------------
+ 
+(1 row)
+
+psql:/tmp/schema.sql:8460: ERROR:  publication "supabase_realtime" does not exist
+psql:/tmp/schema.sql:9295: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9296: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9313: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9314: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9404: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9605: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9606: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9664: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9665: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9722: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9723: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9728: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9729: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9792: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9793: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9834: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9835: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9840: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9841: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9858: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9859: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9864: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9865: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9876: ERROR:  unrecognized privilege type "maintain"
+psql:/tmp/schema.sql:9877: ERROR:  unrecognized privilege type "maintain"

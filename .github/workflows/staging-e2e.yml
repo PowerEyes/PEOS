@@ -1,0 +1,38 @@
+name: Staging end-to-end
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment: staging
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      ERP_EMAIL: ${{ secrets.E2E_ERP_EMAIL }}
+      ERP_PASSWORD: ${{ secrets.E2E_ERP_PASSWORD }}
+      E2E_DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: |
+          pnpm --filter @poweros/erp dev > /tmp/poweros-erp.log 2>&1 &
+          pnpm --filter @poweros/web dev > /tmp/poweros-web.log 2>&1 &
+          until curl --fail --silent http://127.0.0.1:3001/login; do sleep 2; done
+          until curl --fail --silent http://127.0.0.1:3000; do sleep 2; done
+      - run: pnpm test:e2e

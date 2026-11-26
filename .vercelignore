@@ -1,0 +1,34 @@
+# Files the two Next.js builds never need. Everything the build does need —
+# apps/*, packages/*, pnpm-workspace.yaml, pnpm-lock.yaml — is left alone.
+#
+# Env values come from Vercel project settings, not from shipped files, so no
+# .env* is uploaded: a stray secret in the deploy archive is the one failure
+# mode this file exists to prevent.
+
+# Local project-link state written by `vercel link`
+.vercel
+**/.vercel
+
+# Secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build artefacts
+**/node_modules
+**/.next
+**/.turbo
+*.tsbuildinfo
+
+# Repo content that is not part of either app's build input.
+#
+# These MUST be anchored with a leading slash. A bare `supabase` pattern matches
+# any directory named `supabase` at any depth, which also strips
+# apps/*/src/lib/supabase/ (imported by both builds) and breaks
+# supabase/functions/_shared/templates, which crm/view.tsx imports relatively.
+/docs
+/supabase/.temp
+/supabase/migrations

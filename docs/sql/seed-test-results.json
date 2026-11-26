@@ -1,0 +1,100 @@
+{
+ "ranAt": "2026-11-24T16:02:05.475Z",
+ "database": "postgresql://postgres:postgres@127.0.0.1:54522/postgres",
+ "passes": [
+  {
+   "pass": 1,
+   "results": [
+    {
+     "file": "seed.sql",
+     "ok": false,
+     "ms": 7,
+     "error": "duplicate key value violates unique constraint \"organizations_pkey\""
+    },
+    {
+     "file": "seed_branches.sql",
+     "ok": true,
+     "ms": 4
+    },
+    {
+     "file": "seed_finance.sql",
+     "ok": false,
+     "ms": 1,
+     "error": "invalid input syntax for type json"
+    },
+    {
+     "file": "seed_inventory.sql",
+     "ok": true,
+     "ms": 11
+    },
+    {
+     "file": "seed_lab.sql",
+     "ok": true,
+     "ms": 4
+    },
+    {
+     "file": "seed_sales.sql",
+     "ok": true,
+     "ms": 4
+    }
+   ]
+  },
+  {
+   "pass": 2,
+   "results": [
+    {
+     "file": "seed.sql",
+     "ok": false,
+     "ms": 1,
+     "error": "duplicate key value violates unique constraint \"organizations_pkey\""
+    },
+    {
+     "file": "seed_branches.sql",
+     "ok": true,
+     "ms": 0
+    },
+    {
+     "file": "seed_finance.sql",
+     "ok": false,
+     "ms": 1,
+     "error": "invalid input syntax for type json"
+    },
+    {
+     "file": "seed_inventory.sql",
+     "ok": true,
+     "ms": 1
+    },
+    {
+     "file": "seed_lab.sql",
+     "ok": true,
+     "ms": 1
+    },
+    {
+     "file": "seed_sales.sql",
+     "ok": true,
+     "ms": 1
+    }
+   ]
+  }
+ ],
+ "countsAfterFirstPass": {
+  "organizations": 1,
+  "branches": 1,
+  "brands": 11,
+  "lens_packages": 9,
+  "lens_options": 19,
+  "org_settings": 6,
+  "products": 0
+ },
+ "countsAfterSecondPass": {
+  "organizations": 1,
+  "branches": 1,
+  "brands": 11,
+  "lens_packages": 9,
+  "lens_options": 19,
+  "org_settings": 6,
+  "products": 0
+ },
+ "repeatSafe": false,
+ "countStable": true
+}

@@ -1,0 +1,2593 @@
+{
+ "generatedAt": "2026-11-24T15:00:02.164Z",
+ "liveCounts": {
+  "allSchemas": {
+   "tables": 126,
+   "columns": 1673,
+   "indexes": 162,
+   "functions": 203,
+   "views": 11,
+   "triggers": 116,
+   "policies": 236
+  },
+  "publicOnly": {
+   "tables": 84,
+   "columns": 1216,
+   "indexes": 70,
+   "functions": 109,
+   "views": 8,
+   "triggers": 103,
+   "policies": 222
+  }
+ },
+ "files": [
+  {
+   "file": "supabase/migrations/0001_foundation.sql",
+   "dir": "migrations",
+   "version": "0001",
+   "applied": true,
+   "tracked": 21,
+   "present": 21,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0002_prescriptions.sql",
+   "dir": "migrations",
+   "version": "0002",
+   "applied": true,
+   "tracked": 10,
+   "present": 10,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0003_inventory.sql",
+   "dir": "migrations",
+   "version": "0003",
+   "applied": true,
+   "tracked": 15,
+   "present": 15,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0004_sales.sql",
+   "dir": "migrations",
+   "version": "0004",
+   "applied": true,
+   "tracked": 19,
+   "present": 19,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0005_lab_gst.sql",
+   "dir": "migrations",
+   "version": "0005",
+   "applied": true,
+   "tracked": 10,
+   "present": 10,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0006_finance_gst.sql",
+   "dir": "migrations",
+   "version": "0006",
+   "applied": true,
+   "tracked": 18,
+   "present": 15,
+   "absent": 3,
+   "ratio": 0.83,
+   "verdict": "APPLIED_WITH_GAPS",
+   "missing": [
+    "policy:suppliers.suppliers_s",
+    "policy:suppliers.suppliers_i",
+    "policy:suppliers.suppliers_u"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0007_fixes.sql",
+   "dir": "migrations",
+   "version": "0007",
+   "applied": true,
+   "tracked": 7,
+   "present": 7,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0008_repairs_appointments_staff.sql",
+   "dir": "migrations",
+   "version": "0008",
+   "applied": true,
+   "tracked": 10,
+   "present": 10,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0009_website.sql",
+   "dir": "migrations",
+   "version": "0009",
+   "applied": true,
+   "tracked": 24,
+   "present": 24,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0010_cart_checkout.sql",
+   "dir": "migrations",
+   "version": "0010",
+   "applied": true,
+   "tracked": 11,
+   "present": 10,
+   "absent": 1,
+   "ratio": 0.91,
+   "verdict": "APPLIED_WITH_GAPS",
+   "missing": [
+    "policy:online_payments.online_payments_insert"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0011_purchase_invoices.sql",
+   "dir": "migrations",
+   "version": "0011",
+   "applied": true,
+   "tracked": 26,
+   "present": 26,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0012_lens_recommendation.sql",
+   "dir": "migrations",
+   "version": "0012",
+   "applied": true,
+   "tracked": 11,
+   "present": 11,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0013_customer_sync_coupons.sql",
+   "dir": "migrations",
+   "version": "0013",
+   "applied": true,
+   "tracked": 14,
+   "present": 14,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0014_eye_examination_loyalty.sql",
+   "dir": "migrations",
+   "version": "0014",
+   "applied": true,
+   "tracked": 12,
+   "present": 11,
+   "absent": 1,
+   "ratio": 0.92,
+   "verdict": "APPLIED_WITH_GAPS",
+   "missing": [
+    "policy:eye_examinations.eye_exam_staff"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0015_crm_automation.sql",
+   "dir": "migrations",
+   "version": "0015",
+   "applied": true,
+   "tracked": 11,
+   "present": 11,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0016_family_members_optin.sql",
+   "dir": "migrations",
+   "version": "0016",
+   "applied": true,
+   "tracked": 10,
+   "present": 8,
+   "absent": 2,
+   "ratio": 0.8,
+   "verdict": "APPLIED_WITH_GAPS",
+   "missing": [
+    "policy:family_members.fm_staff",
+    "policy:family_members.fm_customer"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0017_staff_signup_profiles.sql",
+   "dir": "migrations",
+   "version": "0017",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0018_customer_self_access.sql",
+   "dir": "migrations",
+   "version": "0018",
+   "applied": true,
+   "tracked": 2,
+   "present": 2,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0019_customer_document_access.sql",
+   "dir": "migrations",
+   "version": "0019",
+   "applied": true,
+   "tracked": 0,
+   "present": 0,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0020_display_shelf_repair_photos.sql",
+   "dir": "migrations",
+   "version": "0020",
+   "applied": true,
+   "tracked": 2,
+   "present": 2,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0021_sale_rx_lifecycle.sql",
+   "dir": "migrations",
+   "version": "0021",
+   "applied": true,
+   "tracked": 5,
+   "present": 5,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0022_conversion_features.sql",
+   "dir": "migrations",
+   "version": "0022",
+   "applied": true,
+   "tracked": 3,
+   "present": 3,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0023_website_cms_images.sql",
+   "dir": "migrations",
+   "version": "0023",
+   "applied": true,
+   "tracked": 6,
+   "present": 6,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0024_catalog_today_views.sql",
+   "dir": "migrations",
+   "version": "0024",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0025_shape_chip_section.sql",
+   "dir": "migrations",
+   "version": "0025",
+   "applied": true,
+   "tracked": 0,
+   "present": 0,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0026_settings_system.sql",
+   "dir": "migrations",
+   "version": "0026",
+   "applied": true,
+   "tracked": 7,
+   "present": 7,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0027_branch_media.sql",
+   "dir": "migrations",
+   "version": "0027",
+   "applied": true,
+   "tracked": 3,
+   "present": 3,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0028_data_integrity_fixes.sql",
+   "dir": "migrations",
+   "version": "0028",
+   "applied": true,
+   "tracked": 3,
+   "present": 3,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0029_purchase_stock_posting.sql",
+   "dir": "migrations",
+   "version": "0029",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0030_sale_idempotency.sql",
+   "dir": "migrations",
+   "version": "0030",
+   "applied": true,
+   "tracked": 3,
+   "present": 3,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0031_sale_idempotency.sql",
+   "dir": "migrations",
+   "version": "0031",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0032_sale_idem2.sql",
+   "dir": "migrations",
+   "version": "0032",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0037_place_sale_check.sql",
+   "dir": "migrations",
+   "version": "0037",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0039_place_sale_real.sql",
+   "dir": "migrations",
+   "version": "0039",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0040_lens_images.sql",
+   "dir": "migrations",
+   "version": "0040",
+   "applied": true,
+   "tracked": 2,
+   "present": 2,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0041_place_sale_restore.sql",
+   "dir": "migrations",
+   "version": "0041",
+   "applied": true,
+   "tracked": 6,
+   "present": 6,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/0042_schema_hardening.sql",
+   "dir": "migrations",
+   "version": "0042",
+   "applied": true,
+   "tracked": 13,
+   "present": 13,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261120162500_payments_cashbook.sql",
+   "dir": "migrations",
+   "version": "20261120162500",
+   "applied": true,
+   "tracked": 16,
+   "present": 15,
+   "absent": 1,
+   "ratio": 0.94,
+   "verdict": "APPLIED_WITH_GAPS",
+   "missing": [
+    "policy:cashbook.cashbook_s"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261120173000_cms_lenses_guide.sql",
+   "dir": "migrations",
+   "version": "20261120173000",
+   "applied": true,
+   "tracked": 0,
+   "present": 0,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261121000000_security_hardening.sql",
+   "dir": "migrations",
+   "version": "20261121000000",
+   "applied": true,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261121010000_document_links.sql",
+   "dir": "migrations",
+   "version": "20261121010000",
+   "applied": true,
+   "tracked": 7,
+   "present": 7,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261121030000_purchase_orders.sql",
+   "dir": "migrations",
+   "version": "20261121030000",
+   "applied": false,
+   "tracked": 12,
+   "present": 12,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261121040000_suppliers_missing_columns.sql",
+   "dir": "migrations",
+   "version": "20261121040000",
+   "applied": false,
+   "tracked": 2,
+   "present": 2,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261122000100_tenancy_rbac.sql",
+   "dir": "migrations",
+   "version": "20261122000100",
+   "applied": true,
+   "tracked": 36,
+   "present": 36,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261122010000_org_driven_permissions.sql",
+   "dir": "migrations",
+   "version": "20261122010000",
+   "applied": true,
+   "tracked": 21,
+   "present": 21,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261123000000_tenant_perms_ratelimit.sql",
+   "dir": "migrations",
+   "version": "20261123000000",
+   "applied": true,
+   "tracked": 22,
+   "present": 21,
+   "absent": 1,
+   "ratio": 0.95,
+   "verdict": "APPLIED_WITH_GAPS",
+   "missing": [
+    "column:role_permissions.id"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261124000000_customer_portal_lockdown.sql",
+   "dir": "migrations",
+   "version": "20261124000000",
+   "applied": true,
+   "tracked": 3,
+   "present": 3,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_OK",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261125010000_fix_patient_customer_id.sql",
+   "dir": "migrations",
+   "version": "20261125010000",
+   "applied": false,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261125020000_site_pages.sql",
+   "dir": "migrations",
+   "version": "20261125020000",
+   "applied": false,
+   "tracked": 8,
+   "present": 8,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261126000000_branch_read_wide_write_narrow.sql",
+   "dir": "migrations",
+   "version": "20261126000000",
+   "applied": false,
+   "tracked": 6,
+   "present": 6,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261126010000_fix_place_sale_array_operator.sql",
+   "dir": "migrations",
+   "version": "20261126010000",
+   "applied": false,
+   "tracked": 0,
+   "present": 0,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261126020000_product_costs.sql",
+   "dir": "migrations",
+   "version": "20261126020000",
+   "applied": false,
+   "tracked": 7,
+   "present": 7,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261126030000_branch_overview.sql",
+   "dir": "migrations",
+   "version": "20261126030000",
+   "applied": false,
+   "tracked": 3,
+   "present": 2,
+   "absent": 1,
+   "ratio": 0.67,
+   "verdict": "PARTIAL",
+   "missing": [
+    "function:itc_summary_scoped"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261127000000_fix_rbac_function_signatures.sql",
+   "dir": "migrations",
+   "version": "20261127000000",
+   "applied": false,
+   "tracked": 2,
+   "present": 2,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261127010000_ops_permissions.sql",
+   "dir": "migrations",
+   "version": "20261127010000",
+   "applied": false,
+   "tracked": 3,
+   "present": 3,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261128000000_data_driven_workflows.sql",
+   "dir": "migrations",
+   "version": "20261128000000",
+   "applied": false,
+   "tracked": 42,
+   "present": 10,
+   "absent": 32,
+   "ratio": 0.24,
+   "verdict": "PARTIAL",
+   "missing": [
+    "table:checkout_quotes",
+    "index:checkout_quotes_expiry",
+    "index:sales_idempotency_org_key",
+    "table:stock_audit_sessions",
+    "table:stock_audit_lines",
+    "index:branches_id_org_unique",
+    "function:guard_stock_audit_line",
+    "function:guard_stock_audit_session",
+    "trigger:stock_audit_lines.trg_stock_audit_line_guard",
+    "policy:stock_audit_sessions.stock_audit_session_read",
+    "policy:stock_audit_sessions.stock_audit_session_insert",
+    "policy:stock_audit_sessions.stock_audit_session_update",
+    "policy:stock_audit_lines.stock_audit_line_read",
+    "policy:stock_audit_lines.stock_audit_line_write",
+    "trigger:stock_audit_sessions.trg_stock_audit_session_guard",
+    "trigger:stock_audit_sessions.trg_stock_audit_session_audit",
+    "trigger:stock_audit_lines.trg_stock_audit_line_audit",
+    "function:start_stock_audit",
+    "function:approve_stock_audit",
+    "function:save_eye_examination",
+    "trigger:eye_examinations.trg_eye_examination_audit",
+    "table:billing_plans",
+    "table:org_subscriptions",
+    "index:stock_audit_branch_status",
+    "index:stock_audit_lines_session",
+    "column:whatsapp_log.branch_id",
+    "function:set_whatsapp_log_branch",
+    "trigger:whatsapp_log.trg_whatsapp_log_branch",
+    "index:whatsapp_log_branch_sent",
+    "policy:whatsapp_log.wa_log_branch_scope"
+   ],
+   "extraMissing": 2
+  },
+  {
+   "file": "supabase/migrations/20261129000000_settings_configuration.sql",
+   "dir": "migrations",
+   "version": "20261129000000",
+   "applied": false,
+   "tracked": 14,
+   "present": 0,
+   "absent": 14,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "column:organizations.legal_name",
+    "column:branches.legal_name",
+    "index:branches_one_default_pickup",
+    "index:branches_active_pickup",
+    "function:set_default_pickup_branch",
+    "function:set_branch_active",
+    "function:audit_settings_change",
+    "trigger:org_settings.trg_org_settings_audit",
+    "trigger:branches.trg_branches_settings_audit",
+    "trigger:message_templates.trg_message_templates_settings_audit",
+    "trigger:loyalty_rules.trg_loyalty_rules_settings_audit",
+    "trigger:org_domains.trg_org_domains_settings_audit",
+    "function:audit_organization_change",
+    "trigger:organizations.trg_organizations_settings_audit"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261130000000_enforce_prescription_approval.sql",
+   "dir": "migrations",
+   "version": "20261130000000",
+   "applied": false,
+   "tracked": 2,
+   "present": 0,
+   "absent": 2,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "function:require_approved_sale_prescription",
+    "trigger:sales.trg_sales_require_approved_prescription"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261201000000_subscription_engine.sql",
+   "dir": "migrations",
+   "version": "20261201000000",
+   "applied": false,
+   "tracked": 13,
+   "present": 0,
+   "absent": 13,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "column:billing_plans.display_order",
+    "column:org_subscriptions.trial_ends_at",
+    "table:subscription_usage",
+    "policy:subscription_usage.subscription_usage_tenant",
+    "table:subscription_invoices",
+    "policy:subscription_invoices.subscription_invoices_tenant",
+    "table:subscription_payments",
+    "policy:subscription_payments.subscription_payments_tenant",
+    "table:subscription_events",
+    "policy:subscription_events.subscription_events_tenant",
+    "function:resolve_entitlements",
+    "table:platform_users",
+    "table:platform_audit_logs"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261202000000_saas_enforcement.sql",
+   "dir": "migrations",
+   "version": "20261202000000",
+   "applied": false,
+   "tracked": 24,
+   "present": 0,
+   "absent": 24,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "function:is_platform_admin",
+    "function:platform_role",
+    "function:is_platform_super_admin",
+    "table:platform_settings",
+    "policy:platform_settings.platform_settings_read",
+    "function:entitlement_enforcement",
+    "function:entitlement_log_only",
+    "policy:platform_users.platform_users_admin",
+    "policy:platform_audit_logs.platform_audit_read",
+    "function:org_usage",
+    "function:enforce_branch_limit",
+    "trigger:branches.trg_enforce_branch_limit",
+    "function:enforce_employee_limit",
+    "trigger:profiles.trg_enforce_employee_limit",
+    "table:announcements",
+    "policy:announcements.announcements_read",
+    "table:support_tickets",
+    "policy:support_tickets.support_tickets_tenant",
+    "policy:support_tickets.support_tickets_tenant_insert",
+    "function:is_org_admin",
+    "policy:org_subscriptions.org_subscriptions_tenant_select",
+    "policy:org_subscriptions.org_subscriptions_tenant_write",
+    "policy:org_subscriptions.org_subscriptions_tenant_update",
+    "policy:subscription_events.subscription_events_tenant_insert"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261203000000_trial_on_signup.sql",
+   "dir": "migrations",
+   "version": "20261203000000",
+   "applied": false,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261205000000_checkout_billing.sql",
+   "dir": "migrations",
+   "version": "20261205000000",
+   "applied": false,
+   "tracked": 12,
+   "present": 0,
+   "absent": 12,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "column:subscription_invoices.provider_order_id",
+    "index:subscription_invoices_provider_order_key",
+    "index:subscription_invoices_invoice_no_key",
+    "index:subscription_invoices_org_status_idx",
+    "function:assign_subscription_invoice_no",
+    "trigger:subscription_invoices.subscription_invoice_no",
+    "column:subscription_events.provider_event_id",
+    "index:subscription_events_provider_event_key",
+    "index:subscription_events_org_type_idx",
+    "policy:billing_plans.billing_plans_read",
+    "function:platform_billing_identity",
+    "function:settle_subscription_payment"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261206000000_subscription_lifecycle.sql",
+   "dir": "migrations",
+   "version": "20261206000000",
+   "applied": false,
+   "tracked": 1,
+   "present": 0,
+   "absent": 1,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "function:run_subscription_lifecycle"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261207000000_customer_phone_uniqueness.sql",
+   "dir": "migrations",
+   "version": "20261207000000",
+   "applied": false,
+   "tracked": 1,
+   "present": 1,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261208000000_patient_customer_id_columns.sql",
+   "dir": "migrations",
+   "version": "20261208000000",
+   "applied": false,
+   "tracked": 2,
+   "present": 2,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261209000000_cross_tenant_policy_fixes.sql",
+   "dir": "migrations",
+   "version": "20261209000000",
+   "applied": false,
+   "tracked": 2,
+   "present": 2,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261210000000_branch_scoped_money_reads.sql",
+   "dir": "migrations",
+   "version": "20261210000000",
+   "applied": false,
+   "tracked": 4,
+   "present": 0,
+   "absent": 4,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "policy:cashbook.perm_read",
+    "policy:day_closings.perm_read",
+    "policy:expenses.perm_read",
+    "policy:purchase_invoices.perm_read"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261211000000_subscription_usage_refresh.sql",
+   "dir": "migrations",
+   "version": "20261211000000",
+   "applied": false,
+   "tracked": 2,
+   "present": 0,
+   "absent": 2,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "function:refresh_subscription_usage",
+    "function:refresh_subscription_usage"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261212000000_role_model_expansion.sql",
+   "dir": "migrations",
+   "version": "20261212000000",
+   "applied": false,
+   "tracked": 4,
+   "present": 4,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "APPLIED_BUT_UNRECORDED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261213000000_cancelled_access_until_period_end.sql",
+   "dir": "migrations",
+   "version": "20261213000000",
+   "applied": false,
+   "tracked": 1,
+   "present": 0,
+   "absent": 1,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "function:resolve_entitlements"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261214000000_platform_break_glass.sql",
+   "dir": "migrations",
+   "version": "20261214000000",
+   "applied": false,
+   "tracked": 2,
+   "present": 0,
+   "absent": 2,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "table:break_glass_grants",
+    "index:break_glass_grants_org_idx"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261215000000_grandfather_backfill_function.sql",
+   "dir": "migrations",
+   "version": "20261215000000",
+   "applied": false,
+   "tracked": 1,
+   "present": 0,
+   "absent": 1,
+   "ratio": 0,
+   "verdict": "PENDING",
+   "missing": [
+    "function:backfill_grandfather_subscriptions"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/20261216000000_security_audit_fixes.sql",
+   "dir": "migrations",
+   "version": "20261216000000",
+   "applied": false,
+   "tracked": 3,
+   "present": 1,
+   "absent": 2,
+   "ratio": 0.33,
+   "verdict": "PARTIAL",
+   "missing": [
+    "function:my_entitlements",
+    "function:my_org_usage"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/disabled/20261122000000_multi_branch_rbac.sql",
+   "dir": "disabled",
+   "version": "20261122000000",
+   "applied": true,
+   "tracked": 40,
+   "present": 40,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "DISABLED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/disabled/20261122000000_tenancy_rbac.sql",
+   "dir": "disabled",
+   "version": "20261122000000",
+   "applied": true,
+   "tracked": 34,
+   "present": 34,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "DISABLED",
+   "missing": [],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/disabled/20261204000000_rbac_tables.sql",
+   "dir": "disabled",
+   "version": "20261204000000",
+   "applied": false,
+   "tracked": 25,
+   "present": 3,
+   "absent": 22,
+   "ratio": 0.12,
+   "verdict": "DISABLED",
+   "missing": [
+    "table:roles",
+    "table:permissions",
+    "table:member_permissions",
+    "table:announcements",
+    "table:attendance",
+    "table:leave_requests",
+    "policy:roles.\"roles_tenant_isolation\"",
+    "policy:staff_invitations.\"staff_invitations_tenant_isolation\"",
+    "policy:attendance.\"attendance_tenant_isolation\"",
+    "policy:leave_requests.\"leave_requests_tenant_isolation\"",
+    "policy:branch_transfers.\"branch_transfers_tenant_isolation\"",
+    "policy:permissions.\"permissions_read_all\"",
+    "policy:announcements.\"announcements_read_all\"",
+    "index:idx_roles_tenant",
+    "index:idx_staff_invitations_tenant",
+    "index:idx_staff_invitations_status",
+    "index:idx_attendance_member",
+    "index:idx_attendance_branch",
+    "index:idx_leave_requests_member",
+    "index:idx_leave_requests_status",
+    "index:idx_branch_transfers_member",
+    "index:idx_branch_transfers_status"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/migrations/disabled/20261204010000_plan_features.sql",
+   "dir": "disabled",
+   "version": "20261204010000",
+   "applied": false,
+   "tracked": 4,
+   "present": 0,
+   "absent": 4,
+   "ratio": 0,
+   "verdict": "DISABLED",
+   "missing": [
+    "table:plan_features",
+    "policy:plan_features.\"plan_features_read_all\"",
+    "index:idx_plan_features_plan",
+    "index:idx_plan_features_code"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/tests/disabled/multi_branch_rbac.test.sql",
+   "dir": "disabled",
+   "version": null,
+   "applied": false,
+   "tracked": 6,
+   "present": 0,
+   "absent": 6,
+   "ratio": 0,
+   "verdict": "DISABLED",
+   "missing": [
+    "function:pg_temp.as_user",
+    "function:pg_temp.as_admin",
+    "function:pg_temp.fails",
+    "function:pg_temp.ok",
+    "table:t_branch_data",
+    "policy:t_branch_data.t_org"
+   ],
+   "extraMissing": 0
+  },
+  {
+   "file": "supabase/tests/disabled/tenant_isolation/01_cross_tenant_read.sql",
+   "dir": "disabled",
+   "version": "01",
+   "applied": false,
+   "tracked": 0,
+   "present": 0,
+   "absent": 0,
+   "ratio": 1,
+   "verdict": "DISABLED",
+   "missing": [],
+   "extraMissing": 0
+  }
+ ],
+ "orphanLive": [
+  {
+   "kind": "table",
+   "object": "family_member_requests"
+  },
+  {
+   "kind": "table",
+   "object": "customer_notifications"
+  },
+  {
+   "kind": "table",
+   "object": "customer_notification_preferences"
+  },
+  {
+   "kind": "table",
+   "object": "lens_package_compatibility_rules"
+  },
+  {
+   "kind": "table",
+   "object": "lens_package_option_eligibility"
+  },
+  {
+   "kind": "table",
+   "object": "lens_package_option_combinations"
+  },
+  {
+   "kind": "table",
+   "object": "lens_package_option_combination_items"
+  },
+  {
+   "kind": "table",
+   "object": "lens_compatibility_evaluation_runs"
+  },
+  {
+   "kind": "table",
+   "object": "lens_compatibility_evaluation_candidates"
+  },
+  {
+   "kind": "table",
+   "object": "palre_recommendation_runs"
+  },
+  {
+   "kind": "table",
+   "object": "palre_recommendation_candidates"
+  },
+  {
+   "kind": "table",
+   "object": "palre_recommendation_events"
+  },
+  {
+   "kind": "table",
+   "object": "palre_fulfilment_snapshots"
+  },
+  {
+   "kind": "column",
+   "object": "repairs.photo_consent",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "repairs.photo_consent_at",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.manufacturer_brand_id",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.specification_verified_at",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.specification_verified_by",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.catalog_version",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.cost_price",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.min_frame_width",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.approved_at",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.os_prism",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.segment_height",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.fitting_height",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.monocular_pd_far",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.monocular_pd_near",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sales.taxable_total",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sales.cgst_total",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sales.sgst_total",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sales.igst_total",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sales.rx_consent_at",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "family_members.primary_customer_id",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "family_members.member_customer_id",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "family_members.is_active",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "stock.available_qty",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "products.display_order",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "brands.manufacturer_verified_at",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "brands.manufacturer_verified_by",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.cgst_pct",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.cgst_amt",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.sgst_pct",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.sgst_amt",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.igst_pct",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.igst_amt",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.warranty_until",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.tax_rate",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.cgst",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.sgst",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.igst",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.total_tax",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "repairs.after_images",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "website_content.icon",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "website_content.image_alt",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "website_content.parent_key",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "website_content.cta2_label",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "website_content.cta2_link",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "family_members.member_label",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "branches.udyam_no",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.manufacturer_sku",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.manufacturer_design_code",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.material_code",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.catalog_verification_status",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.manufacturer_source_ref",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.palre_tier",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.cylinder_convention",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.review_status",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "lens_packages.tier",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.od_base",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "prescriptions.os_base",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "products.price_mode",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "products.display_section",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "products.shelf_location",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "brands.manufacturer_status",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "brands.manufacturer_source_ref",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sales.state_of_supply",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sales.recipient_gstin",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.price_mode",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "column",
+   "object": "sale_lines.warranty_terms",
+   "note": "table declared by a file, column not declared anywhere"
+  },
+  {
+   "kind": "index",
+   "object": "website_content_org_id_section_is_active_display_order_idx"
+  },
+  {
+   "kind": "index",
+   "object": "customer_notifications_feed_idx"
+  },
+  {
+   "kind": "index",
+   "object": "lab_orders_org_id_status_idx"
+  },
+  {
+   "kind": "index",
+   "object": "palre_evaluation_candidates_run_idx"
+  },
+  {
+   "kind": "index",
+   "object": "lab_orders_sale_id_idx"
+  },
+  {
+   "kind": "index",
+   "object": "lens_packages_palre_gate_idx"
+  },
+  {
+   "kind": "index",
+   "object": "lens_packages_manufacturer_sku_uq"
+  },
+  {
+   "kind": "index",
+   "object": "lens_package_option_eligibility_lookup_idx"
+  },
+  {
+   "kind": "index",
+   "object": "appointments_org_id_appt_date_status_idx"
+  },
+  {
+   "kind": "index",
+   "object": "customers_org_id_full_name_idx"
+  },
+  {
+   "kind": "index",
+   "object": "palre_option_combinations_package_idx"
+  },
+  {
+   "kind": "index",
+   "object": "palre_option_combination_items_parent_idx"
+  },
+  {
+   "kind": "index",
+   "object": "family_member_requests_customer_idx"
+  },
+  {
+   "kind": "index",
+   "object": "repairs_org_id_customer_id_idx"
+  },
+  {
+   "kind": "index",
+   "object": "appointments_org_id_customer_id_idx"
+  },
+  {
+   "kind": "index",
+   "object": "palre_recommendation_runs_review_idx"
+  },
+  {
+   "kind": "index",
+   "object": "lab_orders_patient_customer_idx"
+  },
+  {
+   "kind": "index",
+   "object": "palre_evaluation_runs_rx_idx"
+  },
+  {
+   "kind": "index",
+   "object": "sales_patient_customer_idx"
+  },
+  {
+   "kind": "index",
+   "object": "sales_org_id_kind_created_at_idx"
+  },
+  {
+   "kind": "index",
+   "object": "palre_recommendation_candidates_run_idx"
+  },
+  {
+   "kind": "index",
+   "object": "prescriptions_org_id_customer_id_rx_date_idx"
+  },
+  {
+   "kind": "index",
+   "object": "palre_fulfilment_lookup_idx"
+  },
+  {
+   "kind": "index",
+   "object": "customers_org_id_phone_idx"
+  },
+  {
+   "kind": "index",
+   "object": "family_member_requests_one_pending_idx"
+  },
+  {
+   "kind": "index",
+   "object": "products_org_id_kind_status_idx"
+  },
+  {
+   "kind": "index",
+   "object": "repairs_org_id_status_idx"
+  },
+  {
+   "kind": "index",
+   "object": "expenses_org_id_expense_date_idx"
+  },
+  {
+   "kind": "index",
+   "object": "loyalty_ledger_org_id_customer_id_created_at_idx"
+  },
+  {
+   "kind": "index",
+   "object": "product_reviews_product_id_status_idx"
+  },
+  {
+   "kind": "index",
+   "object": "lens_package_compatibility_lookup_idx"
+  },
+  {
+   "kind": "index",
+   "object": "family_members_primary_idx"
+  },
+  {
+   "kind": "index",
+   "object": "sales_org_id_customer_id_idx"
+  },
+  {
+   "kind": "function",
+   "object": "approve_family_member_request"
+  },
+  {
+   "kind": "function",
+   "object": "current_portal_customer_id"
+  },
+  {
+   "kind": "function",
+   "object": "palre_guard_verified_catalogue_evidence"
+  },
+  {
+   "kind": "function",
+   "object": "palre_guard_verified_option_combination"
+  },
+  {
+   "kind": "function",
+   "object": "palre_recommendation_event_no_mutation"
+  },
+  {
+   "kind": "function",
+   "object": "palre_validate_compatibility_design_family"
+  },
+  {
+   "kind": "function",
+   "object": "palre_validate_option_combination"
+  },
+  {
+   "kind": "function",
+   "object": "portal_family_members"
+  },
+  {
+   "kind": "function",
+   "object": "portal_notify_appointment"
+  },
+  {
+   "kind": "function",
+   "object": "portal_notify_loyalty"
+  },
+  {
+   "kind": "function",
+   "object": "portal_notify_order"
+  },
+  {
+   "kind": "function",
+   "object": "portal_notify_prescription"
+  },
+  {
+   "kind": "function",
+   "object": "record_palre_compatibility_evaluation"
+  },
+  {
+   "kind": "function",
+   "object": "record_palre_recommendation_run"
+  },
+  {
+   "kind": "function",
+   "object": "reject_family_member_request"
+  },
+  {
+   "kind": "function",
+   "object": "validate_family_member_org"
+  },
+  {
+   "kind": "view",
+   "object": "palre_verified_lens_catalogue"
+  },
+  {
+   "kind": "trigger",
+   "object": "lens_package_compatibility_rules.palre_compatibility_design_family"
+  },
+  {
+   "kind": "trigger",
+   "object": "lens_package_compatibility_rules.palre_compatibility_immutable"
+  },
+  {
+   "kind": "trigger",
+   "object": "lens_package_option_eligibility.palre_option_eligibility_immutable"
+  },
+  {
+   "kind": "trigger",
+   "object": "lens_package_option_combinations.palre_option_combination_parent_validate"
+  },
+  {
+   "kind": "trigger",
+   "object": "lens_package_option_combination_items.palre_option_combination_item_validate"
+  },
+  {
+   "kind": "trigger",
+   "object": "lens_package_option_combinations.palre_option_combination_parent_immutable"
+  },
+  {
+   "kind": "trigger",
+   "object": "lens_package_option_combination_items.palre_option_combination_item_immutable"
+  },
+  {
+   "kind": "trigger",
+   "object": "palre_recommendation_events.palre_recommendation_events_immutable"
+  },
+  {
+   "kind": "trigger",
+   "object": "sales.portal_order_created"
+  },
+  {
+   "kind": "trigger",
+   "object": "sales.portal_order_status"
+  },
+  {
+   "kind": "trigger",
+   "object": "loyalty_ledger.portal_loyalty_event"
+  },
+  {
+   "kind": "trigger",
+   "object": "prescriptions.portal_prescription_event"
+  },
+  {
+   "kind": "trigger",
+   "object": "appointments.portal_appointment_created"
+  },
+  {
+   "kind": "trigger",
+   "object": "appointments.portal_appointment_status"
+  },
+  {
+   "kind": "trigger",
+   "object": "family_members.family_member_org_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "family_members.family_members_audit"
+  },
+  {
+   "kind": "trigger",
+   "object": "family_member_requests.family_member_requests_audit"
+  },
+  {
+   "kind": "trigger",
+   "object": "sales.trg_sales_events"
+  },
+  {
+   "kind": "trigger",
+   "object": "expenses.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "day_closings.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "gst_periods.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "suppliers.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "purchase_invoices.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "purchase_items.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "credit_notes.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "credit_note_lines.trg_01_perm"
+  },
+  {
+   "kind": "trigger",
+   "object": "sales.trg_sales_patient"
+  },
+  {
+   "kind": "trigger",
+   "object": "lab_orders.trg_lab_orders_patient"
+  },
+  {
+   "kind": "trigger",
+   "object": "eye_examinations.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "purchase_invoices.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "stock.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "stock_movements.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "lab_orders.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "purchase_orders.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "purchase_order_receipts.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "repairs.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "appointments.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "staff_assignments.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "cashbook.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "palre_fulfilment_snapshots.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "prescriptions.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "sales.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "credit_notes.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "expenses.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "day_closings.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "staff_invitations.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "profile_branches.trg_00_branch_scope"
+  },
+  {
+   "kind": "trigger",
+   "object": "sales.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "lab_orders.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "appointments.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "repairs.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "eye_examinations.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "stock.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "stock_movements.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "credit_notes.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "cashbook.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "expenses.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "day_closings.trg_branch_guard"
+  },
+  {
+   "kind": "trigger",
+   "object": "purchase_invoices.trg_branch_guard"
+  },
+  {
+   "kind": "policy",
+   "object": "prescriptions.branch_scope"
+  },
+  {
+   "kind": "policy",
+   "object": "prescriptions.prescriptions_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "prescriptions.prescriptions_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "brands.brands_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "brands.brands_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "brands.brands_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "products.products_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "products.products_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "products.products_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "stock.stock_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "stock.stock_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "stock.stock_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "stock_movements.stock_movements_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "stock_movements.stock_movements_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_packages.lens_packages_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_packages.lens_packages_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_packages.lens_packages_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_options.lens_options_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_options.lens_options_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_options.lens_options_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "sales.sales_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "sales.sales_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "sales.sales_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "sales.sales_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "sales.sales_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "sale_lines.sale_lines_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "sale_lines.sale_lines_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "sale_lines.sale_lines_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "sale_lines.sale_lines_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "sale_lines.sale_lines_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "payments.payments_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "payments.payments_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "payments.payments_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "payments.payments_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "payments.payments_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "lab_orders.lab_orders_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "lab_orders.lab_orders_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "lab_orders.lab_orders_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "lab_events.lab_events_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "lab_events.lab_events_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "repairs.repairs_customer_insert"
+  },
+  {
+   "kind": "policy",
+   "object": "repairs.repairs_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "repairs.repairs_rls_del"
+  },
+  {
+   "kind": "policy",
+   "object": "repairs.repairs_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "repairs.repairs_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "repairs.repairs_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "repair_events.repair_events_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "repair_events.repair_events_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "repair_events.repair_events_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "appointments.appointments_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "appointments.appointments_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "appointments.appointments_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "appointments.appointments_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "appointments.appointments_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_compatibility_rules.lens_package_compatibility_rules_i"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_compatibility_rules.lens_package_compatibility_rules_s"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_compatibility_rules.lens_package_compatibility_rules_u"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_eligibility.lens_package_option_eligibility_i"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_eligibility.lens_package_option_eligibility_s"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_eligibility.lens_package_option_eligibility_u"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combinations.palre_option_combinations_d"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combinations.palre_option_combinations_i"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combinations.palre_option_combinations_s"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combinations.palre_option_combinations_u"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combination_items.palre_option_combination_items_d"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combination_items.palre_option_combination_items_i"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combination_items.palre_option_combination_items_s"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_package_option_combination_items.palre_option_combination_items_u"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_compatibility_evaluation_runs.palre_evaluation_runs_i"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_compatibility_evaluation_runs.palre_evaluation_runs_s"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_compatibility_evaluation_candidates.palre_evaluation_candidates_i"
+  },
+  {
+   "kind": "policy",
+   "object": "lens_compatibility_evaluation_candidates.palre_evaluation_candidates_s"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_recommendation_runs.palre_recommendation_runs_i"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_recommendation_runs.palre_recommendation_runs_s"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_recommendation_candidates.palre_recommendation_candidates_i"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_recommendation_candidates.palre_recommendation_candidates_s"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_recommendation_events.palre_recommendation_events_i"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_recommendation_events.palre_recommendation_events_s"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_fulfilment_snapshots.branch_scope"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_fulfilment_snapshots.palre_fulfilment_snapshots_i"
+  },
+  {
+   "kind": "policy",
+   "object": "palre_fulfilment_snapshots.palre_fulfilment_snapshots_s"
+  },
+  {
+   "kind": "policy",
+   "object": "suppliers.suppliers_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "suppliers.suppliers_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "suppliers.suppliers_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_invoices.purchase_invoices_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_invoices.purchase_invoices_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_invoices.purchase_invoices_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_items.purchase_items_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_items.purchase_items_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "expenses.expenses_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "expenses.expenses_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "expenses.expenses_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "credit_notes.credit_notes_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "credit_notes.credit_notes_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "credit_notes.credit_notes_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "credit_note_lines.credit_note_lines_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "credit_note_lines.credit_note_lines_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "credit_note_lines.credit_note_lines_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "day_closings.day_closings_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "day_closings.day_closings_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "day_closings.day_closings_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "gst_periods.gst_periods_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "gst_periods.gst_periods_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "gst_periods.gst_periods_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "website_content.wc_delete"
+  },
+  {
+   "kind": "policy",
+   "object": "loyalty_ledger.loyalty_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "family_members.family_members_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "family_members.family_members_staff_read"
+  },
+  {
+   "kind": "policy",
+   "object": "family_members.family_members_staff_write"
+  },
+  {
+   "kind": "policy",
+   "object": "family_member_requests.family_member_requests_customer_insert"
+  },
+  {
+   "kind": "policy",
+   "object": "family_member_requests.family_member_requests_customer_read"
+  },
+  {
+   "kind": "policy",
+   "object": "family_member_requests.family_member_requests_staff_read"
+  },
+  {
+   "kind": "policy",
+   "object": "family_member_requests.family_member_requests_staff_update"
+  },
+  {
+   "kind": "policy",
+   "object": "customer_notifications.customer_notifications_read_own"
+  },
+  {
+   "kind": "policy",
+   "object": "customer_notifications.customer_notifications_update_own"
+  },
+  {
+   "kind": "policy",
+   "object": "customer_notification_preferences.customer_notification_preferences_own"
+  },
+  {
+   "kind": "policy",
+   "object": "eye_examinations.eye_examinations_rls_del"
+  },
+  {
+   "kind": "policy",
+   "object": "eye_examinations.eye_examinations_rls_ins"
+  },
+  {
+   "kind": "policy",
+   "object": "eye_examinations.eye_examinations_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "eye_examinations.eye_examinations_rls_upd"
+  },
+  {
+   "kind": "policy",
+   "object": "loyalty_rules.loyalty_rules_public"
+  },
+  {
+   "kind": "policy",
+   "object": "sale_events.sale_events_customer_select"
+  },
+  {
+   "kind": "policy",
+   "object": "sale_events.sale_events_staff_select"
+  },
+  {
+   "kind": "policy",
+   "object": "product_view_counts.pvc_public_read"
+  },
+  {
+   "kind": "policy",
+   "object": "website_sections.ws_anon"
+  },
+  {
+   "kind": "policy",
+   "object": "website_sections.ws_delete"
+  },
+  {
+   "kind": "policy",
+   "object": "website_sections.ws_staff"
+  },
+  {
+   "kind": "policy",
+   "object": "website_sections.ws_update"
+  },
+  {
+   "kind": "policy",
+   "object": "website_sections.ws_write"
+  },
+  {
+   "kind": "policy",
+   "object": "cashbook.cashbook_rls_sel"
+  },
+  {
+   "kind": "policy",
+   "object": "staff_invitations.branch_scope"
+  },
+  {
+   "kind": "policy",
+   "object": "staff_assignments.branch_scope"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_orders.branch_scope"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_orders.po_staff"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_order_receipts.branch_scope"
+  },
+  {
+   "kind": "policy",
+   "object": "purchase_order_receipts.por_staff"
+  },
+  {
+   "kind": "policy",
+   "object": "profile_branches.branch_scope"
+  }
+ ]
+}

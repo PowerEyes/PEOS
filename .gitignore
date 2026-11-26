@@ -1,0 +1,23 @@
+# Production data dumps (contain real customer/auth data — never commit)
+/docs/sql/backup/*-data-*.sql
+
+# Playwright end-to-end artifacts
+/test-results/
+/playwright-report/
+apps/*/.next-verify/
+**/.next/
+**/.turbo/
+**/node_modules/
+**/*.tsbuildinfo
+/tests/.auth/
+/tests/e2e/.auth/
+/playwright-mcp/
+/.playwright-mcp/
+.env
+.env.*
+!.env.example
+.env.local
+.DS_Store
+/services/ocr/.venv/
+/services/ocr/models/
+/services/ocr/.env

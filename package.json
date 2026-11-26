@@ -1,0 +1,25 @@
+{
+  "name": "poweros",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=web",
+    "dev:erp": "turbo dev --filter=erp",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test:unit": "node --test apps/erp/tests/*.test.mjs",
+    "verify:migrations": "node scripts/verify-migrations.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:erp": "playwright test --project=erp",
+    "test:e2e:web": "playwright test --project=web"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "pg": "^8.23.1",
+    "prettier": "^3.3.0",
+    "turbo": "^2.1.0",
+    "typescript": "^5.5.0"
+  }
+}

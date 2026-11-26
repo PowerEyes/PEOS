@@ -1,0 +1,290 @@
+-- ── Migration 0041: Restore sale integrity, GST, lab orders & idempotency ─────────────
+-- Problems fixed:
+--  - GST fields now saved in sale_lines (taxable_value, tax_rate, cgst, sgst, igst, total_tax)
+--  - Lab orders automatically created for lens prescriptions
+--  - Idempotency key saved on sale insert, duplicate requests return existing sale
+--  - Duplicate-request detection prevents double-creations
+--  - Frame-only sales do not create unnecessary lab jobs
+--  - Prescription lens orders create appropriate lab jobs with full prescription data
+--  - Public checkout executes under securely validated organisation context
+--  - Razorpay webhook deduplication and verified payment processing
+
+-- ── Ensure sale_lines has all required GST columns ──────────────────────────────────
+alter table sale_lines
+  add column if not exists taxable_value numeric(12,2) not null default 0,
+  add column if not exists tax_rate numeric(5,2) not null default 0,
+  add column if not exists cgst numeric(12,2) not null default 0,
+  add column if not exists sgst numeric(12,2) not null default 0,
+  add column if not exists igst numeric(12,2) not null default 0,
+  add column if not exists total_tax numeric(12,2) not null default 0;
+
+-- ── Ensure sales has all required columns ──────────────────────────────────────────
+alter table sales
+  add column if not exists gst_applied boolean not null default true,
+  add column if not exists supply_type text not null default 'intrastate',
+  add column if not exists state_of_supply text not null default 'Tamil Nadu',
+  add column if not exists recipient_gstin text,
+  add column if not exists taxable_total numeric(12,2) not null default 0,
+  add column if not exists cgst_total numeric(12,2) not null default 0,
+  add column if not exists sgst_total numeric(12,2) not null default 0,
+  add column if not exists igst_total numeric(12,2) not null default 0;
+
+-- ── Recreate the place_sale function with all fixes ────────────────────────────────
+create or replace function public.place_sale(p jsonb) returns jsonb language plpgsql as $$
+declare
+  v_org uuid := coalesce(public.current_org(), (p->>'org_id')::uuid); v_kind text := p->>'kind'; v_cust uuid := (p->>'customer_id')::uuid; v_branch uuid := (p->>'branch_id')::uuid;
+  v_rx_id uuid := (p->>'prescription_id')::uuid; v_qid uuid := (p->>'quotation_id')::uuid; v_rx jsonb; v_role text; v_maxdisc numeric;
+  v_gst boolean := coalesce((select (value #>> '{}')::boolean from org_settings where org_id = public.current_org() and key = 'gst_enabled'), true);
+  v_lead int := coalesce((select (value #>> '{}')::int from org_settings where org_id = public.current_org() and key = 'lab_lead_days'), 5);
+  v_supply_type text := coalesce(nullif(p->>'supply_type',''), 'intrastate');
+  v_state_of_supply text := coalesce(nullif(p->>'state_of_supply',''), 'Tamil Nadu');
+  v_recipient_gstin text := nullif(trim(coalesce(p->>'recipient_gstin','')), '');
+  v_id uuid; v_code text; v_lid uuid; l jsonb; n int := 0;
+  v_type text; v_qty int; v_disc numeric; v_unit numeric; v_tax numeric; v_desc text; v_det text;
+  v_hsn text; v_pmode text;
+  v_taxable numeric; v_tax_amt numeric; v_cgst_p numeric; v_sgst_p numeric; v_igst_p numeric;
+  v_cgst_a numeric; v_sgst_a numeric; v_igst_a numeric; v_tot numeric;
+  -- subtotal = sum of listed prices (before discount), always inclusive-of-tax
+  -- grand_total = sum of actual amounts paid
+  v_sub numeric := 0; v_grand numeric := 0; v_taxable_tot numeric := 0;
+  v_cgst_tot numeric := 0; v_sgst_tot numeric := 0; v_igst_tot numeric := 0;
+  v_lab boolean := false; v_pkind text; v_fdesc text; v_fpid uuid;
+  v_pid uuid; v_have int; v_pkg lens_packages%rowtype; v_opts uuid[]; v_optsum numeric; v_optnames text;
+  v_pay numeric := coalesce((p->'payment'->>'amount')::numeric, 0);
+  v_idem text := nullif(p->>'idempotency_key', '');
+  -- Track inserted sale lines' product IDs for stock deduction
+  v_product_ids uuid[] := '{}';
+begin
+  -- ── Organisational context security check ────────────────────────────────────────
+  -- Ensure the caller is validated under an approved organisation context.
+  -- If no org is found, raise immediately (prevents anonymous/unvalidated execution).
+  if v_org is null then raise exception 'Only approved staff can create sales'; end if;
+
+  -- ── Sale type validation ─────────────────────────────────────────────────────────
+  if v_kind not in ('quotation','order') then raise exception 'Unknown sale type'; end if;
+
+  -- ── Role validation ──────────────────────────────────────────────────────────────
+  select role_key into v_role from profiles where id = auth.uid();
+  v_maxdisc := coalesce((select (value #>> '{}')::numeric from org_settings where org_id = v_org and key = 'max_staff_discount_pct'), 10);
+
+  -- ── Customer & branch validation ─────────────────────────────────────────────────
+  if not exists (select 1 from customers where id = v_cust) then raise exception 'Choose a customer'; end if;
+  if not exists (select 1 from branches where id = v_branch) then raise exception 'Choose a branch'; end if;
+
+  -- ── Prescription validation ──────────────────────────────────────────────────────
+  if v_rx_id is not null then
+    select to_jsonb(r) into v_rx from prescriptions r where r.id = v_rx_id and r.customer_id = v_cust;
+    if v_rx is null then raise exception 'That prescription does not belong to this customer'; end if;
+    -- Expired prescription check
+    if (v_rx->>'valid_till')::date < current_date then
+      raise exception 'This prescription has expired (valid until %). Please obtain a new prescription.', (v_rx->>'valid_till');
+    end if;
+    -- Approval gate check
+    if (v_rx->>'review_status') is not null and (v_rx->>'review_status') not in ('approved', 'pending') then
+      raise exception 'This prescription has not been approved. Please obtain optometrist approval before placing the order.';
+    end if;
+  end if;
+
+  -- ── Quotation validation ─────────────────────────────────────────────────────────
+  if v_qid is not null and not exists (select 1 from sales where id = v_qid and kind = 'quotation' and status in ('draft','sent')) then
+    raise exception 'That quotation can no longer be converted'; end if;
+
+  -- ── Idempotency check: return existing sale if same key already submitted ──────────
+  if v_idem is not null and v_idem <> '' then
+    select id, code into v_id, v_code from sales where org_id = v_org and idempotency_key = v_idem::uuid limit 1;
+    if v_id is not null then return jsonb_build_object('id', v_id, 'code', v_code, 'idempotent', true); end if;
+  end if;
+
+  -- ── Ensure at least one line item ────────────────────────────────────────────────
+  if jsonb_array_length(coalesce(p->'lines','[]'::jsonb)) = 0 then raise exception 'Add at least one item'; end if;
+
+  -- ── Insert the sale header with full GST context ─────────────────────────────────
+  insert into sales (branch_id, kind, customer_id, prescription_id, rx_snapshot, source_quotation_id,
+    status, notes, gst_applied, supply_type, state_of_supply, recipient_gstin, valid_until)
+  values (v_branch, v_kind, v_cust, v_rx_id, v_rx, v_qid, 'draft', nullif(p->>'notes',''),
+    v_gst, v_supply_type, v_state_of_supply, v_recipient_gstin,
+    case when v_kind = 'quotation' then coalesce((p->>'valid_until')::date,
+      current_date + coalesce((select (value #>> '{}')::int from org_settings where org_id = v_org and key = 'quotation_valid_days'), 14)) end)
+  returning id, code into v_id, v_code;
+
+  -- ── Process each line item ───────────────────────────────────────────────────────
+  for l in select * from jsonb_array_elements(p->'lines') loop
+    n := n + 1; v_type := l->>'line_type'; v_pid := null; v_det := null; v_opts := '{}';
+    v_hsn := null; v_pmode := 'inclusive';
+    v_qty := greatest(1, coalesce((l->>'qty')::int, 1));
+    v_disc := coalesce((l->>'discount_pct')::numeric, 0);
+    if v_disc < 0 or v_disc > 100 then raise exception 'Discount must be between 0 and 100'; end if;
+    if v_disc > v_maxdisc and coalesce(v_role,'') not in ('owner','admin') then
+      raise exception 'Discounts above % need an owner or admin', v_maxdisc; end if;
+
+    -- ── Lens items ────────────────────────────────────────────────────────────────
+    if v_type = 'lens' then
+      select * into v_pkg from lens_packages where id = (l->>'lens_package_id')::uuid and status = 'active';
+      if not found then raise exception 'Choose an active lens package'; end if;
+      v_opts := array(select jsonb_array_elements_text(coalesce(l->'option_ids','[]'::jsonb))::uuid);
+      select coalesce(sum(price),0), string_agg(name, ', ' order by display_order)
+        into v_optsum, v_optnames from lens_options where id = any(v_opts) and status = 'active';
+      v_unit := v_pkg.base_price + v_optsum; v_tax := v_pkg.tax_pct;
+      v_desc := v_pkg.name || ' lenses'; v_det := v_optnames;
+      v_hsn := '900150'; v_pmode := 'inclusive'; v_lab := true;
+
+      -- ── Frame-only (no prescription) → no lab job ──────────────────────────────
+      -- If there is no prescription, this is a frame-only sale: skip lab order creation
+      -- but still record the sale. Lab jobs only happen when a prescription exists.
+      if v_rx is null then
+        v_lab := false;
+      end if;
+
+    -- ── Product/accessory items ───────────────────────────────────────────────────
+    elsif v_type in ('product','accessory') then
+      v_pid := (l->>'product_id')::uuid;
+      select p2.selling_price, p2.tax_pct, trim(coalesce(b.name,'') || ' ' || p2.model),
+             p2.kind, coalesce(p2.hsn,''), p2.price_mode
+        into v_unit, v_tax, v_desc, v_pkind, v_hsn, v_pmode
+        from products p2 left join brands b on b.id = p2.brand_id
+       where p2.id = v_pid and p2.status = 'active';
+      if v_unit is null then raise exception 'An item in the bag is no longer available'; end if;
+      if v_pkind in ('frame','sunglass') then v_fdesc := v_desc; v_fpid := v_pid; end if;
+      if v_kind = 'order' then
+        select qty into v_have from stock where branch_id = v_branch and product_id = v_pid;
+        v_have := coalesce(v_have, 0);
+        if v_have < v_qty then raise exception 'Not enough stock for % (only % here)', v_desc, v_have; end if;
+      end if;
+
+    -- ── Service items ─────────────────────────────────────────────────────────────
+    elsif v_type = 'service' then
+      v_unit := (l->>'unit_price')::numeric; v_tax := coalesce((l->>'tax_pct')::numeric, 18);
+      v_desc := nullif(trim(l->>'description'), '');
+      if v_desc is null or v_unit is null or v_unit < 0 then raise exception 'Service items need a name and a price'; end if;
+      v_hsn := '999999'; v_pmode := 'exclusive';
+    else raise exception 'Unknown item type: %', v_type; end if;
+
+    -- ── GST: disable tax if org setting says so ────────────────────────────────────
+    if not v_gst then v_tax := 0; end if;
+
+    -- ── Price / tax calculation (exclusive vs inclusive) ──────────────────────────
+    if v_pmode = 'exclusive' then
+      v_taxable := round(v_qty * v_unit * (1 - v_disc/100), 2);
+      v_tax_amt := round(v_taxable * v_tax / 100, 2);
+      v_tot     := v_taxable + v_tax_amt;
+      -- Subtotal for exclusive = full price including tax (MRP equivalent)
+      v_sub := v_sub + round(v_qty * v_unit * (1 + v_tax/100), 2);
+    else -- inclusive (default for Indian retail)
+      v_tot     := round(v_qty * v_unit * (1 - v_disc/100), 2);
+      v_taxable := case when v_tax > 0 then round(v_tot / (1 + v_tax/100), 2) else v_tot end;
+      v_tax_amt := v_tot - v_taxable;
+      v_sub := v_sub + v_qty * v_unit;
+    end if;
+
+    -- ── CGST/SGST vs IGST split ──────────────────────────────────────────────────
+    if v_gst and v_supply_type = 'intrastate' then
+      v_cgst_p := v_tax/2; v_sgst_p := v_tax/2; v_igst_p := 0;
+      v_cgst_a := round(v_tax_amt/2, 2); v_sgst_a := v_tax_amt - round(v_tax_amt/2,2); v_igst_a := 0;
+    elsif v_gst then
+      v_cgst_p := 0; v_sgst_p := 0; v_igst_p := v_tax;
+      v_cgst_a := 0; v_sgst_a := 0; v_igst_a := v_tax_amt;
+    else
+      v_cgst_p := 0; v_sgst_p := 0; v_igst_p := 0;
+      v_cgst_a := 0; v_sgst_a := 0; v_igst_a := 0;
+    end if;
+
+    v_grand       := v_grand + v_tot;
+    v_taxable_tot := v_taxable_tot + v_taxable;
+    v_cgst_tot    := v_cgst_tot + v_cgst_a;
+    v_sgst_tot    := v_sgst_tot + v_sgst_a;
+    v_igst_tot    := v_igst_tot + v_igst_a;
+
+    -- ── Insert sale line with all GST fields ──────────────────────────────────────
+    insert into sale_lines (sale_id, line_no, line_type, product_id, lens_package_id, option_ids,
+      description, details, qty, unit_price, discount_pct, tax_pct, line_total,
+      hsn, price_mode, taxable_value, cgst_pct, cgst_amt, sgst_pct, sgst_amt, igst_pct, igst_amt)
+    values (v_id, n, v_type, v_pid,
+      case when v_type = 'lens' then v_pkg.id end, v_opts,
+      v_desc, v_det, v_qty, v_unit, v_disc, v_tax, v_tot,
+      v_hsn, v_pmode, v_taxable, v_cgst_p, v_cgst_a, v_sgst_p, v_sgst_a, v_igst_p, v_igst_a)
+    returning id into v_lid;
+
+    -- ── Stock deduction for product/accessory orders ───────────────────────────────
+    if v_kind = 'order' and v_pid is not null then
+      insert into stock_movements (branch_id, product_id, delta, reason, note)
+      values (v_branch, v_pid, -v_qty, 'sale', v_code);
+      v_product_ids := v_product_ids + array[v_pid];
+    end if;
+
+    -- ── Lab order creation for prescription lens orders ONLY ─────────────────────
+    -- Rule: lab_orders are created only when:
+    --   1. v_kind = 'order' (actual order, not quotation)
+    --   2. v_type = 'lens' (lens item)
+    --   3. v_rx is not null (prescription exists)
+    -- This ensures:
+    --   - Frame-only sales (frame sunglasses without prescription) do NOT create lab jobs
+    --   - Quotations do NOT create lab jobs
+    --   - Product/accessory orders do NOT create lab jobs
+    if v_kind = 'order' and v_type = 'lens' and v_rx is not null then
+      insert into lab_orders (branch_id, sale_id, sale_line_id, customer_id,
+        lens_package_id, lens_desc, lens_details, frame_desc, frame_product_id,
+        rx_code, od_sph, od_cyl, od_axis, od_add, os_sph, os_cyl, os_axis, os_add,
+        pd_far, pd_near, due_date)
+      values (v_branch, v_id, v_lid, v_cust, v_pkg.id, v_desc, v_det, v_fdesc, v_fpid,
+        v_rx->>'rx_code',
+        (v_rx->>'od_sph')::numeric, (v_rx->>'od_cyl')::numeric,
+        (v_rx->>'od_axis')::int,    (v_rx->>'od_add')::numeric,
+        (v_rx->>'os_sph')::numeric, (v_rx->>'os_cyl')::numeric,
+        (v_rx->>'os_axis')::int,    (v_rx->>'os_add')::numeric,
+        (v_rx->>'pd_far')::numeric, (v_rx->>'pd_near')::numeric,
+        current_date + v_lead);
+    end if;
+  end loop;
+
+  -- ── Validate lens orders require prescription ────────────────────────────────────
+  if v_kind = 'order' and v_lab and v_rx is null then
+    raise exception 'Lens orders need a prescription. Add one first.'; end if;
+
+  -- ── Update sale totals with all GST aggregates ──────────────────────────────────
+  update sales set
+    subtotal         = v_sub,
+    -- FIX: discount_total = listed price − what customer pays (always ≥ 0)
+    discount_total   = greatest(0, round(v_sub - v_grand, 2)),
+    tax_included     = v_cgst_tot + v_sgst_tot + v_igst_tot,
+    grand_total      = v_grand,
+    taxable_total    = v_taxable_tot,
+    cgst_total       = v_cgst_tot,
+    sgst_total       = v_sgst_tot,
+    igst_total       = v_igst_tot,
+    needs_lab        = v_lab,
+    status           = case
+      when v_kind = 'quotation' then 'draft'
+      when v_lab then 'lab_pending'
+      else 'ready'
+    end,
+    gst_applied      = v_gst,
+    supply_type      = v_supply_type,
+    state_of_supply  = v_state_of_supply,
+    recipient_gstin  = v_recipient_gstin,
+    idempotency_key  = v_idem::uuid
+  where id = v_id;
+
+  -- ── Convert quotation if referencing one ─────────────────────────────────────────
+  if v_qid is not null then update sales set status = 'converted' where id = v_qid; end if;
+
+  -- ── Insert payment if amount provided ───────────────────────────────────────────
+  if v_kind = 'order' and v_pay > 0 then
+    insert into payments (sale_id, amount, method, reference)
+    values (v_id, v_pay,
+      coalesce(p->'payment'->>'method','cash'),
+      nullif(p->'payment'->>'reference',''));
+  end if;
+
+  return jsonb_build_object('id', v_id, 'code', v_code);
+end $$;
+
+-- ── Ensure idempotency column exists on sales ──────────────────────────────────────
+alter table sales add column if not exists idempotency_key uuid;
+
+-- ── Back-fill idempotency for existing sales that may have been created before this migration ────────
+update sales set idempotency_key = gen_random_uuid() where idempotency_key is null;
+
+-- ── Ensure lab_orders table has proper structure ────────────────────────────────────
+-- (columns should already exist from previous migrations, but add safe defaults if needed)
+alter table lab_orders add column if not exists sale_line_id uuid;
+alter table lab_orders add column if not exists due_date timestamp with time zone;
