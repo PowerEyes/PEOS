@@ -1,0 +1,26 @@
+kind,brand,model,sku,gender,mrp,selling_price,tax_pct,cost_price
+frame,VisionCraft,Classic Round Black,VC-FRM-001,unisex,2499,1999,5,900
+frame,VisionCraft,Metal Rectangle Silver,VC-FRM-002,men,2999,2399,5,1120
+frame,VisionCraft,Lightweight Oval Rose,VC-FRM-003,women,3299,2699,5,1250
+frame,VisionCraft,Wayfarer Tortoise,VC-FRM-004,unisex,2799,2299,5,1050
+frame,VisionCraft,Aviator Metal Gold,VC-FRM-005,men,3499,2999,5,1400
+frame,VisionCraft,Cat Eye Acetate,VC-FRM-006,women,3199,2699,5,1300
+frame,UrbanLook,Sporty Wrap Black,UL-FRM-001,unisex,1999,1599,5,750
+frame,UrbanLook,Office Rectangle Grey,UL-FRM-002,men,2199,1799,5,850
+frame,UrbanLook,Fashion Cat Eye Pink,UL-FRM-003,women,2499,1999,5,950
+frame,UrbanLook,Kids Flexi Blue,UL-FRM-004,kids,1499,1199,5,600
+sunglass,SunShield,Aviator Gold Green,SS-SUN-001,unisex,3499,2799,5,1320
+sunglass,SunShield,Wayfarer Black Polarized,SS-SUN-002,men,3999,3199,5,1550
+sunglass,SunShield,Cat Eye Tortoise,SS-SUN-003,women,3799,2999,5,1440
+sunglass,SunShield,Sport Wrap Blue,SS-SUN-004,unisex,2999,2399,5,1150
+sunglass,SunShield,Round John Lennon,SS-SUN-005,unisex,2699,2199,5,1050
+contact_lens,ClearView,Monthly Clear 3 Pack,CV-CL-001,unisex,999,799,12,390
+contact_lens,ClearView,Daily Comfort 30 Pack,CV-CL-002,unisex,1899,1599,12,820
+contact_lens,ClearView,Monthly Toric 3 Pack,CV-CL-003,unisex,1599,1299,12,640
+contact_lens,ClearView,Daily Toric 30 Pack,CV-CL-004,unisex,2099,1799,12,880
+contact_lens,ClearView,Monthly Multifocal 3 Pack,CV-CL-005,unisex,2499,2099,12,1050
+accessory,OptiCare,Microfiber Cleaning Kit,OC-ACC-001,unisex,299,199,18,65
+accessory,OptiCare,Hard Case Navy,OC-ACC-002,unisex,399,249,18,90
+accessory,OptiCare,Anti Fog Lens Spray,OC-ACC-003,unisex,349,229,18,80
+accessory,OptiCare,Lens Cleaning Wipes Box,OC-ACC-004,unisex,199,129,18,50
+accessory,OptiCare,Eyeglass Repair Kit,OC-ACC-005,unisex,249,179,18,70
