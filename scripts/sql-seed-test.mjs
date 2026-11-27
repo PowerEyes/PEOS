@@ -9,9 +9,10 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
 
+if (!process.env.SEED_DATABASE_URL) throw new Error("SEED_DATABASE_URL is required");
+
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const LOCAL = process.env.SEED_DATABASE_URL ??
-  "postgresql://postgres:postgres@127.0.0.1:54522/postgres";
+const LOCAL = process.env.SEED_DATABASE_URL;
 const SEED_DIR = join(ROOT, "supabase", "seed");
 const OUT = join(ROOT, "docs", "sql", "seed-test-results.json");
 

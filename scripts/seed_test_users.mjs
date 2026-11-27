@@ -4,13 +4,14 @@
 import { sb, log } from "./db.mjs";
 import pg from "pg";
 
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+
 const ORG_ID = "00000000-0000-0000-0000-000000000001";
 const BRANCH_EAST = "c1e79328-6a5e-4598-918f-3005f123e23c";
 const ROLES = ["owner","admin","branch_manager","staff","optometrist","sales_executive","cashier","inventory_manager","lab_technician","accountant","receptionist"];
 
 const client = new pg.Client({
-  connectionString: process.env.DATABASE_URL ??
-    "postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 await client.connect();

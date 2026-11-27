@@ -62,6 +62,15 @@ export function isPreviewEnabled(sp?: { preview?: string | string[]; k?: string 
   return typeof k === "string" && k === key;
 }
 
+/**
+ * Preview state for layouts/pages, which don't receive searchParams. Middleware
+ * validates the query key and sets this trusted header; nothing in the browser
+ * can set it on a real request.
+ */
+export function isPreviewRequest(): boolean {
+  try { return headers().get("x-site-preview") === "1"; } catch { return false; }
+}
+
 export const supabaseServer = () => {
   const s = cookies();
   return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {

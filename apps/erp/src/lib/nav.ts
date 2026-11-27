@@ -43,7 +43,8 @@ export const NAV: NavGroup[] = [
   { key: "reports", label: "Reports & Analytics", icon: BarChart3, items: [
     { label: "Company overview", href: "/reports/company-overview", icon: Building2 }, { label: "Branch comparison", href: "/reports/branch-comparison", icon: BarChart3 }] },
   { key: "website", label: "Website", icon: Globe, items: [
-    { label: "Website studio", href: "/website", icon: Globe }, { label: "Pages", href: "/website/pages", icon: FileText }, { label: "Coupons", href: "/website/coupons", icon: Tag }] },
+    { label: "Website studio", href: "/website", icon: Globe }, { label: "Pages", href: "/website/pages", icon: FileText },
+    { label: "Clinical services", href: "/website/clinical", icon: Eye }, { label: "Coupons", href: "/website/coupons", icon: Tag }] },
   { key: "settings", label: "Settings & Security", icon: Settings, items: [
     { label: "Settings", href: "/settings", icon: Settings }, { label: "Roles & permissions", href: "/settings/roles", icon: Shield }, { label: "Store domains", href: "/settings/domains", icon: Globe },
     { label: "Integrations", href: "/settings/integrations", icon: Zap }, { label: "Backup", href: "/settings/backup", icon: HardDrive },

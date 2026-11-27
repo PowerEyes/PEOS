@@ -13,9 +13,8 @@ import { siteImgUrl } from "@/lib/types";
 import { useSite } from "@/lib/site-context";
 import { waHref } from "@/lib/wa";
 
-// Mega-menu columns are hardcoded (see chrome-data.ts) and re-attached by
-// label, so a nav row renamed in the ERP simply loses its dropdown instead of
-// pointing at the wrong one.
+// Studio-authored mega menus live on the nav row (website_content.body JSON).
+// The label map is only a fallback for stores that have not authored one yet.
 const MEGA_BY_LABEL = new Map(DEFAULT_NAV.filter(n => n.mega).map(n => [n.label, n.mega as string[][]]));
 
 type Suggestion = { id:string; brand:string|null; model:string; selling_price:number; images:string[]; kind:string };
@@ -49,7 +48,7 @@ export function Header({ portal = false }: { portal?: boolean }) {
   const logo = chrome ? chrome.logo : DEFAULT_LOGO;
   const navRaw = chrome ? chrome.nav : DEFAULT_NAV;
   const NAVLINKS: NavItem[] | null = navRaw
-    ? navRaw.map(i => ({ ...i, mega: MEGA_BY_LABEL.get(i.label) }))
+    ? navRaw.map(i => ({ ...i, mega: i.mega ?? MEGA_BY_LABEL.get(i.label) }))
     : null;
   const [scrolled, setScrolled] = useState(false);
   const hdrRef = useRef<HTMLElement>(null);

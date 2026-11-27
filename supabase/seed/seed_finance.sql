@@ -1,8 +1,8 @@
 -- HSN defaults per product type (update individually after adding products)
 insert into org_settings (org_id, key, value) values
- ('00000000-0000-0000-0000-000000000001','gstin','33AAAAA0000A1Z5'),
- ('00000000-0000-0000-0000-000000000001','state','Tamil Nadu'),
- ('00000000-0000-0000-0000-000000000001','state_code','33') on conflict do nothing;
+ ('00000000-0000-0000-0000-000000000001','gstin','"33AAAAA0000A1Z5"'::jsonb),
+ ('00000000-0000-0000-0000-000000000001','state','"Tamil Nadu"'::jsonb),
+ ('00000000-0000-0000-0000-000000000001','state_code','"33"'::jsonb) on conflict do nothing;
 -- Common optical HSN codes (post Sep 2025 rates)
 -- 900311 plastic frames 18%, 900319 metal frames 18%
 -- 900410 sunglasses 18%, 900130 contact lenses 5%

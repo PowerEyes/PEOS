@@ -103,7 +103,7 @@ NEXT_PUBLIC_WEB_URL=http://localhost:3000
 INTEGRATION_HEALTH_TOKEN=replace-with-a-different-strong-random-secret
 ```
 
-For the storefront, copy `apps/web/.env.example` to `apps/web/.env.local` and set Supabase URL/key, `OCR_SERVICE_URL`, `OCR_SERVICE_TOKEN`, the same `INTEGRATION_HEALTH_TOKEN`, and server-only `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` if online payments are enabled. Do not set a `NEXT_PUBLIC_` Razorpay key. In production, put these values in the deployment secret manager and point both apps at the private OCR hostname; restart/redeploy after changing environment values.
+For the storefront, copy `apps/web/.env.example` to `apps/web/.env.local` and set Supabase URL/key, `OCR_SERVICE_URL`, `OCR_SERVICE_TOKEN`, the same `INTEGRATION_HEALTH_TOKEN`, and server-only `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` if online payments are enabled. Do not set a `NEXT_PUBLIC_` Razorpay key. In production, put these values in the deployment secret manager and point both apps at the private OCR hostname; restart/redeploy after changing environment values. Never commit `.env`, `.env.local`, or a service-role/webhook secret; rotate any credential that has appeared in a tracked file or build artifact.
 
 Apply `supabase/migrations/20261129000000_settings_configuration.sql` after the existing schema migrations. It adds the organisation/branch settings columns, safe default pickup controls, settings audit triggers, and seeds defaults only where no setting exists.
 
@@ -157,9 +157,22 @@ WHERE id = '<profile-id-from-above>';
 ```
 
 Role permissions:
-- **owner** — everything including settings, GST toggle, discount override
-- **admin** — everything except cannot change org settings
-- **staff** — POS, customers, prescriptions, inventory (read), workshop; cannot override discount limit
+
+There is no literal `manager` role. `admin` is the company-manager tier and
+`branch_manager` is the branch manager. Settings write authority is resolved per
+key by `setting_definitions.write_role` / `write_permission`
+(`supabase/migrations/20261229000000_settings_control_plane.sql`), not by a
+blanket UI rule:
+
+- **owner** — everything, including keys with `write_role = 'owner'` (GST identity, numbering prefixes, module toggles and other owner-only keys)
+- **admin** — company-manager tier; can change `write_role = 'admin'` and `write_role = 'manager'` settings, but cannot change `write_role = 'owner'` keys unless explicitly granted by `write_permission`
+- **branch_manager** — branch-scoped operations and `write_role = 'manager'` settings where the branch scope applies; no owner-only tax/security/module keys
+- **staff / optometrist / cashier / other specialists** — granted operations only; cannot override the staff discount limit or write protected settings
+
+`credit_notes.issue` remains in the permission catalogue for cashier, but
+`trg_credit_notes_role_guard` still requires owner/admin at write time. This
+conflict is asserted explicitly in the RBAC test fixtures; do not treat the
+grant alone as refund authority.
 
 ## Guided setup
 

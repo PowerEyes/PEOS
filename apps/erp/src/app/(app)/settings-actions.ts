@@ -64,16 +64,20 @@ export async function saveSettings(
       return { error: "Enter a valid 15-character GSTIN." };
     entries.push(["gstin", gstin]);
   }
-  if (data.maxDiscount !== undefined)
+  if (data.maxDiscount !== undefined) {
+    const value = Number(data.maxDiscount);
     entries.push([
       "max_staff_discount_pct",
-      Math.min(100, Math.max(0, Number(data.maxDiscount) || 0)),
+      Math.min(100, Math.max(0, Number.isFinite(value) ? value : 10)),
     ]);
-  if (data.quoteDays !== undefined)
+  }
+  if (data.quoteDays !== undefined) {
+    const value = Number(data.quoteDays);
     entries.push([
       "quotation_valid_days",
-      Math.max(1, Number(data.quoteDays) || 7),
+      Math.max(1, Number.isFinite(value) ? value : 14),
     ]);
+  }
   if (data.labDays !== undefined)
     entries.push(["lab_lead_days", Math.max(1, Number(data.labDays) || 5)]);
   if (data.invoiceFooter !== undefined)

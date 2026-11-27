@@ -8,7 +8,7 @@
 //   node scripts/sql-upgrade-test.mjs --apply     # apply the 28 unrecorded migrations
 //   node scripts/sql-upgrade-test.mjs --all       # both
 //
-// scratch DB: postgres://postgres:postgres@127.0.0.1:5433/postgres (qa_restore container)
+// scratch DB: set SCRATCH_DATABASE_URL (qa_restore container)
 
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
@@ -16,8 +16,10 @@ import { fileURLToPath } from "node:url";
 import { execFileSync, spawnSync } from "node:child_process";
 import pg from "pg";
 
+if (!process.env.SCRATCH_DATABASE_URL) throw new Error("SCRATCH_DATABASE_URL is required");
+
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const SCRATCH = "postgresql://postgres:postgres@127.0.0.1:5433/postgres";
+const SCRATCH = process.env.SCRATCH_DATABASE_URL;
 const RESTORE_LOG = join(ROOT, "docs", "sql", "restore-log.txt");
 const APPLY_LOG = join(ROOT, "docs", "sql", "upgrade-apply-results.json");
 

@@ -6,7 +6,7 @@ const erpOrigins = (process.env.ERP_ORIGIN || "http://localhost:3001")
 export default {
   distDir: process.env.NEXT_BUILD_DIR || ".next",
   poweredByHeader: false,
-  transpilePackages: ["@poweros/ui", "@poweros/business-rules"],
+  transpilePackages: ["@poweros/ui", "@poweros/business-rules", "@poweros/settings"],
   images: { remotePatterns: [{ protocol:"https", hostname:"*.supabase.co" }] },
   async headers() {
     return [{ source:"/(.*)", headers:[

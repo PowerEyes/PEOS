@@ -22,8 +22,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import pg from "pg";
 
+if (!process.env.LOCAL_DATABASE_URL) throw new Error("LOCAL_DATABASE_URL is required");
+
 const OUT = "supabase/migrations/20261217000000_fix_schema_drift.sql";
-const LOCAL = "postgresql://postgres:postgres@127.0.0.1:54522/postgres";
+const LOCAL = process.env.LOCAL_DATABASE_URL;
 
 const upg = JSON.parse(readFileSync("docs/sql/snapshots/upgrade.json", "utf8"));
 const fresh = JSON.parse(readFileSync("docs/sql/snapshots/fresh.json", "utf8"));

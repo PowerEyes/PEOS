@@ -3,18 +3,29 @@ import { printSb } from "@/lib/doclinks";
 import { inr } from "@poweros/business-rules";
 import { PrintButton } from "@/components/PrintButton";
 import { getScopeCtx } from "@/lib/branch-scope";
+import { getSettingsSnapshot } from "@/lib/settings-catalog";
 export default async function SalePrint({ params, searchParams }: { params: { id: string }; searchParams: { dt?: string } }) {
   const sb = await printSb("sale", params.id, searchParams?.dt);
   const { scope } = await getScopeCtx(); let q=sb.from("sales").select("*, customers!sales_customer_id_fkey(*), sale_lines(*), payments(*), branches(*)").eq("id", params.id); if(scope)q=q.eq("branch_id",scope);
   const { data: s } = await q.single();
   if (!s) notFound();
   const { data: org } = await sb.from("organizations").select("name,legal_name,business_email,business_phone,billing_address,timezone").limit(1).maybeSingle();
-  const { data: g } = await sb.from("org_settings").select("value").eq("key","gstin").maybeSingle();
-  const { data: f } = await sb.from("org_settings").select("value").eq("key","invoice_footer").maybeSingle();
+  // Print links are service-client requests with no user session, so pass an
+  // explicit org/branch context through the resolver. Historical documents keep
+  // their own branch values; resolver values are only fallbacks/current defaults.
+  const settings = await getSettingsSnapshot({
+    client: sb,
+    context: { orgId: s.org_id, branchId: s.branch_id ?? scope ?? undefined },
+    allowedSources: ["org_settings", "branch_settings", "storage"],
+  });
+  const cfg = (key: string) => settings.values[key];
   const branchGstin=typeof s.branches?.gstin==="string"?s.branches.gstin.trim():"";
-  const gstin = s.gst_applied ? (branchGstin || (g?.value as string)) : null;
+  const orgGstin = typeof cfg("tax.gstin") === "string" ? String(cfg("tax.gstin")) : "";
+  const gstin = s.gst_applied ? (branchGstin || orgGstin || null) : null;
   const issuerName=s.branches?.legal_name||org?.legal_name||org?.name;
-  const footerNote = typeof f?.value === "string" && f.value ? f.value : null;
+  const footerValue = cfg("tax.invoice_footer");
+  const footerNote = typeof footerValue === "string" && footerValue ? footerValue : null;
+  const quoteDays = Number(cfg("sales.quote_valid_days")) || 14;
   const b = s.branches, c = s.customers, rx = s.rx_snapshot, isQ = s.kind === "quotation";
   const lines = [...s.sale_lines].sort((a: any, z: any) => a.line_no - z.line_no);
   const bal = Number(s.grand_total) - Number(s.paid_total);
@@ -78,7 +89,7 @@ export default async function SalePrint({ params, searchParams }: { params: { id
       {s.payments?.length > 0 && <p className="mt-1 text-[7pt] text-slate-600">Payments: {s.payments.map((p: any) => `${d(p.created_at)} ${p.method} ${inr(p.amount)}`).join(" | ")}</p>}
       {/* Footer */}
       <footer className="mt-auto pt-3 text-[7pt] text-slate-600">
-        <ul className="list-disc pl-4">{isQ?<><li>Valid for {14} days. Stock subject to availability.</li><li>This is not a tax invoice.</li></>:<><li>Goods once sold can be exchanged only as per store policy.</li><li>Carry this invoice for warranty and service claims.</li>{s.gst_applied&&<li>This is a computer-generated tax invoice.</li>}</>}</ul>
+        <ul className="list-disc pl-4">{isQ?<><li>Valid for {quoteDays} days. Stock subject to availability.</li><li>This is not a tax invoice.</li></>:<><li>Goods once sold can be exchanged only as per store policy.</li><li>Carry this invoice for warranty and service claims.</li>{s.gst_applied&&<li>This is a computer-generated tax invoice.</li>}</>}</ul>
         {footerNote && <p className="mt-1 font-medium text-navy-800">{footerNote}</p>}
         {b?.invoice_terms&&<p className="mt-1">{b.invoice_terms}</p>}
         <div className="mt-4 flex justify-between text-[7.5pt]"><span>Customer signature: ___________</span><span>For {issuerName}</span></div></footer></div></div></div>);

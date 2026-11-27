@@ -1,6 +1,6 @@
 export default {
   distDir: process.env.NEXT_BUILD_DIR || ".next",
-  transpilePackages: ["@poweros/ui", "@poweros/business-rules"],
+  transpilePackages: ["@poweros/ui", "@poweros/business-rules", "@poweros/settings"],
   poweredByHeader: false,
   experimental: { serverComponentsExternalPackages: ["puppeteer-core", "@sparticuz/chromium"] },
   async headers() {

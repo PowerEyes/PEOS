@@ -1,10 +1,11 @@
 // Run arbitrary SQL: node scripts/sql.mjs "select ..."
 import pg from "pg";
+
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
 const sql = process.argv.slice(2).join(" ");
 if (!sql) { console.error("usage: node scripts/sql.mjs \"<sql>\""); process.exit(1); }
 const client = new pg.Client({
-  connectionString: process.env.DATABASE_URL ??
-    "postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
 await client.connect();

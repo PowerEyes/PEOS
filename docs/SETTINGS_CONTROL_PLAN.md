@@ -142,7 +142,7 @@ create table if not exists public.setting_definitions (
   requires_approval    boolean not null default false,
   affects_transactions boolean not null default false,   -- needs effective_at/snapshot policy
   snapshot_policy      text not null default 'none' check (snapshot_policy in ('none','order','invoice','quote')),
-  write_role           text check (write_role in ('owner','admin','manager')),
+  write_role           text check (write_role in ('owner','admin','manager')), -- 'manager' maps to role_key 'branch_manager'
   write_permission     text,                             -- optional extra role_permissions grant
   revalidate_paths     text[] not null default '{}',
   storage_ref          text,                             -- 'org_settings', 'organizations.legal_name', ...
@@ -249,7 +249,11 @@ All functions fail closed: unknown key, malformed value, missing org or inactive
 
 ## 5. Authority model
 
-Resolve the current documentation/code conflict: `SETUP.md` says admins cannot change org settings, while `settings-actions.ts` and `settings/view.tsx` allow both. The catalog will be the single authority.
+Resolved: `setting_definitions.write_role` + optional `write_permission` are
+the single authority. `SETUP.md`, `GO_LIVE_CHECKLIST.md`, `WEBSITE_SETUP.md`
+and `docs/API.md` now match the implementation: owner/admin may write settings
+unless a key is marked `write_role = 'owner'`. The catalog value `manager`
+means the stored role `branch_manager`; there is no literal `manager` role.
 
 | Role | Allowed settings |
 |---|---|
@@ -419,7 +423,7 @@ A setting is not finished until all of these are true:
 - Settings UI shows only “Not configured / Configured / Rotated on …”.
 - Public view excludes all secrets by definition (`is_public AND NOT is_secret`).
 - Per-org Razorpay credentials must replace global env keys before multi-tenant go-live.
-- Rotate the service-role JWTs currently present in `.env.local`, purge stale `.next` chunks, and use deployment secret managers.
+- Rotate every service-role and Postgres credential that has appeared in a tracked file or Git history; update deployment secret managers and ignored local env files. Repo-side literals have been replaced with `process.env.*` guards and stale `.next`/`.turbo`/`.playwright-mcp` caches are purged, but rotation and a coordinated history purge remain external release gates.
 
 ---
 
@@ -427,17 +431,17 @@ A setting is not finished until all of these are true:
 
 These are blocking defects found during the audits. Fix and verify in staging first.
 
-| # | Blocker | Evidence | Required fix |
+| # | Blocker | Code/SQL status | Remaining release gate |
 |---|---|---|---|
-| S1 | Grants collision | `20261222000000_harden_grants.sql` blanket-grants EXECUTE on all `SECURITY DEFINER` functions to `authenticated`, reopening cross-org/service-only RPCs | Replace with explicit allowlist; revoke `resolve_entitlements`, `org_usage`, `seed_org_permissions`, `settle_subscription_payment`, `rate_limit_hit`, lifecycle/platform helpers |
-| S2 | `place_sale` regression | `20261217000020` lost `v_org` binding, advisory lock, discount-override/storefront bypass; hardcoded intrastate/Tamil Nadu | Restore all patches from `20261128000000`, then drive supply defaults from settings |
-| S3 | Rx approval trigger conflict | strict `trg_sales_require_approved_prescription` and tolerant `sales_rx_valid()` coexist | Keep one authoritative rule; drop/disable the dead trigger; backfill approvals before enabling |
-| S4 | Invalid seed JSON | `seed_finance.sql` inserts bare `33AAAAA0000A1Z5` and `Tamil Nadu` into JSONB | Quote them as valid JSON strings |
-| S5 | Service-role secrets in workspace | `.env.local` files and stale `.next` chunks | Rotate keys, purge builds, move to secret manager |
-| S6 | Pending/unverified migrations | prior report §6 rollout | Apply existing → `0042` → approval → `20261217000010/20/30` in staging, then new settings migration |
-| S7 | Duplicate customer phone | `CUS-0006`/`CUS-0007` share `9000000001` | Merge before unique phone index |
-| S8 | RBAC fixtures missing | all profiles are `owner` | Create cashier/optometrist/manager fixtures in isolated DB |
-| S9 | Documentation conflict | owner-only docs vs owner+admin code | Decide via `setting_definitions.write_role`; align code and docs |
+| S1 | Grants collision | `20270101000000_complete_grants_allowlist.sql` revokes 13 exact-signature service/scheduler RPCs from `public`, `anon`, `authenticated` and grants `service_role`; `rls_audit.sql` asserts grants, SECURITY DEFINER and safe-wrapper exceptions. `next_code()` is hardened by `20270101000030_next_code_org_guard.sql`. | Apply both forward migrations in staging and run `rls_audit.sql`; no live database was changed. |
+| S2 | `place_sale` regression | `20261231000000_phase2_effective_settings.sql` restores org binding, advisory lock, discount override, storefront `p.org_id`, explicit org propagation and settings-driven tax/quote/lab/supply values; `place_sale_staging.sql` supplied. | Apply and run the staging suite, including replay and cross-org probes. |
+| S3 | Rx approval trigger conflict | `20270101000010_prescription_approval_resolution.sql` keeps strict `require_approved_sale_prescription`, disables tolerant `trg_sales_rx_valid`, adds `set_prescription_review()`, audited conservative backfill and immutable Rx audit log; review UI wired. | Apply and run `prescription_approval.sql`; approve/backfill real rows only in staging after business review. |
+| S4 | Invalid seed JSON | `seed_finance.sql` strings quoted correctly in source. | Confirm the seed applies in a scratch DB. |
+| S5 | Service-role/Postgres secrets in workspace | All tracked literal credentials replaced with `process.env.*` guards; RLS-off root scripts gated; stale caches purged. Ignored local env files still need external rotation and history remains compromised. | Rotate service-role/Postgres credentials in provider/deployment secret manager, update local env files, then coordinate a history purge with all clones/forks. |
+| S6 | Pending/unverified migrations | Full forward stream supplied, including settings, grants, Rx, phone merge and `next_code` guard. | Apply in filename order to a fresh staging clone with backup; reconcile live schema drift; never hand-mark failed migrations applied. |
+| S7 | Duplicate customer phone | `20270101000020_customer_phone_merge.sql` keeps `CUS-0006`, retains `CUS-0007` with empty phone/`merged` status, rebuilds the unique index and writes an audit row; `customer_merge.sql` supplied. | Apply and run the merge verification in staging. |
+| S8 | RBAC fixtures missing | `rbac_role_fixtures.sql` and `rbac_non_owner_access.sql` cover owner, admin, `branch_manager`, cashier, optometrist, staff and cross-tenant IDOR; `rbac_rls.test.sql` and `branch_access.sql` include the fixtures. | Seed and run in an isolated migrated DB; no literal `manager` role. |
+| S9 | Documentation conflict | Resolved in `SETUP.md`, `GO_LIVE_CHECKLIST.md`, `WEBSITE_SETUP.md`, `docs/API.md`, this plan and the roadmap: catalog `write_role`/`write_permission` is authoritative; owner/admin write unless key is owner-only. | Verify against the applied catalog in staging and keep docs aligned at release. |
 
 Verification for Phase 0: `pnpm verify:migrations`, per-app `tsc --noEmit`, SQL `rls_audit.sql`, fresh staging database reset/push, and build in CI/Linux (local Windows turbo has a known `spawn UNKNOWN` issue).
 
@@ -470,7 +474,7 @@ Indicative sequencing; each phase ends with tests and a staging smoke test.
 
 ### Phase 3 — Module control and RBAC
 
-- Implement `MODULES` registry and `module.<key>.enabled` keys.
+- Implement `MODULES` registry with canonical `module.<key>` keys. Older `module.<key>.enabled` documentation is stale.
 - Apply to sidebar, TopBar quick actions, `routeAllowed()`, middleware, command palette and print routes.
 - Add `withModuleGuard()` to server actions and `assert_module_enabled()` to critical RPCs.
 - Align `write_role/write_permission` with `role_permissions`; fix duplicated permission list in `staff/actions.ts`.
@@ -569,3 +573,101 @@ Run `pnpm build` in CI/Linux; the local Windows turbo runner has a known `spawn 
 ## 13. Recommended next step
 
 Start with **Phase 1 only**: add the catalog migration and shared resolver behind the current UI, with everything still behaving as today. That gives a reversible foundation and an effective-value inventory before any behaviour is switched over. Phase 0 blockers must be fixed in staging before Phase 2 changes money, clinical or access behaviour.
+
+---
+
+## 14. Phase 1 implementation status (2026-11-27)
+
+**Status: code-complete, database migration NOT applied.** This pass stayed read-only against the live database.
+
+Delivered:
+
+- `supabase/migrations/20261229000000_settings_control_plane.sql` — catalog, org/branch/user value stores, change requests, validation/authority helpers (`validate_setting_value`, `can_write_setting`), public/history projections, RLS and audit triggers. No existing value is rewritten and no trigger blocks writes in Phase 1.
+- `supabase/tests/settings_control_plane.sql` — transactional SQL checks for catalog seeds, validation, public-secret exclusion and history projection. Run against a scratch database only.
+- `packages/settings` — shared keys, defaults, schemas, module registry, fail-closed resolver, public projection and error types.
+- `apps/erp/src/lib/settings-catalog.ts` — ERP `SettingsDataSource` and `getSettingsSnapshot()`. `apps/erp/src/lib/settings.ts` is a compatibility adapter returning the exact legacy `AppSettings` shape/coercion. During Phase 1 it read only `org_settings`; Phase 2 supersedes that with the full resolver (see §15).
+- `apps/erp/src/app/(app)/settings/modules/page.tsx` — read-only effective-value and module inspector, linked from the existing Settings rail. It falls back to the built-in catalog until the DB migration is applied.
+- Workspace/lockfile wiring for `@poweros/settings` in both apps, including `transpilePackages` updates.
+- Follow-up hardening: `20261230000000_settings_hardening.sql` restores the settings audit actor and revokes tenant/service-only RPCs reopened by the earlier blanket grants; `settings_change_history` now uses `security_invoker`, and the effective-value inspector is owner/admin-only.
+
+Verification completed without touching the live database:
+
+- `pnpm install` — linked the new workspace package.
+- `pnpm verify:migrations` — 91 unique migration versions; no duplicate prefixes.
+- `pnpm --dir apps/erp exec tsc --noEmit` — clean.
+- `pnpm --dir apps/web exec tsc --noEmit` — clean.
+- `git diff --check` — no whitespace errors (only existing CRLF/LF normalisation warnings).
+
+Deliberately deferred: catalog-driven replacement of the hardcoded `/settings` section rail, enforcement gates, approval workflows, storefront consumers and all behaviour-changing wiring. These remain Phase 2+ so Phase 1 is reversible. The SQL migration and its test must be run in staging before any runtime verification is claimed.
+
+---
+
+## 15. Phase 2 implementation status (2026-11-27)
+
+**Status: code and forward SQL supplied; migration NOT applied; runtime behaviour NOT verified.** All work remains uncommitted/untracked. No live database records or schema were changed.
+
+Delivered in the safe Phase 2 slice:
+
+- `apps/erp/src/lib/settings-catalog.ts`
+  - `erpSettingsSource(client?)` accepts an injected client for service-role/print contexts.
+  - `getSettingsSnapshot({ allowedSources, context, client })` accepts explicit org/branch/user overrides.
+  - `legacyAppSettingsFrom()` now reads validated `snapshot.values` instead of compatibility-only `rawValues`.
+- `apps/erp/src/lib/settings.ts` — `getSettings()` now uses the full resolver; legacy keys still work through catalog aliases, so existing `AppSettings` callers keep their contract.
+- `apps/erp/src/app/(app)/sales/page.tsx` — removed the duplicate raw `quotation_valid_days` query; passes resolver-backed `maxDiscount` and the caller's `role` into `SalesView`/`Pos`.
+- `apps/erp/src/app/(app)/sales/pos.tsx` — discount input is capped by `sales.max_discount_pct` for staff; owner/admin retain the existing 100% override that SQL already enforces.
+- `apps/erp/src/app/print/sale/[id]/page.tsx` — uses the resolver with explicit `orgId`/`branchId` and the print service client for GSTIN/footer/quote-days fallbacks. Historical sale values remain primary so old documents are not rewritten by later settings changes.
+- `apps/erp/src/app/(app)/settings-actions.ts` — writer fallbacks aligned with catalog defaults (`maxDiscount` 10, quote days 14). Writers still write legacy `org_settings` keys because SQL readers are being migrated in this phase, not before it.
+- `supabase/migrations/20261231000000_phase2_effective_settings.sql` — **supplied, not applied**. Adds:
+  - `public.effective_setting(org, key, branch)` with canonical-first/legacy-fallback resolution, validation, org binding and fail-closed defaults;
+  - `place_sale(jsonb)` rewritten to use validated tax/discount/quote/lab/supply values, restore the idempotency advisory lock, bind to `p.org_id` for service-role storefront calls, write the resolved org id on sales/lines/payments/stock/lab rows, and reject cross-org ids;
+  - `next_code(org, key, prefix)` rewritten to prefer `numbering.code_prefixes` with legacy `code_prefixes` fallback.
+- `supabase/tests/settings_control_plane.sql` — extended with Phase 2 checks for legacy resolution, canonical precedence, invalid-value fallback and both legacy/canonical numbering paths.
+
+Verification after Phase 2 code edits:
+
+- `pnpm --dir apps/erp exec tsc --noEmit` — clean.
+- `pnpm --dir apps/web exec tsc --noEmit` — clean.
+- `pnpm verify:migrations` — 92 unique migration versions after adding the Phase 2 migration.
+- `git diff --check` — no whitespace errors; CRLF/LF normalization warnings only.
+
+Still required before Phase 2 can be called complete:
+
+- Apply `20261229000000_settings_control_plane.sql`, `20261230000000_settings_hardening.sql` and `20261231000000_phase2_effective_settings.sql` to a fresh staging clone, in order, with a backup.
+- Run `supabase/tests/settings_control_plane.sql` and the RLS/grant audit in that scratch database.
+- Exercise GST on/off, old-vs-new invoice immutability, quote validity, lab due dates, discount overrides, prefix changes, idempotent replay, concurrent replay and storefront `p.org_id` sales.
+- Keep legacy/dual writes until those tests prove `place_sale` and `next_code()` read canonical values correctly.
+
+Deferred by design: stubs for hours/security/branding have no canonical keys yet, service tax `18` and home-state semantics need product/accountant confirmation, and full Phase 3–6 enforcement remains pending. See `docs/PHASE2_6_PRODUCTION_READINESS_ROADMAP.md`.
+
+---
+
+## 16. Phase 0 closure status (2026-11-27)
+
+**Status: code, forward migrations and staging tests supplied; nothing applied to
+live or staging; no database record changed.** The release verdict remains
+**NO-GO** until staging evidence and credential rotation exist.
+
+Added after §15:
+
+- `20270101000000_complete_grants_allowlist.sql` — exact-signature 13-function service-only allowlist and self-check.
+- `20270101000010_prescription_approval_resolution.sql` — one enabled strict Rx gate, disabled tolerant trigger, review RPC, conservative audited backfill and immutable Rx audit log.
+- `20270101000020_customer_phone_merge.sql` — audit-preserving merge for `CUS-0006`/`CUS-0007` and rebuilt unique phone index.
+- `20270101000030_next_code_org_guard.sql` — direct session-org binding and input validation for the authenticated-callable `SECURITY DEFINER` counter writer.
+- `supabase/tests/rls_audit.sql` — expanded structural and functional grant/RLS audit, including safe-wrapper exceptions and a real `service_role` probe.
+- `supabase/tests/place_sale_staging.sql`, `prescription_approval.sql`, `customer_merge.sql`, `rbac_role_fixtures.sql`, `rbac_non_owner_access.sql` — isolated staging suites; branch/role and SaaS checkout suites were extended.
+- ERP prescription review action/UI and subscription-invoice printer now use the service client only after tenant RLS verifies the invoice.
+- All tracked credential literals were replaced with environment guards; RLS-off root scripts now refuse to run without an explicit disposable-environment flag; stale caches were purged.
+
+Local verification after these edits: `pnpm verify:migrations` reports 96 unique
+versions; both apps' `tsc --noEmit` are clean; `pnpm test:unit` passes 55/55;
+`node --check` is clean for all tracked `.mjs` files; `git diff --check` reports
+no whitespace errors (CRLF/LF normalization warnings only). A tracked-file scan
+finds no service-role or credentialed database URL values; the only remaining
+JWT-shaped value is the public anon key in `scripts/qa-anon.mjs`.
+
+Required staging sequence: fresh clone + backup, apply migrations in filename
+order, then run `rls_audit.sql`, `settings_control_plane.sql`,
+`place_sale_staging.sql`, `customer_merge.sql`, `prescription_approval.sql`,
+`rbac_non_owner_access.sql`, branch/role/subscription/break-glass suites and
+mutating Playwright with `RUN_MUTATING_E2E=1`. Rotation of exposed credentials
+is external and must complete before any release reconsideration.

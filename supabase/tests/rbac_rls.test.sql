@@ -109,4 +109,25 @@ begin
   perform pg_temp.as_user(st1); perform pg_temp.ok(pg_temp.fails($q$select rate_limit_hit('x', 1, 60)$q$), 'rate limiter not callable by users');
   raise notice 'ALL RBAC/RLS TESTS PASSED';
 end $$;
+
+-- Reusable non-owner fixtures must be seeded as the migration owner because
+-- seed_org_permissions() is service/migration-only.
+reset role;
+\ir rbac_role_fixtures.sql
+
+select pg_temp.as_user(pg_temp.rbac_uid('cashier'));
+select pg_temp.ok(public.has_perm('finance_view'), 'fixture cashier has finance_view');
+select pg_temp.ok(not public.has_perm('expenses'), 'fixture cashier has no expenses grant');
+select pg_temp.ok(
+  pg_temp.fails(format('update profiles set role_key = ''owner'' where id = %L',
+                       pg_temp.rbac_uid('cashier'))),
+  'fixture cashier cannot promote itself');
+
+select pg_temp.as_user(pg_temp.rbac_uid('optometrist'));
+select pg_temp.ok(not public.has_perm('finance_view'), 'fixture optometrist has no finance grant');
+
+select pg_temp.as_user(pg_temp.rbac_uid('branch_manager'));
+select pg_temp.ok(cardinality(public.my_permissions()) = 13, 'fixture branch_manager has all 13 grants');
+
+reset role;
 rollback;

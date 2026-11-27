@@ -3,8 +3,9 @@
 //   node scripts/sql-prod-facts.mjs
 import pg from "pg";
 
-const dsn = process.env.DATABASE_URL ??
-  "postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres";
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+
+const dsn = process.env.DATABASE_URL;
 const db = new pg.Client({ connectionString: dsn, ssl: { rejectUnauthorized: false } });
 await db.connect();
 const one = async (sql) => (await db.query(sql)).rows;

@@ -2,7 +2,9 @@ import { Client } from "pg";
 import { readFileSync, readdirSync } from "fs";
 import { join } from "path";
 
-const dbUrl = process.env.DATABASE_URL || "postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres";
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+
+const dbUrl = process.env.DATABASE_URL;
 
 const client = new Client({ connectionString: dbUrl, ssl: { rejectUnauthorized: false } });
 

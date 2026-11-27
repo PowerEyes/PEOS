@@ -29,6 +29,9 @@ importers:
       '@poweros/business-rules':
         specifier: workspace:*
         version: link:../../packages/business-rules
+      '@poweros/settings':
+        specifier: workspace:*
+        version: link:../../packages/settings
       '@poweros/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -109,6 +112,9 @@ importers:
       '@poweros/business-rules':
         specifier: workspace:*
         version: link:../../packages/business-rules
+      '@poweros/settings':
+        specifier: workspace:*
+        version: link:../../packages/settings
       '@poweros/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -166,6 +172,8 @@ importers:
         version: 5.9.3
 
   packages/business-rules: {}
+
+  packages/settings: {}
 
   packages/ui:
     dependencies:

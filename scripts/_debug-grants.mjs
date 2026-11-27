@@ -1,8 +1,11 @@
 // compare grants: qa_restore (upgrade baseline) vs local fresh
 import pg from "pg";
 
-const qa = new pg.Client({ connectionString: "postgresql://postgres:postgres@127.0.0.1:5433/postgres" });
-const fresh = new pg.Client({ connectionString: "postgresql://postgres:postgres@127.0.0.1:54522/postgres" });
+if (!process.env.QA_DATABASE_URL) throw new Error("QA_DATABASE_URL is required");
+if (!process.env.FRESH_DATABASE_URL) throw new Error("FRESH_DATABASE_URL is required");
+
+const qa = new pg.Client({ connectionString: process.env.QA_DATABASE_URL });
+const fresh = new pg.Client({ connectionString: process.env.FRESH_DATABASE_URL });
 await qa.connect(); await fresh.connect();
 
 const q = async (c, table) => (await c.query(

@@ -4,7 +4,7 @@ import { dbError } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
 type R = { error?: string; ok?: string };
 // Top-level website routes that already exist (they win over a custom page with the same slug), plus internal prefixes.
-const RESERVED = new Set(["about", "accessories", "api", "blog", "cart", "checkout", "clinic", "collections", "compare", "computer-glasses", "contact", "contact-lenses", "eye-test", "eyeglasses", "faq", "help-me-choose", "kids", "lab", "lenses", "login", "my", "offers", "print", "privacy", "product", "returns", "search", "store-locator", "sunglasses", "terms", "track-order", "wishlist", "robots", "sitemap"]);
+const RESERVED = new Set(["about", "accessories", "api", "blog", "cart", "checkout", "clinic", "clinical-services", "collections", "compare", "computer-glasses", "contact", "contact-lenses", "eye-test", "eyeglasses", "faq", "forgot-password", "help-me-choose", "kids", "lab", "lenses", "login", "my", "offers", "print", "privacy", "product", "reset-password", "returns", "search", "store", "store-locator", "sunglasses", "terms", "track-order", "wishlist", "robots", "sitemap"]);
 const slugify = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
 
 // Row-level security (admin-only insert/update/delete, org-scoped) is the real gate; these actions add validation and revalidation.

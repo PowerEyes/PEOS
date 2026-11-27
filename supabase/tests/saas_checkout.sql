@@ -10,7 +10,14 @@ grant select on _c to public;
 
 create or replace function pg_temp.as_user(u uuid) returns void language plpgsql as $$
 begin perform set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true);
-      perform set_config('request.jwt.claim.sub', u::text, true); set local role authenticated; end $$;
+      perform set_config('request.jwt.claim.sub', u::text, true);
+      perform set_config('request.jwt.claim.role', 'authenticated', true);
+      set local role authenticated; end $$;
+create or replace function pg_temp.as_service() returns void language plpgsql as $$
+begin reset role; perform set_config('request.jwt.claims', '', true);
+      perform set_config('request.jwt.claim.sub', '', true);
+      perform set_config('request.jwt.claim.role', 'service_role', true);
+      set local role service_role; end $$;
 create or replace function pg_temp.expect_fail(sql text, label text) returns void language plpgsql as $$
 declare v_state text := null; v_msg text := null;
 begin
@@ -43,10 +50,18 @@ insert into organizations (id, name) values
 select pg_temp.as_user(u_owner) from _c;
 select pg_temp.expect_rows($q$select 1 from billing_plans where code = 'starter'$q$,
   1, 'tenant reads the plan catalogue (billing_plans RLS fix)');
+select pg_temp.expect_fail(
+  $q$select platform_billing_identity()$q$,
+  'tenant cannot read the platform GST identity directly (service-only RPC)');
+reset role;
+
+-- The ERP print route fetches identity through the audited service client only
+-- after tenant RLS has already verified the invoice row.
+select pg_temp.as_service();
 select pg_temp.expect_rows(
   $q$select 1 from platform_billing_identity() b
        where b ->> 'gstin' = '' and (b ->> 'gst_rate_bp')::int = 1800$q$,
-  1, 'tenant reads the platform GST identity for its own invoice');
+  1, 'service role reads the platform GST identity for the print route');
 reset role;
 
 select pg_temp.expect_rows(

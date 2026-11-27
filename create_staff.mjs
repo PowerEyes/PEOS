@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 
-const DATABASE_URL = 'postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres';
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) throw new Error("DATABASE_URL is required");
 const pool = new Pool({ connectionString: DATABASE_URL });
 
 const ORG_ID = 'aa4fd022-272b-4d96-80cc-9005ad7313ad';

@@ -134,15 +134,23 @@ ERP routes are server actions (not REST). They are invoked via Next.js server ac
 | Inventory | `inventory/actions.ts` | CRUD products, stock adjustments, lens options |
 | Customers | `customers/actions.ts` | CRUD customers, vision profiles |
 | Finance | `finance/actions.ts` | GST ledger, credit notes, period close |
-| Prescriptions | `prescriptions/actions.ts` | CRUD prescriptions, OCR confirm |
-| Settings | `settings-actions.ts` | Business profile, GST, branch management |
+| Prescriptions | `prescriptions/actions.ts` | CRUD prescriptions, OCR confirm, owner/admin/optometrist review via `set_prescription_review` |
+| Settings | `settings-actions.ts` | Catalog-backed business profile, GST, branch management and modules; per-key `write_role`/`write_permission` authority |
 | CRM | `crm/actions.ts` | Leads, follow-ups, reminders |
 | Staff | `staff/actions.ts` | Staff management, branch access |
 
 ## Authentication
 
 - **Web:** Supabase Auth (email/password + OTP). Session stored in cookies.
-- **ERP:** Supabase Auth with role-based access (owner, admin, staff, accountant). RLS enforced at DB level.
+- **ERP:** Supabase Auth with role-based access. Stored roles are `owner`,
+  `admin` (company manager), `branch_manager` (branch manager), `staff`,
+  `optometrist`, `sales_executive`, `cashier`, `inventory_manager`,
+  `lab_technician`, `accountant` and `receptionist`. There is no literal
+  `manager` role; the settings catalog's `write_role = 'manager'` maps to
+  `branch_manager`. RLS, branch guards and per-key settings authority are
+  enforced at the DB level. Owner/admin may change settings except keys marked
+  `write_role = 'owner'`; a cashier's `credit_notes.issue` grant is overridden
+  by the owner/admin-only credit-note write trigger.
 
 ## Error Format
 

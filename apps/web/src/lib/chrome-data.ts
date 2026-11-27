@@ -59,9 +59,8 @@ export const DEFAULT_LOGO: Logo = {
   imageAlt: null,
 };
 
-// Mega-menu columns are NOT in the CMS — they stay hardcoded and are re-attached
-// by label, so renaming a nav row simply drops its dropdown rather than
-// breaking navigation.
+// Fallback mega-menu columns. Website Studio can now author its own JSON in a
+// nav row's `body`; these defaults are used only when no CMS menu exists.
 const EYEGASSES_MEGA: string[][] = [
   ["By Shape", "Round", "Square", "Rectangle", "Cat Eye", "Aviator", "Oval"],
   ["By Brand", "Ray-Ban", "Vogue", "Oakley", "Titan", "John Jacobs", "Lenskart"],
@@ -108,7 +107,7 @@ export const DEFAULT_FOOTER: FooterChrome = {
       { label: "My account", href: "/my" },
       { label: "Vision ID", href: "/my/vision-id" },
       { label: "My Orders", href: "/my/orders" },
-      { label: "Track Order", href: "/my/orders" },
+      { label: "Track Order", href: "/track-order" },
       { label: "Loyalty Rewards", href: "/my/loyalty" },
       { label: "Wishlist", href: "/wishlist" },
     ]},
