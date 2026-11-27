@@ -29,8 +29,10 @@ export async function CatalogListing({ slug, kind, filter, sp, fallback, tone = 
       </div>)}
     <div id="products" className="mx-auto max-w-7xl scroll-mt-24 px-4 sm:px-6 lg:px-8">
       <div className="flex justify-end pt-4"><GuideButton page={slug} /></div>
-      <Suspense fallback={null}><ProductFilters facets={facets} bounds={priceBounds(rows)} total={rows.length} shown={shown.length} /></Suspense>
-      <div className="pt-4"><ProductGrid products={shown as Product[]} kind={kind as any} brands={[]} /></div>
+      <div className="grid gap-6 pt-4 lg:grid-cols-[240px_minmax(0,1fr)]">
+        <Suspense fallback={null}><ProductFilters facets={facets} bounds={priceBounds(rows)} total={rows.length} shown={shown.length} /></Suspense>
+        <div className="min-w-0"><ProductGrid products={shown as Product[]} kind={kind as any} brands={[]} /></div>
+      </div>
     </div>
   </>);
 }

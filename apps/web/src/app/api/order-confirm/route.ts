@@ -62,9 +62,30 @@ export async function POST(req: Request) {
     customerId = customer?.id ?? null;
   }
   if (!customerId) return NextResponse.json({ error: "Could not identify customer." }, { status: 500 });
+  const prescriptionSnapshot = quote.prescription_snapshot && typeof quote.prescription_snapshot === "object"
+    ? quote.prescription_snapshot
+    : null;
+  if (quote.prescription_required && !prescriptionSnapshot) {
+    return NextResponse.json({ error: "Prescription details are missing for this order. Reopen checkout and re-enter them." }, { status: 400 });
+  }
   const notes = `Online order.${quote.coupon_code ? ` Coupon ${clean(quote.coupon_code, 40)} applied.` : ""} ${quote.delivery === "pickup" ? `Pickup: ${clean(quote.branch_name, 100)}` : `Deliver to ${clean(address.line1, 200)}, ${clean(address.city, 60)} ${clean(address.pincode, 10)}`}. Razorpay: ${clean(razorpay_order_id, 80)}`;
   const payment = paymentId ? { amount: Number(quote.subtotal), method: "razorpay", reference: paymentId } : { amount: 0, method: "cash" };
-  const { data: sale, error } = await sb.rpc("place_sale", { p: { org_id: orgId, idempotency_key: q.id, kind: "order", channel: "storefront", customer_id: customerId, branch_id: quote.branch_id, lines: quote.lines, notes, payment } });
+  const { data: sale, error } = await sb.rpc("place_sale", {
+    p: {
+      org_id: orgId,
+      idempotency_key: q.id,
+      kind: "order",
+      channel: "storefront",
+      customer_id: customerId,
+      branch_id: quote.branch_id,
+      lines: quote.lines,
+      notes,
+      payment,
+      prescription_snapshot: prescriptionSnapshot,
+      coupon_id: typeof quote.coupon_id === "string" && /^[0-9a-f-]{36}$/i.test(quote.coupon_id) ? quote.coupon_id : null,
+      discount: Number(quote.discount ?? 0),
+    },
+  });
   if (error) { console.error("place_sale error:", error.message); return NextResponse.json({ error: dbError(error.message) }, { status: 500 }); }
   if (paymentId) {
     const { error: pErr } = await sb.from("online_payments").upsert({ org_id: orgId, sale_id: sale.id, customer_id: customerId, razorpay_order_id, razorpay_payment_id: paymentId, razorpay_signature, amount: paidAmount, status: "paid" }, { onConflict: "razorpay_payment_id" });

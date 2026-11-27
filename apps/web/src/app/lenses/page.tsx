@@ -10,10 +10,14 @@ import { getPage } from "@/lib/pages";
 export const metadata = { title: "Lens Packages" };
 export const dynamic = "force-dynamic";
 export default async function Page() {
-  const hero = await getPage("hero-lenses");
-  const [{ data: pkgs }, { data: opts }] = await Promise.all([
-    supabaseFresh().from("lens_packages").select("*").eq("status","active").order("display_order"),
-    supabaseFresh().from("lens_options").select("*").eq("status","active").order("display_order"),
+  // Start the CMS read and the two catalogue reads together. The old version
+  // awaited getPage() first, so every lens query waited behind tenant + page
+  // resolution before it even started.
+  const sb = supabaseFresh();
+  const [{ hero }, { data: pkgs }, { data: opts }] = await Promise.all([
+    getPage("hero-lenses").then((hero) => ({ hero })),
+    sb.from("lens_packages").select("*").eq("status", "active").order("display_order"),
+    sb.from("lens_options").select("*").eq("status", "active").order("display_order"),
   ]);
   return (<div className="min-h-screen bg-white overflow-x-hidden"><Header/>
     <div className="bg-gradient-to-r from-navy-900 to-navy-800 py-10 sm:py-14 px-4 text-center text-white">

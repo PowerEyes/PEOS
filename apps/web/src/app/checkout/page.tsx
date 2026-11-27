@@ -226,8 +226,10 @@ export default function CheckoutPage() {
             setOrderId(cd.code);
             clear();
             setStep("success");
-          } else
-            alert("Order confirmation failed. Please contact us via WhatsApp.");
+          } else {
+            alert(cd.error || "Order confirmation failed. Please contact us via WhatsApp.");
+            setBusy(false);
+          }
         },
         modal: { ondismiss: () => setBusy(false) },
       }).open();
@@ -267,7 +269,10 @@ export default function CheckoutPage() {
         setOrderId(cd.code);
         clear();
         setStep("success");
-      } else alert("Failed to place order. Contact us on WhatsApp.");
+      } else {
+        alert(cd.error || "Failed to place order. Contact us on WhatsApp.");
+        setBusy(false);
+      }
     }
     setBusy(false);
   }

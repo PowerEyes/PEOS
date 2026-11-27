@@ -112,7 +112,10 @@ export default function CartPage() {
                     <p className="text-xs text-slate-500 truncate">{item.brand}</p>
                     <p className="font-bold text-sm sm:text-base text-navy-900 truncate">{item.productName}</p>
                     {item.lensPackageName && <p className="text-xs text-blue-600 mt-0.5 truncate">+ {item.lensPackageName}{item.addons?.length ? ` | ${item.addons.join(", ")}` : ""}</p>}
-                    {item.rx && <p className="text-xs text-slate-400 mt-0.5 truncate">Rx: OD {item.rx.od?.sph ?? "—"} | OS {item.rx.os?.sph ?? "—"}</p>}
+                    {item.rx && <p className="text-xs text-slate-400 mt-0.5 truncate">
+                      Rx: OD {item.rx.od?.sph ?? "—"} | OS {item.rx.os?.sph ?? "—"}
+                      {(item.rx.od?.add != null || item.rx.os?.add != null) && <> | ADD {item.rx.od?.add ?? "—"}/{item.rx.os?.add ?? "—"}</>}
+                    </p>}
                     <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white">
                         <button onClick={() => setQty(item.id, item.qty - 1)} className="p-1.5 sm:p-2 hover:bg-slate-50 rounded-l-xl transition" aria-label="Decrease quantity"><Minus size={14}/></button>
