@@ -46,9 +46,11 @@ const RULES: [string, Role[]][] = [
   ["/branches", MANAGER], ["/branches/new", ADMIN],
   // audit_read RLS returns rows to owner/admin only — match the route to it.
   ["/audit", ADMIN],
+  // Payroll: admin-only, except an employee's own payslips (RLS limits rows to their own finalised slips).
+  ["/payroll", ADMIN], ["/payroll/mine", ["owner", "admin", "branch_manager", "staff"]], ["/payroll/slip", ["owner", "admin", "branch_manager", "staff"]],
 ];
 // Routes gated by a configurable permission (Staff → Permissions). Owners/admins always pass.
-const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"]];
+const PERM_ROUTES: [string, string][] = [["/finance", "finance_view"], ["/purchase-invoices", "finance_view"], ["/reports", "reports_view"], ["/crm", "crm_manage"], ["/purchases", "purchases_manage"], ["/stock-audits", "stock_audit"], ["/stock-adjustments", "stock_adjust"], ["/opening-stock", "stock_adjust"], ["/accountant-export", "finance_view"], ["/web-orders", "web_orders"]];
 export const PERMISSIONS = [
   { key: "finance_view", label: "View finance, cashbook & purchase invoices" },
   { key: "expenses", label: "Record expenses" },
@@ -66,15 +68,15 @@ export const PERMISSIONS = [
 ] as const;
 // MENU FOCUS ONLY: which sidebar groups a specialist role sees. Route access stays grant-based (routeAllowed + RLS), by design —
 // specialists reach modules through role_permissions grants, not role names.
-const COMMON = ["/", "/customers", "/inbox", "/support", "/print", "/staff/attendance", "/staff/leave"];
+const COMMON = ["/", "/customers", "/inbox", "/support", "/print", "/payroll/mine", "/payroll/slip"];
 export const ROLE_AREAS: Record<string, string[]> = {
   optometrist: ["/appointments", "/prescriptions", "/consultations", "/lpims"],
-  receptionist: ["/appointments", "/prescriptions", "/sales", "/repairs", "/communications", "/loyalty"],
+  receptionist: ["/appointments", "/prescriptions", "/sales", "/repairs", "/crm", "/loyalty"],
   sales_executive: ["/sales", "/prescriptions", "/appointments", "/web-orders", "/inventory", "/repairs", "/loyalty"],
   cashier: ["/sales", "/web-orders", "/repairs", "/expenses", "/finance"],
-  inventory_manager: ["/inventory", "/transfers", "/stock-audits", "/purchases", "/purchase-invoices", "/suppliers", "/web-orders", "/lpims"],
+  inventory_manager: ["/inventory", "/transfers", "/stock-audits", "/stock-adjustments", "/opening-stock", "/purchases", "/purchase-invoices", "/suppliers", "/web-orders", "/lpims"],
   lab_technician: ["/workshop", "/repairs", "/dispensing", "/workshop", "/web-orders", "/inventory"],
-  accountant: ["/finance", "/accountant-export", "/expenses", "/bank-reconciliation", "/purchase-invoices", "/purchases", "/suppliers", "/reports", "/sales", "/payroll"],
+  accountant: ["/finance", "/accountant-export", "/expenses", "/bank-reconciliation", "/purchase-invoices", "/purchases", "/suppliers", "/reports", "/sales"],
 };
 const under = (path: string, p: string) => p === "/" ? path === "/" : path === p || path.startsWith(p + "/");
 export function specialistAllowed(role: string | null | undefined, path: string): boolean {

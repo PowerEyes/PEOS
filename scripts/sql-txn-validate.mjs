@@ -5,13 +5,15 @@
 import { readFile } from "node:fs/promises";
 import pg from "pg";
 
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+
 const files = process.argv.slice(2);
 if (!files.length) {
   console.error("usage: node scripts/sql-txn-validate.mjs <file.sql> [...]");
   process.exit(1);
 }
 
-const db = new pg.Client({ connectionString: "postgresql://postgres:postgres@127.0.0.1:54522/postgres" });
+const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
 await db.connect();
 
 let failed = false;

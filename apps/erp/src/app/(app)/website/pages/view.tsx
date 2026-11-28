@@ -3,26 +3,31 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Modal, Pill, useToast } from "@poweros/ui";
-import { Pencil, ArrowLeft, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Pencil, ArrowLeft, Plus, Trash2, ArrowUp, ArrowDown, RotateCcw, ExternalLink } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { createPage, deletePage } from "./actions";
+import { createPage, deletePage, renamePage, restorePages } from "./actions";
 import { ImageField } from "@/components/ImageField";
 
 const GROUPS: [string, string, string][] = [["page", "Enterprise pages", "About, Clinic and Lab pages shown on the website"], ["guide", "Buying & size guides", "Each category page has its own guide. The frame size guide shows only on Eyeglasses."], ["config", "Page headings & Eye consultation", "Listing-page hero text and the eye-test booking form"]];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const lines = (v: string) => v.split("\n").map((x) => x.trim()).filter(Boolean);
 
-export function PagesStudio({ rows }: { rows: any[] }) {
+export function PagesStudio({ rows, siteUrl }: { rows: any[]; siteUrl: string }) {
   const router = useRouter(); const toast = useToast();
   const [creating, setCreating] = useState(false); const [nw, setNw] = useState({ title: "", slug: "", subtitle: "", nav: false });
   const [edit, setEdit] = useState<any | null>(null); const [busy, setBusy] = useState(false);
-  const open = (r: any) => { const b = r.body ?? {}; const { sections: _s, stats: _t, table: _b, ...rest } = b; setEdit({ ...r, extra: Object.keys(rest).length && r.kind !== "config" ? JSON.stringify(rest, null, 2) : "", sections: b.sections ?? [], stats: b.stats ?? [], thead: (b.table?.headers ?? []).join(" | "), trows: (b.table?.rows ?? []).map((x: string[]) => x.join(" | ")).join("\n"),
+  const open = (r: any) => { const b = r.body ?? {}; const { sections: _s, stats: _t, table: _b, ...rest } = b; setEdit({ ...r, newSlug: r.slug, extra: Object.keys(rest).length && r.kind !== "config" ? JSON.stringify(rest, null, 2) : "", sections: b.sections ?? [], stats: b.stats ?? [], thead: (b.table?.headers ?? []).join(" | "), trows: (b.table?.rows ?? []).map((x: string[]) => x.join(" | ")).join("\n"),
     price: b.price ?? "", duration: b.duration ?? "", intro: b.intro ?? "", types: (b.types ?? []).join("\n"), times: (b.times ?? []).join("\n"), cta: b.cta ?? "", note: b.note ?? "", closed: b.closed_weekdays ?? [] }); };
   const set = (k: string, v: any) => setEdit((e: any) => ({ ...e, [k]: v }));
   const move = (arr: string, i: number, d: number) => setEdit((e: any) => { const a = [...e[arr]]; const j = i + d; if (j < 0 || j >= a.length) return e; [a[i], a[j]] = [a[j], a[i]]; return { ...e, [arr]: a }; });
   const upd = (arr: string, i: number, k: string, v: string) => setEdit((e: any) => ({ ...e, [arr]: e[arr].map((x: any, n: number) => (n === i ? { ...x, [k]: v } : x)) }));
   async function save() {
     if (!edit.title.trim()) return toast("Title is required", "err");
+    // Rename first so a failed validation never leaves half-saved content.
+    if (!edit.is_system && edit.newSlug && edit.newSlug !== edit.slug) {
+      setBusy(true); const r = await renamePage(edit.id, edit.newSlug); setBusy(false);
+      if (r.error) return toast(r.error, "err");
+    }
     const body: any = { ...(edit.body ?? {}) };
     if (edit.kind === "config" && edit.slug === "eye-consultation") Object.assign(body, { price: edit.price, duration: edit.duration, intro: edit.intro, types: lines(edit.types), times: lines(edit.times), cta: edit.cta, note: edit.note, closed_weekdays: edit.closed });
     else if (edit.kind !== "config") {
@@ -40,19 +45,22 @@ export function PagesStudio({ rows }: { rows: any[] }) {
   async function create() { setBusy(true); const r = await createPage({ title: nw.title, slug: nw.slug, subtitle: nw.subtitle, show_in_nav: nw.nav }); setBusy(false);
     if (r.error) return toast(r.error, "err"); toast(r.ok ?? "Created."); setCreating(false); setNw({ title: "", slug: "", subtitle: "", nav: false }); router.refresh(); }
   async function remove(r: any) { if (!window.confirm(`Delete "${r.title}" permanently? This cannot be undone.`)) return; const x = await deletePage(r.id); if (x.error) return toast(x.error, "err"); toast(x.ok ?? "Deleted."); router.refresh(); }
+  async function restore() { setBusy(true); const x = await restorePages(); setBusy(false); if (x.error) return toast(x.error, "err"); toast(x.ok ?? "Restored."); router.refresh(); }
   const toggle = async (r: any) => { const { error } = await supabaseBrowser().from("site_pages").update({ is_active: !r.is_active }).eq("id", r.id); if (error) toast(error.message, "err"); router.refresh(); };
 
   return (<div className="space-y-6">
     <div className="flex items-center gap-3"><Link href="/website" className="rounded-xl border border-slate-200 p-2 hover:bg-slate-50" aria-label="Back to Website Studio"><ArrowLeft size={16} /></Link>
       <div><h1 className="text-xl font-bold text-slate-900">Pages &amp; Guides</h1><p className="text-sm text-slate-500">Everything here is read live by the website. Turn an item off to hide it.</p></div>
-      <button onClick={() => setCreating(true)} className="btn btn-primary ml-auto text-sm"><Plus size={14} className="mr-1 inline" />New page</button></div>
+      <button onClick={restore} disabled={busy} className="btn btn-ghost ml-auto text-sm"><RotateCcw size={14} className="mr-1 inline" />Restore built-ins</button>
+      <button onClick={() => setCreating(true)} className="btn btn-primary text-sm"><Plus size={14} className="mr-1 inline" />New page</button></div>
     {GROUPS.map(([kind, title, hint]) => (<section key={kind}><h2 className="font-semibold text-slate-800">{title}</h2><p className="mb-2 text-xs text-slate-500">{hint}</p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{rows.filter((r) => r.kind === kind).map((r) => (
         <div key={r.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4"><div className="min-w-0 flex-1"><p className="truncate font-semibold text-slate-900">{r.title}</p><p className="truncate text-xs text-slate-500">/{r.slug}</p></div>
+          {siteUrl && r.kind === "page" && <a href={`${siteUrl.replace(/\/+$/, "")}/${r.slug}`} target="_blank" rel="noreferrer" title="Open on website" aria-label={`Open ${r.title} on website`} className="rounded-lg bg-slate-100 p-2 hover:bg-slate-200"><ExternalLink size={14} /></a>}
           <button onClick={() => toggle(r)} title="Show / hide"><Pill tone={r.is_active ? "green" : "red"}>{r.is_active ? "Live" : "Hidden"}</Pill></button>
           <button onClick={() => open(r)} className="rounded-lg bg-slate-100 p-2 hover:bg-slate-200" aria-label={`Edit ${r.title}`}><Pencil size={14} /></button>
           {!r.is_system && r.kind === "page" && <button onClick={() => remove(r)} className="rounded-lg bg-rose-50 p-2 text-rose-600 hover:bg-rose-100" aria-label={`Delete ${r.title}`}><Trash2 size={14} /></button>}</div>))}</div></section>))}
-    {rows.length === 0 && <p className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">No pages yet. Run migration 20261219000000_site_pages_defaults.sql.</p>}
+    {rows.length === 0 && <p className="rounded-2xl bg-amber-50 p-4 text-sm text-amber-800">No pages yet. Click “Restore built-ins” (or apply migration 20261219000000_site_pages_defaults.sql).</p>}
 
     <Modal open={creating} onClose={() => setCreating(false)} title="New page">
       <div className="space-y-3">
@@ -65,12 +73,15 @@ export function PagesStudio({ rows }: { rows: any[] }) {
     <Modal open={!!edit} onClose={() => setEdit(null)} title={edit ? `Edit: ${edit.title}` : ""}>
       {edit && (<div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
         <label className="block text-sm font-medium">Title<input className="field mt-1" value={edit.title} onChange={(e) => set("title", e.target.value)} /></label>
+        {!edit.is_system ? <label className="block text-sm font-medium">Web address<input className="field mt-1 font-mono text-xs" value={edit.newSlug ?? edit.slug} onChange={(e) => set("newSlug", e.target.value)} placeholder="my-page" /><span className="text-xs text-slate-500">Changing this moves the public URL. Built-in pages keep their address.</span></label>
+          : <p className="text-xs text-slate-500">Public address: <code className="rounded bg-slate-100 px-1">/{edit.slug}</code> — built-in pages keep this address.</p>}
         <label className="block text-sm font-medium">Subtitle<input className="field mt-1" value={edit.subtitle ?? ""} onChange={(e) => set("subtitle", e.target.value)} /></label>
         {edit.kind !== "guide" && <ImageField value={edit.hero_image ?? ""} onChange={(p) => set("hero_image", p)} label="Hero image (optional)" aspect="aspect-[21/9]" crop />}
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!edit.show_in_nav} onChange={(e) => set("show_in_nav", e.target.checked)} />Show in website menu</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={edit.is_active} onChange={(e) => set("is_active", e.target.checked)} />Visible on website</label>
 
         {edit.slug === "eye-consultation" ? (<>
+          <p className="text-xs text-slate-500">Served on the website at <code className="rounded bg-slate-100 px-1">/eye-test</code>. The CMS key is <code>eye-consultation</code>.</p>
           <div className="grid gap-3 sm:grid-cols-2"><label className="text-sm font-medium">Price label<input className="field mt-1" value={edit.price} onChange={(e) => set("price", e.target.value)} placeholder="Free / ₹300" /></label><label className="text-sm font-medium">Duration<input className="field mt-1" value={edit.duration} onChange={(e) => set("duration", e.target.value)} /></label></div>
           <label className="block text-sm font-medium">Intro text<textarea className="field mt-1" rows={2} value={edit.intro} onChange={(e) => set("intro", e.target.value)} /></label>
           <label className="block text-sm font-medium">Appointment types (one per line)<textarea className="field mt-1" rows={4} value={edit.types} onChange={(e) => set("types", e.target.value)} /></label>

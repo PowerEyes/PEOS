@@ -33,3 +33,25 @@ export async function createPrescription(input: unknown): Promise<{ error?: stri
   if (error) return { error: dbError(error.message) };
   revalidatePath("/prescriptions"); return { ok: data.rx_code, id: data.id };
 }
+
+const reviewSchema = z.object({
+  id: z.string().uuid("Invalid prescription"),
+  decision: z.enum(["approve", "reapprove", "reject", "request_correction"]),
+  reason: z.string().trim().max(300).optional(),
+});
+
+export async function setPrescriptionReview(input: unknown): Promise<{ error?: string; ok?: string }> {
+  const gate = await subscriptionGate(); if (gate) return gate;
+  const p = reviewSchema.safeParse(input); if (!p.success) return { error: p.error.issues[0].message };
+  if ((p.data.decision === "reject" || p.data.decision === "request_correction") && !p.data.reason)
+    return { error: "Add a reason for this review decision." };
+
+  const { data, error } = await supabaseServer().rpc("set_prescription_review", {
+    p_prescription_id: p.data.id,
+    p_decision: p.data.decision,
+    p_reason: p.data.reason || null,
+  });
+  if (error) return { error: dbError(error.message) };
+  revalidatePath("/prescriptions");
+  return { ok: `Prescription ${String((data as any)?.review_status ?? "updated")}` };
+}

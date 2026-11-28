@@ -6,7 +6,7 @@ const erpOrigins = (process.env.ERP_ORIGIN || "http://localhost:3001")
 export default {
   distDir: process.env.NEXT_BUILD_DIR || ".next",
   poweredByHeader: false,
-  transpilePackages: ["@poweros/ui", "@poweros/business-rules"],
+  transpilePackages: ["@poweros/ui", "@poweros/business-rules", "@poweros/settings"],
   images: { remotePatterns: [{ protocol:"https", hostname:"*.supabase.co" }] },
   async headers() {
     return [{ source:"/(.*)", headers:[
@@ -23,7 +23,7 @@ export default {
       { key:"Permissions-Policy", value:"camera=(self), microphone=(), geolocation=(), payment=(self)" },
     ] },
       // Signed-in pages and money APIs must never be cached by browsers/CDNs/shared proxies.
-      { source:"/:p(my|checkout|login|track-order|api)/:rest*", headers:[{ key:"Cache-Control", value:"private, no-store, max-age=0" }, { key:"X-Robots-Tag", value:"noindex, nofollow" }] },
+      { source:"/:p(my|checkout|login|forgot-password|reset-password|auth|api)/:rest*", headers:[{ key:"Cache-Control", value:"private, no-store, max-age=0" }, { key:"X-Robots-Tag", value:"noindex, nofollow" }] },
       { source:"/manifest.json", headers:[{ key:"Content-Type", value:"application/manifest+json" }] }];
   },
 };

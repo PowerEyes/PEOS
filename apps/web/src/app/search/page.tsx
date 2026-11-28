@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import type { Product } from "@/lib/types";
-export const metadata = { title: "Search – Power Eyes Opticals" };
+export const metadata = { title: "Search " };
 
 const CATEGORIES = [
   { label: "Eyeglasses", href: "/eyeglasses", e: "👓" },

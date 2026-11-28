@@ -1,3 +1,11 @@
+## Payroll, Drive backup, bank reconciliation (2026-11-26)
+- Payroll: salary structures, monthly runs, finalise, mark paid, printable payslips, "My payslips".
+- Backup: nightly Google Drive backup (OAuth drive.file), manual backup, direct download, run history.
+- Bank reconciliation: CSV import, auto/manual matching to non-cash cashbook entries.
+- Razorpay: subscription payments are checked against the gateway's captured amount; webhook checks the quoted amount.
+- Website controller: header/footer/menu links are validated against real routes and active pages.
+- Removed placeholder pages (Security, Leave, Attendance, Offline sync); Integrations shows real status; remaining "Power Eyes" defaults removed.
+
 # Changelog
 
 All notable changes to PowerOSC are documented here.
@@ -13,15 +21,19 @@ All notable changes to PowerOSC are documented here.
 - `.github/workflows/ci.yml` — CI pipeline (typecheck, lint, unit tests)
 - `.github/ISSUE_TEMPLATE/` — bug report and feature request templates
 - `.github/PULL_REQUEST_TEMPLATE.md` — PR template
+- Settings control plane foundation, Phase 2 resolver-backed ERP consumers and Phase 0 closure SQL/tests (all supplied only; no migration applied)
 
 ### Changed
 - Replaced Inter + Playfair Display with General Sans across both apps
 - Updated `.gitignore` to ignore `.playwright-mcp/`, `.env`, `.env.local`
 - Added `dev:web` and `dev:erp` scripts to root package.json
+- Settings write authority is now documented as per-key catalog authority (`admin` = company manager, `branch_manager` = branch manager; owner-only keys remain owner-only)
+- Tracked scripts read secrets from `process.env.*`; RLS-off diagnostics require an explicit disposable-environment flag; stale build caches purged
 
 ### Fixed
 - Removed committed `tsconfig.tsbuildinfo` files from git tracking
 - Fixed duplicate `.card` CSS class definition in `globals.css`
+- Supplied forward fixes for the grants allowlist, `place_sale`, Rx approval conflict, duplicate phone merge and `next_code` org binding (awaiting staging verification)
 
 ## [Build 6] — Finance & GST (2026-11-22)
 

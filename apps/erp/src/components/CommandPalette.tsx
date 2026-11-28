@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@poweros/ui";
-import { Home, Users, FileText, UserPlus, FilePlus, Search, ShoppingCart, Boxes, Wrench, Glasses, Landmark, CalendarDays, Shield, Settings, Building2, Store } from "lucide-react";
+import { Home, Users, FileText, UserPlus, FilePlus, Search, ShoppingCart, Boxes, Wrench, Glasses, Landmark, CalendarDays, Shield, Settings, Building2, Store, SlidersHorizontal, PackagePlus } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { globalSearch } from "@/app/(app)/shell-actions";
 import { routeAllowed } from "@/lib/rbac";
@@ -30,6 +30,8 @@ const BASE: Cmd[] = [
   { label: "New repair",     icon: Glasses,      go: "/repairs?new=1" },
   { label: "Book appointment", icon: CalendarDays, go: "/appointments?new=1" },
   { label: "Add product",    icon: Boxes,        go: "/inventory?new=1" },
+  { label: "Stock adjustments", icon: SlidersHorizontal, go: "/stock-adjustments" },
+  { label: "Opening stock",  icon: PackagePlus,   go: "/opening-stock" },
 ];
 
 export function CommandPalette({ open, onClose, role, perms }: { open: boolean; onClose: () => void; role?: string | null; perms?: string[] }) {

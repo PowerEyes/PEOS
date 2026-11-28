@@ -77,25 +77,48 @@ select pg_temp.expect_rows(
         and not (coalesce(p.proconfig, array[]::text[])::text like '%search_path%')$q$,
   0, 'every SECURITY DEFINER function pins search_path');
 
--- 9. Money, lifecycle and cross-org functions are not callable by tenants.
+-- 9. Service/scheduler-only RPCs: exact signatures, tenant roles denied and
+--    service_role explicitly granted. Name-based loops are deliberately avoided:
+--    an overload or a SECURITY INVOKER redefinition must not silently pass.
 do $$
-declare r record; n int := 0;
+declare
+  v_sig text;
+  v_oid oid;
+  v_service_only text[] := array[
+    'public.seed_org_permissions(uuid)',
+    'public.rate_limit_hit(text, integer, integer)',
+    'public.resolve_entitlements(uuid)',
+    'public.org_usage(uuid)',
+    'public.settle_subscription_payment(uuid, uuid, text, text, bigint, text)',
+    'public.run_subscription_lifecycle()',
+    'public.platform_billing_identity()',
+    'public.backfill_grandfather_subscriptions()',
+    'public.refresh_subscription_usage()',
+    'public.seed_site_pages(uuid)',
+    'public.backup_tables()',
+    'public.org_for_host(text)',
+    'public.entitlement_log_only(uuid, text, uuid, jsonb)'
+  ];
+  n int := 0;
 begin
-  for r in
-    select p.oid, p.proname, pg_get_function_identity_arguments(p.oid) args
-    from pg_proc p join pg_namespace ns on ns.oid = p.pronamespace
-    where ns.nspname = 'public'
-      and p.proname in ('settle_subscription_payment','rate_limit_hit','run_subscription_lifecycle',
-                        'backfill_grandfather_subscriptions','seed_org_permissions','org_usage',
-                        'resolve_entitlements')
-  loop
-    if has_function_privilege('anon', r.oid, 'execute')
-       or has_function_privilege('authenticated', r.oid, 'execute') then
-      raise exception 'FAIL: % (%) executable by tenant roles', r.proname, r.args;
+  foreach v_sig in array v_service_only loop
+    select p.oid into v_oid
+      from pg_proc p
+     where p.oid = pg_catalog.to_regprocedure(v_sig);
+
+    if v_oid is null then
+      raise exception 'FAIL: missing service-only function %', v_sig;
+    end if;
+    if has_function_privilege('anon', v_oid, 'execute')
+       or has_function_privilege('authenticated', v_oid, 'execute') then
+      raise exception 'FAIL: % executable by tenant roles', v_sig;
+    end if;
+    if not has_function_privilege('service_role', v_oid, 'execute') then
+      raise exception 'FAIL: % lost service_role EXECUTE', v_sig;
     end if;
     n := n + 1;
   end loop;
-  raise notice 'ok   % sensitive functions revoked from anon/authenticated', n;
+  raise notice 'ok   % service-only functions have exact tenant-deny/service-grant grants', n;
 end $$;
 
 -- 10. The scheduler-only usage refresh overload stays off-limits (the org-arg
@@ -107,13 +130,58 @@ select pg_temp.expect_rows(
         and (has_function_privilege('anon', p.oid, 'execute')
              or has_function_privilege('authenticated', p.oid, 'execute'))$q$,
   0, 'scheduler-only refresh_subscription_usage() is not tenant-callable');
+select pg_temp.expect_rows(
+  $q$select 1 from pg_proc p
+      where p.oid = 'public.refresh_subscription_usage(uuid)'::regprocedure
+        and has_function_privilege('authenticated', p.oid, 'execute')$q$,
+  1, 'documented exception: refresh_subscription_usage(uuid) stays tenant-callable');
+
+-- 10b. Safe wrappers and the anonymous host resolver must not be over-revoked
+--      while closing the raw cross-org RPCs.
+select pg_temp.expect_rows(
+  $q$select 1 from pg_proc p
+      where p.oid in ('public.my_entitlements()'::regprocedure,
+                      'public.my_org_usage()'::regprocedure)
+        and has_function_privilege('authenticated', p.oid, 'execute')$q$,
+  2, 'tenant-safe entitlement/usage wrappers remain callable');
+select pg_temp.expect_rows(
+  $q$select 1 from pg_proc p
+      where p.oid = 'public.resolve_org(text)'::regprocedure
+        and has_function_privilege('anon', p.oid, 'execute')$q$,
+  1, 'anonymous host resolver remains callable');
 
 -- 11. Drift guard: no policy may depend on a function tenants cannot execute.
 select pg_temp.expect_rows(
   $q$select 1 from pg_policies where schemaname='public'
       and (coalesce(qual,'') || coalesce(with_check,'')) ~*
-          'resolve_entitlements|org_usage|seed_org_permissions|my_entitlements|my_org_usage'$q$,
+          'resolve_entitlements|org_usage|seed_org_permissions|platform_billing_identity|backfill_grandfather_subscriptions|refresh_subscription_usage|seed_site_pages|backup_tables|org_for_host|entitlement_log_only|my_entitlements|my_org_usage'$q$,
   0, 'no RLS policy depends on a revoked or wrapper function');
+
+-- 11b. Sensitive RPCs must stay SECURITY DEFINER; an invoker redefinition would
+--      bypass the definer-owned guards even if the grants still looked correct.
+select pg_temp.expect_rows(
+  $q$select 1 from pg_proc p
+      where p.oid in (
+        'public.seed_org_permissions(uuid)'::regprocedure,
+        'public.rate_limit_hit(text, integer, integer)'::regprocedure,
+        'public.resolve_entitlements(uuid)'::regprocedure,
+        'public.org_usage(uuid)'::regprocedure,
+        'public.settle_subscription_payment(uuid, uuid, text, text, bigint, text)'::regprocedure,
+        'public.run_subscription_lifecycle()'::regprocedure,
+        'public.platform_billing_identity()'::regprocedure,
+        'public.backfill_grandfather_subscriptions()'::regprocedure,
+        'public.refresh_subscription_usage()'::regprocedure
+      ) and not p.prosecdef$q$,
+  0, 'sensitive RPCs remain SECURITY DEFINER');
+
+-- 11c. No tenant-callable SECURITY DEFINER function may read break-glass grants.
+select pg_temp.expect_rows(
+  $q$select 1 from pg_proc p
+      where p.prosecdef
+        and pg_get_functiondef(p.oid) ilike '%break_glass_grants%'
+        and (has_function_privilege('anon', p.oid, 'execute')
+             or has_function_privilege('authenticated', p.oid, 'execute'))$q$,
+  0, 'no tenant-callable SECURITY DEFINER function reads break_glass_grants');
 
 -- ══ Fixtures: two organisations with a sale, a line and loyalty each ══════
 create temp table _a as
@@ -157,7 +225,15 @@ create or replace function pg_temp.as_user(u uuid) returns void language plpgsql
 begin perform set_config('request.jwt.claims', json_build_object('sub', u, 'role', 'authenticated')::text, true);
       perform set_config('request.jwt.claim.sub', u::text, true); set local role authenticated; end $$;
 create or replace function pg_temp.as_service() returns void language plpgsql as $$
-begin reset role; perform set_config('request.jwt.claims', '', true); end $$;
+begin
+  reset role;
+  perform set_config('request.jwt.claims', '', true);
+  perform set_config('request.jwt.claim.sub', '', true);
+  perform set_config('request.jwt.claim.role', 'service_role', true);
+  -- A real role switch: a superuser probe would pass even if service_role had
+  -- lost its EXECUTE grant.
+  set local role service_role;
+end $$;
 
 -- ══ Functional probes — tenant A ═══════════════════════════════════════════
 select pg_temp.as_user(user_id) from _a;
@@ -176,13 +252,35 @@ select pg_temp.expect_rows(
   $q$select 1 from my_org_usage() where metric='customers' and value=1$q$, 1,
   'my_org_usage() reports the caller''s own organisation');
 
--- The raw cross-org RPCs are revoked for tenant roles.
+-- The raw cross-org RPCs are revoked for tenant roles. Structural invariant 9
+-- is authoritative; these probes confirm PostgREST-style calls fail too.
 select pg_temp.expect_fail($q$select resolve_entitlements((select org from _b))$q$,
   'raw resolve_entitlements is revoked for tenants');
 select pg_temp.expect_fail($q$select 1 from org_usage((select org from _b))$q$,
   'raw org_usage is revoked for tenants');
 select pg_temp.expect_fail($q$select seed_org_permissions((select org from _b))$q$,
   'seed_org_permissions is revoked for tenants');
+select pg_temp.expect_fail($q$select platform_billing_identity()$q$,
+  'platform_billing_identity is revoked for tenants');
+select pg_temp.expect_fail(
+  $q$select settle_subscription_payment(null, null, null, null, 0, 'razorpay')$q$,
+  'settle_subscription_payment is revoked for tenants');
+select pg_temp.expect_fail($q$select run_subscription_lifecycle()$q$,
+  'lifecycle runner is revoked for tenants');
+select pg_temp.expect_fail($q$select rate_limit_hit('audit', 1, 60)$q$,
+  'rate_limit_hit is revoked for tenants');
+select pg_temp.expect_fail($q$select backfill_grandfather_subscriptions()$q$,
+  'grandfather backfill is revoked for tenants');
+select pg_temp.expect_fail($q$select refresh_subscription_usage()$q$,
+  'scheduler usage refresh is revoked for tenants');
+select pg_temp.expect_fail($q$select seed_site_pages((select org from _b))$q$,
+  'site-page seeder is revoked for tenants');
+select pg_temp.expect_fail($q$select backup_tables()$q$,
+  'backup_tables is revoked for tenants');
+select pg_temp.expect_fail($q$select org_for_host('b.test')$q$,
+  'org_for_host is revoked for tenants');
+select pg_temp.expect_fail($q$select entitlement_log_only(null, null, null, null)$q$,
+  'entitlement log-only writer is revoked for tenants');
 
 -- Sensitive tables stay invisible even with a direct query.
 select pg_temp.expect_fail($q$select 1 from break_glass_grants$q$,
@@ -219,6 +317,10 @@ select pg_temp.expect_rows($q$select 1 from resolve_entitlements((select org fro
 select pg_temp.expect_rows(
   $q$select 1 from org_usage((select org from _b)) where metric='customers' and value=1$q$, 1,
   'service role still reads any organisation''s usage');
+select pg_temp.expect_rows(
+  $q$select 1 from platform_billing_identity() b
+      where (b ->> 'gst_rate_bp')::int = 1800$q$, 1,
+  'service role still reads platform billing identity through the audited client path');
 select pg_temp.expect_rows($q$select 1 from customer_orders$q$, 2,
   'service role still sees every row through the views');
 

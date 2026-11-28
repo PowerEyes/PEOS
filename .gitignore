@@ -1,3 +1,6 @@
+# Production data dumps (contain real customer/auth data — never commit)
+/docs/sql/backup/*-data-*.sql
+
 # Playwright end-to-end artifacts
 /test-results/
 /playwright-report/

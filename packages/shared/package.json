@@ -1,0 +1,11 @@
+{
+  "name": "@poweros/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "lib/types/index.ts",
+  "types": "lib/types/index.ts",
+  "exports": {
+    ".": "./lib/types/index.ts",
+    "./utils": "./lib/utils/index.ts"
+  }
+}

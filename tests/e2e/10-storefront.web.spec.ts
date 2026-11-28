@@ -36,7 +36,7 @@ async function untilProductSays(page: Page, id: string, want: string) {
       // networkidle: `in_stock` is fetched client-side after hydration.
       await page.goto(`/product/${id}?cb=${Date.now()}`, { waitUntil: "networkidle" });
       const txt = await page.locator("body").innerText();
-      return txt.includes(want);
+      return txt.toLowerCase().includes(want.toLowerCase());
     },
     90_000,
     2_000,
@@ -213,7 +213,7 @@ test.describe("storefront", () => {
     const id = product!.id;
 
     // --- Phase A: stocked in both branches ---
-    await untilProductSays(page, id, "In Stock at Mogappair");
+    await untilProductSays(page, id, "In Stock");
     await untilCardSays(page, id, "Out of stock", true);
 
     // --- Phase B: drained in both branches ---
@@ -225,14 +225,14 @@ test.describe("storefront", () => {
 
       // --- Phase C: one unit per branch (2 in total) — low-stock warning ---
       await setStock(id, 1, "E2E low-stock probe");
-      await untilProductSays(page, id, "In Stock at Mogappair");
+      await untilProductSays(page, id, "In Stock");
       await untilCardSays(page, id, "Only 2 left in stock");
     } finally {
       for (const s of original) await setStock(id, num(s.qty), "E2E restore");
     }
 
     // --- Back to normal ---
-    await untilProductSays(page, id, "In Stock at Mogappair");
+    await untilProductSays(page, id, "In Stock");
     await untilCardSays(page, id, "Out of stock", true);
   });
 
@@ -245,6 +245,6 @@ test.describe("storefront", () => {
     expect(res!.status()).toBe(200);
     await expect(page.locator("h1").first()).toBeVisible();
     const body = await page.locator("body").innerText();
-    expect(body).toMatch(/In Stock at Mogappair|Currently Out of Stock/);
+    expect(body).toMatch(/In Stock|Currently Out of Stock/i);
   });
 });

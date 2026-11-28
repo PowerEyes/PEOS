@@ -9,7 +9,7 @@ export function EyeTestBooking({ cfg, branches }: { cfg: any; branches: string[]
   const [branch,setBranch]=useState(""); const [type,setType]=useState(""); const [date,setDate]=useState(""); const [time,setTime]=useState(""); const [name,setName]=useState(""); const [phone,setPhone]=useState(""); const [done,setDone]=useState(false);
   function submit() {
     if (!branch||!type||!date||!time||!name||!phone) return;
-    const msg=`Hello, I'd like to book a ${type} at Power Eyes Opticals ${branch} on ${new Date(date).toLocaleDateString("en-IN",{dateStyle:"long"})} at ${time}.\nName: ${name}\nPhone: ${phone}`;
+    const msg=`Hello, I'd like to book a ${type} at ${branch} on ${new Date(date).toLocaleDateString("en-IN",{dateStyle:"long"})} at ${time}.\nName: ${name}\nPhone: ${phone}`;
     window.open(waHref(whatsappNumber, msg),"_blank"); setDone(true);
   }
   if (done) return <div className="mx-auto max-w-lg px-4 py-20 text-center"><div className="mx-auto mb-4 grid h-20 w-20 place-items-center rounded-full bg-emerald-50"><Check className="text-emerald-500" size={40}/></div><h2 className="font-display text-3xl font-bold text-navy-900">Booking Requested!</h2><p className="mt-2 text-slate-500">WhatsApp opened with your details. Our team will confirm shortly.</p><button onClick={()=>setDone(false)} className="btn-gold mt-6">Book Another</button></div>;
@@ -26,7 +26,7 @@ export function EyeTestBooking({ cfg, branches }: { cfg: any; branches: string[]
         <div className="flex flex-wrap gap-2">{TIMES.map(t=><button key={t} onClick={()=>setTime(t)} className={`rounded-xl border px-3 py-2 text-xs font-medium transition ${time===t?"border-gold-500 bg-amber-50 text-gold-700":"border-slate-200 hover:border-navy-700"}`}>{t}</button>)}</div></div>}
       <div className="grid gap-3 sm:grid-cols-2">
         <div><p className="mb-2 flex items-center gap-2 text-sm font-semibold text-navy-700"><User size={15}/>Your name</p><input value={name} onChange={e=>setName(e.target.value)} placeholder="Full name" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/></div>
-        <div><p className="mb-2 text-sm font-semibold text-navy-700">Phone</p><input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Enter your phone number" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/></div>
+        <div><p className="mb-2 text-sm font-semibold text-navy-700">Phone</p><input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+91 98401 85186" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-navy-700"/></div>
       </div>
       <button onClick={submit} disabled={!branch||!type||!date||!time||!name||!phone} className="btn-gold w-full py-4 text-base disabled:opacity-50">💬 {cfg.cta || "Confirm via WhatsApp"}</button>
       <p className="text-center text-xs text-slate-400">Opens WhatsApp with your appointment details. {cfg.note}</p>

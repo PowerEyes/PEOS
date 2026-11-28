@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { dbError } from "@poweros/business-rules";
@@ -8,6 +9,8 @@ export default function Login() {
   const [mode, setMode] = useState<"in" | "up">("in");
   const [showPassword, setShowPassword] = useState(false);
   const [err, setErr] = useState(""); const [busy, setBusy] = useState(false); const router = useRouter();
+  const [resetDone, setResetDone] = useState(false);
+  useEffect(() => { setResetDone(new URLSearchParams(window.location.search).get("reset") === "1"); }, []);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault(); setBusy(true); setErr("");
     const f = new FormData(e.currentTarget); const email = String(f.get("email")); const password = String(f.get("password"));
@@ -31,8 +34,10 @@ export default function Login() {
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
+        {resetDone && <p className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">Password updated. Sign in with your new password.</p>}
         {err && <p className="text-sm text-rose-600">{err}</p>}
         <button disabled={busy} className="btn btn-primary w-full">{busy ? "Please wait…" : mode === "in" ? "Sign in" : "Request access"}</button>
+        {mode === "in" && <Link href="/forgot-password" className="block text-center text-sm text-navy-700 underline">Forgot password?</Link>}
         <button type="button" onClick={() => setMode(mode === "in" ? "up" : "in")} className="w-full text-center text-sm text-navy-700 underline">
           {mode === "in" ? "New staff? Request access" : "Back to sign in"}</button>
       </form>

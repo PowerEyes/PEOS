@@ -1,3 +1,4 @@
+import { getStoreName } from "@/lib/site";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -53,6 +54,7 @@ function DocSection({ title, icon, count, action, empty, children }: {
 }
 
 export default async function DocumentsPage() {
+  const storeName = await getStoreName();
   const site = await getSiteSettings();
   const customer = await getCustomer();
   if (!customer) redirect("/my/login");
@@ -323,7 +325,7 @@ export default async function DocumentsPage() {
       </DocSection>
 
       <p className="text-xs text-slate-400">
-        Documents are generated from your account records at Power Eyes Opticals.
+        Documents are generated from your account records at {storeName}.
         Need a copy by email or WhatsApp? <a href={waHref(site.whatsappNumber, "Please send me a copy of my documents")} target="_blank" rel="noopener noreferrer" className="font-semibold text-navy-700 hover:underline">Contact us</a>.
       </p>
     </PortalLayout>

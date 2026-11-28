@@ -28,6 +28,17 @@ pnpm dev          # runs ERP on :3001, Website on :3000
 - Add the same env vars.
 - Update Supabase Auth → Redirect URLs with your website domain.
 
+## 6. Settings authority
+Storefront and Website Studio values are settings-catalog keys, not hardcoded
+page values. Write authority is resolved per key by
+`setting_definitions.write_role` / `write_permission`: owner/admin can edit
+operational website keys, while `write_role = 'owner'` keys (for example tax
+identity, numbering prefixes and module toggles) remain owner-only. There is no
+literal `manager` role; use `admin` for company manager and `branch_manager`
+for branch manager. Secrets belong only in the deployment secret manager or
+`integration_secrets`; never place a service-role or webhook secret in
+`NEXT_PUBLIC_*`.
+
 ## Architecture
 Public website reads from Supabase directly (anon key, RLS policies
 added in 0009_website.sql). Only `visible_on_website = true` products

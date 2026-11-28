@@ -69,5 +69,30 @@ select pg_temp.as_user(u_a) from _ids;
 select pg_temp.expect_fail(format('insert into sales (org_id, branch_id, customer_id, grand_total, kind, status) values (%L,%L,%L,5,''order'',''draft'')', (select org from _ids), (select bb from _ids), (select cust from _ids)), 'A cannot create a sale in branch B');
 select pg_temp.expect_rows(format('select 1 from public.customer_branch_context(%L)', (select cust from _ids)), 1, 'customer_branch_context works');
 reset role;
+
+-- Reusable non-owner fixtures, then IDOR/cost/refund probes from the specialist
+-- role set. The fixture is seeded as the migration owner, not as a tenant.
+\ir rbac_role_fixtures.sql
+
+select pg_temp.as_user(pg_temp.rbac_uid('cashier'));
+select pg_temp.expect_rows('select 1 from product_costs', 0, 'cashier cannot read cost prices');
+select pg_temp.expect_fail(format('update product_costs set cost_price = 1 where product_id = %L', (select product_id from _rbac)), 'cashier cannot write a cost price');
+select pg_temp.expect_fail(
+  format($q$insert into credit_notes (org_id, branch_id, original_sale_id, customer_id, reason, grand_total)
+         values (%L, %L, %L, %L, 'rbac conflict probe', 1)$q$,
+         (select org_a from _rbac), (select branch_east from _rbac),
+         (select sale_id from _rbac), (select customer_id from _rbac)),
+  'cashier cannot issue a refund despite credit_notes.issue grant');
+reset role;
+
+select pg_temp.as_user(pg_temp.rbac_uid('optometrist'));
+select pg_temp.expect_fail(format('update sales set grand_total = 1 where id = %L', (select sale_id from _rbac)), 'optometrist in West cannot edit an East sale');
+reset role;
+
+select pg_temp.as_user(pg_temp.rbac_uid('org2_owner'));
+select pg_temp.expect_rows(format('select 1 from customers where id = %L', (select customer_id from _rbac)), 0, 'org B owner cannot read org A customer (IDOR)');
+select pg_temp.expect_rows(format('select 1 from sales where id = %L', (select sale_id from _rbac)), 0, 'org B owner cannot read org A sale (IDOR)');
+reset role;
+
 rollback;
 \echo 'ALL BRANCH ACCESS CHECKS PASSED'

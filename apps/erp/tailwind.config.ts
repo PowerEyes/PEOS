@@ -1,6 +1,9 @@
 import type { Config } from "tailwindcss";
 export default {
   content: ["./src/**/*.{ts,tsx}", "../../packages/ui/src/**/*.{ts,tsx}"],
+  // Website Controller builds the product-toggle colour as `bg-${c}-500`.
+  // Tailwind cannot see those runtime strings, so keep them in the CSS.
+  safelist: ["bg-emerald-500", "bg-blue-500", "bg-violet-500", "bg-gold-500"],
   theme: { extend: {
     colors: {
       navy: { 50: "#EEF3F8", 700: "#123659", 800: "#0E2B4A", 900: "#0A2240" },

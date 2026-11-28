@@ -18,12 +18,13 @@ import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import pg from "pg";
 
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const INV = join(ROOT, "docs", "sql", "inventory.json");
 const OUT = join(ROOT, "docs", "sql", "drift.json");
 
-const dsn = process.env.DATABASE_URL ??
-  "postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres";
+const dsn = process.env.DATABASE_URL;
 
 const db = new pg.Client({ connectionString: dsn, ssl: { rejectUnauthorized: false } });
 await db.connect();

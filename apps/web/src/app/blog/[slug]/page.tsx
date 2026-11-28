@@ -97,7 +97,7 @@ export default async function BlogPostPage({ params }: Params) {
         {/* CTA banner */}
         <div className="mt-10 rounded-2xl bg-gradient-to-r from-navy-900 to-navy-700 text-white p-7 text-center">
           <p className="font-bold text-xl mb-1">Need expert eye care advice?</p>
-          <p className="text-slate-300 text-sm mb-4">Our optometrists are available Mon–Sun 10 AM – 9 PM at both Mogappair stores.</p>
+          <p className="text-slate-300 text-sm mb-4">Our optometrists are available Mon–Sun 10 AM – 9 PM at our stores.</p>
           <div className="flex justify-center gap-3 flex-wrap">
             <Link href="/eye-test" className="rounded-lg bg-gold-500 px-6 py-2.5 text-sm font-bold hover:bg-gold-600 transition">Book Eye Test</Link>
             <a href={waHref(site.whatsappNumber)} target="_blank" className="rounded-lg border-2 border-white/40 px-6 py-2.5 text-sm font-bold hover:bg-white/10 transition">💬 Ask on WhatsApp</a>

@@ -28,7 +28,7 @@ import {
 } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { WhatsAppSend } from "@/components/WhatsAppSend";
-import { createPrescription } from "./actions";
+import { createPrescription, setPrescriptionReview } from "./actions";
 
 type Cust = { id: string; full_name: string; phone: string; vision_id: string };
 const TONE = { active: "green", expiring: "gold", expired: "red" } as const;
@@ -712,10 +712,23 @@ function RxDrawer({
   );
 }
 
-function Detail({ r, onClose }: { r: any | null; onClose: () => void }) {
+function Detail({
+  r,
+  onClose,
+  canReview,
+}: {
+  r: any | null;
+  onClose: () => void;
+  canReview: boolean;
+}) {
   const [img, setImg] = useState("");
+  const [reason, setReason] = useState("");
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const toast = useToast();
+  const router = useRouter();
   useEffect(() => {
     setImg("");
+    setReason("");
     if (r?.image_path)
       supabaseBrowser()
         .storage.from("prescriptions")
@@ -724,6 +737,23 @@ function Detail({ r, onClose }: { r: any | null; onClose: () => void }) {
   }, [r?.id]);
   if (!r)
     return <Modal open={false} onClose={onClose} title="" children={null} />;
+
+  async function review(
+    decision: "approve" | "reapprove" | "reject" | "request_correction",
+  ) {
+    if (reviewBusy) return;
+    setReviewBusy(true);
+    try {
+      const result = await setPrescriptionReview({ id: r.id, decision, reason });
+      if (result.error) return toast(result.error, "err");
+      toast(result.ok ?? "Prescription review saved");
+      onClose();
+      router.refresh();
+    } finally {
+      setReviewBusy(false);
+    }
+  }
+
   const eyeRow = (s: "od" | "os") => (
     <div
       className={`rounded-2xl border p-4 ${s === "od" ? "border-blue-200 bg-blue-50/40" : "border-orange-200 bg-orange-50/40"}`}
@@ -772,6 +802,48 @@ function Detail({ r, onClose }: { r: any | null; onClose: () => void }) {
           {new Date(r.valid_till).toLocaleDateString("en-IN")}
         </p>
         {r.remarks && <p className="text-sm">{r.remarks}</p>}
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+          <Pill tone={r.review_status === "approved" ? "green" : r.review_status === "rejected" ? "red" : "gold"}>
+            {r.review_status || "pending"}
+          </Pill>
+          {r.approved_at && <span>Approved {new Date(r.approved_at).toLocaleDateString("en-IN")}</span>}
+        </div>
+        {canReview && (
+          <div className="space-y-2 rounded-2xl border border-navy-100 bg-navy-50/40 p-3">
+            <p className="text-sm font-semibold">Review decision</p>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={2}
+              maxLength={300}
+              placeholder="Reason (required for reject / correction)"
+              className="field"
+            />
+            <div className="flex flex-wrap gap-2">
+              <button
+                disabled={reviewBusy}
+                onClick={() => review(r.review_status === "approved" ? "reapprove" : "approve")}
+                className="btn btn-primary"
+              >
+                {r.review_status === "approved" ? "Reapprove" : "Approve"}
+              </button>
+              <button
+                disabled={reviewBusy}
+                onClick={() => review("request_correction")}
+                className="btn btn-ghost text-amber-700"
+              >
+                Request correction
+              </button>
+              <button
+                disabled={reviewBusy}
+                onClick={() => review("reject")}
+                className="btn btn-ghost text-red-700"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        )}
         {img && (
           <img
             src={img}
@@ -810,9 +882,11 @@ function Detail({ r, onClose }: { r: any | null; onClose: () => void }) {
 export function RxView({
   rows,
   customers,
+  canReview,
 }: {
   rows: any[];
   customers: Cust[];
+  canReview: boolean;
 }) {
   const sp = useSearchParams();
   const [open, setOpen] = useState(false);
@@ -895,7 +969,7 @@ export function RxView({
         customers={customers}
         presetId={sp.get("customer")}
       />
-      <Detail r={sel} onClose={() => setSel(null)} />
+      <Detail r={sel} onClose={() => setSel(null)} canReview={canReview} />
     </div>
   );
 }

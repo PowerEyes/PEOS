@@ -2,7 +2,7 @@ import test from "node:test"; import assert from "node:assert/strict";
 import { buildDocPdf } from "../src/lib/doc-render.ts";
 // Minimal chainable fake of the Supabase client returning fixed rows.
 const rows = {
-  organizations: { name: "Power Eyes Opticals" },
+  organizations: { name: "Test Opticals" },
   sales: { id: "s1", code: "INV-0001", kind: "invoice", gst_applied: true, created_at: "2026-11-01", grand_total: 1180, paid_total: 500, cgst_total: 90, sgst_total: 90, igst_total: 0, discount_total: 0,
     customers: { full_name: "Anita ₹ Kumar", phone: "9876543210" }, branches: { name: "East", address: "Chennai", phone: "044" }, payments: [],
     sale_lines: [{ line_no: 1, description: "Titan frame (blue)", qty: 1, unit_price: 1000, line_total: 1180 }, ...Array.from({ length: 60 }, (_, i) => ({ line_no: i + 2, description: "Extra item " + i, qty: 1, unit_price: 1, line_total: 1 }))] },

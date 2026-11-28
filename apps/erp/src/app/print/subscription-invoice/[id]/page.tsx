@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { inr } from "@poweros/business-rules";
 import { supabaseServer } from "@/lib/supabase/server";
+import { supabaseBilling } from "@/lib/supabase/admin";
 import { PrintButton } from "@/components/PrintButton";
 
 // Tax invoice for a SaaS subscription. RLS scopes the read to the caller's org, so
@@ -11,19 +12,24 @@ export default async function SubscriptionInvoicePrint({ params }: { params: { i
   const { data: { user } } = await sb.auth.getUser();
   if (!user) notFound();
 
-  const [{ data: inv }, { data: identity }] = await Promise.all([
-    sb.from("subscription_invoices")
-      .select("*, plan:billing_plans(name, code, interval)")
-      .eq("id", params.id)
-      .maybeSingle(),
-    sb.rpc("platform_billing_identity"),
-  ]);
+  // RLS must verify that this session is entitled to the invoice *before* any
+  // elevated call happens. platform_billing_identity() reads platform settings
+  // and is service-role only, so it is fetched only after that tenant check.
+  const { data: inv } = await sb.from("subscription_invoices")
+    .select("*, plan:billing_plans(name, code, interval)")
+    .eq("id", params.id)
+    .maybeSingle();
   if (!inv) notFound();
 
   const { data: org } = await sb.from("organizations")
     .select("name, legal_name, billing_address")
     .eq("id", inv.org_id)
     .maybeSingle();
+  if (!org) notFound();
+
+  const { data: identity, error: identityError } = await supabaseBilling().rpc("platform_billing_identity");
+  if (identityError) throw identityError;
+
   const { data: seller } = await sb.from("organizations").select("name").limit(1).maybeSingle();
 
   const total = Number(inv.amount_minor) || 0;

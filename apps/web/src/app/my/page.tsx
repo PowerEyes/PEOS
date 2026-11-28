@@ -1,3 +1,4 @@
+import { getStoreName } from "@/lib/site";
 import Link from "next/link";
 import { FileText, ShoppingBag, CalendarDays, Shield, Star } from "lucide-react";
 import { getCustomer } from "@/lib/customer";
@@ -6,6 +7,7 @@ import { getSiteSettings } from "@/lib/site";
 import { waHref } from "@/lib/wa";
 
 export default async function PortalDashboard() {
+  const storeName = await getStoreName();
   const site = await getSiteSettings();
   const customer = await getCustomer();
 
@@ -83,6 +85,6 @@ export default async function PortalDashboard() {
           <Link key={l as string} href={h as string} className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-100 bg-white p-3 text-center text-xs font-medium text-slate-700 hover:border-gold-400 hover:bg-amber-50 transition min-h-[76px]">
             <span className="text-xl sm:text-2xl">{e as string}</span><span className="leading-tight">{l as string}</span></Link>))}
       </div></div>
-    <p className="text-xs text-slate-400">Figures above are generated live from your Power Eyes account records.</p>
+    <p className="text-xs text-slate-400">Figures above are generated live from your {storeName} account records.</p>
   </div>);
 }

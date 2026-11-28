@@ -4,11 +4,13 @@
 import { readFile } from "node:fs/promises";
 import pg from "pg";
 
+if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is required");
+
 const files = [
   "supabase/migrations/20261217000000_fix_schema_drift.sql",
   "supabase/migrations/20261218000000_recover_out_of_band_features.sql",
 ];
-const db = new pg.Client({ connectionString: "postgresql://postgres:postgres@127.0.0.1:54522/postgres" });
+const db = new pg.Client({ connectionString: process.env.DATABASE_URL });
 await db.connect();
 try {
   await db.query("BEGIN");

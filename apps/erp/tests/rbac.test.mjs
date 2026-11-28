@@ -41,6 +41,18 @@ test("specialist roles reach their own modules through grants, not role names", 
   assert.equal(routeAllowed("cashier", "/finance", ["finance_view"]), true);
   assert.equal(routeAllowed("lab_technician", "/workshop"), true);
 });
+test("stock adjustment routes need the stock_adjust grant; owners/admins bypass", () => {
+  for (const p of ["/stock-adjustments", "/opening-stock"]) {
+    assert.equal(routeAllowed("owner", p), true, `owner ${p}`);
+    assert.equal(routeAllowed("admin", p), true, `admin ${p}`);
+    assert.equal(routeAllowed("inventory_manager", p, ["stock_adjust"]), true, `inventory_manager+grant ${p}`);
+    assert.equal(routeAllowed("inventory_manager", p), false, `inventory_manager no grant ${p}`);
+    assert.equal(routeAllowed("staff", p, ["stock_adjust"]), true, `staff+grant ${p}`);
+    assert.equal(routeAllowed("staff", p), false, `staff no grant ${p}`);
+  }
+  // The grant is distinct: stock_audit alone must not open the adjustment screens.
+  assert.equal(routeAllowed("inventory_manager", "/stock-adjustments", ["stock_audit"]), false);
+});
 test("audit is owner/admin-only; branches are manager-tier, creation admin-only", () => {
   for (const r of ["owner", "admin"]) for (const p of ["/audit", "/branches", "/branches/xyz", "/branches/new"]) assert.equal(routeAllowed(r, p), true, `${r} ${p}`);
   assert.equal(routeAllowed("branch_manager", "/branches"), true);

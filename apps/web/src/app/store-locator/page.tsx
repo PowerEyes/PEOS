@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MapPin, Phone, Mail, MessageCircle, Clock } from "lucide-react";
 import { getSiteSettings } from "@/lib/site";
 import { waHref } from "@/lib/wa";
-export const metadata = { title: "Store Locator – Power Eyes Mogappair" };
+export const metadata = { title: "Store Locator " };
 
 const branchImgUrl = (p: string) =>
   `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/site-images/${p}`;

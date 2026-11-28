@@ -44,9 +44,17 @@ export async function POST(req: Request) {
   if (!Array.isArray(quote.lines) || quote.lines.some((l: any) => !l || !["product", "accessory", "lens", "service"].includes(l.line_type) || !Number.isInteger(l.qty) || l.qty < 1 || l.qty > 10) || quote.lines.filter((l:any)=>l.line_type==="service").some((l:any)=>l.description!=="Delivery fee"||l.qty!==1||Number(l.unit_price)!==Number(quote.delivery_fee)||Number(l.tax_pct)!==0)) return NextResponse.json({ error: "Saved checkout lines are invalid." }, { status: 400 });
 
   const address = quote.address ?? {};
-  const phone = clean(address.phone, 20).replace(/\D/g, "").slice(-10);
+  // Pickup quotes have no postal address — the contact saved on the quote is
+  // what identifies the buyer. Read it the same way finalizeStorefrontQuote
+  // does: quote.customer (new) → quote.address (delivery) → the address the
+  // client sent (quotes created before the contact was persisted).
+  const contact = quote.customer ?? {};
+  const supplied = body.addr && typeof body.addr === "object" ? body.addr : {};
+  const field = (key: string) => contact[key] || address[key] || supplied[key];
+  const phone = clean(field("phone"), 20).replace(/\D/g, "").slice(-10);
   if (phone.length !== 10) return NextResponse.json({ error: "A valid 10-digit customer phone is required." }, { status: 400 });
-  const email = typeof address.email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address.email.trim()) ? address.email.trim().toLowerCase() : null;
+  const emailCandidate = field("email");
+  const email = typeof emailCandidate === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailCandidate.trim()) ? emailCandidate.trim().toLowerCase() : null;
 
   if (paymentId) {
     const { data: previous } = await sb.from("online_payments").select("sale_id,sales(code)").eq("razorpay_payment_id", paymentId).not("sale_id", "is", null).maybeSingle();
@@ -58,13 +66,37 @@ export async function POST(req: Request) {
   if (!customerId && email) { const { data: customer } = await sb.from("customers").select("id").eq("org_id", orgId).ilike("email", email).limit(1).maybeSingle(); if (customer) customerId = customer.id; }
   if (!customerId) { const { data: customer } = await sb.from("customers").select("id").eq("org_id", orgId).eq("phone", phone).limit(1).maybeSingle(); if (customer) customerId = customer.id; }
   if (!customerId) {
-    const { data: customer } = await sb.from("customers").insert({ org_id: orgId, full_name: clean(address.name, 80) || "Online Customer", phone, email, city: clean(address.city, 60) || "Chennai", state: clean(address.state, 60) || "Tamil Nadu", pincode: clean(address.pincode, 10) || "600000" }).select("id").single();
+    const { data: customer } = await sb.from("customers").insert({ org_id: orgId, full_name: clean(field("name"), 80) || "Online Customer", phone, email, city: clean(address.city, 60) || null, state: clean(address.state, 60) || null, pincode: clean(address.pincode, 10) || null }).select("id").single();
     customerId = customer?.id ?? null;
   }
   if (!customerId) return NextResponse.json({ error: "Could not identify customer." }, { status: 500 });
+  const prescriptionSnapshot = quote.prescription_snapshot && typeof quote.prescription_snapshot === "object"
+    ? quote.prescription_snapshot
+    : null;
+  if (quote.prescription_required && !prescriptionSnapshot) {
+    return NextResponse.json({ error: "Prescription details are missing for this order. Reopen checkout and re-enter them." }, { status: 400 });
+  }
   const notes = `Online order.${quote.coupon_code ? ` Coupon ${clean(quote.coupon_code, 40)} applied.` : ""} ${quote.delivery === "pickup" ? `Pickup: ${clean(quote.branch_name, 100)}` : `Deliver to ${clean(address.line1, 200)}, ${clean(address.city, 60)} ${clean(address.pincode, 10)}`}. Razorpay: ${clean(razorpay_order_id, 80)}`;
   const payment = paymentId ? { amount: Number(quote.subtotal), method: "razorpay", reference: paymentId } : { amount: 0, method: "cash" };
-  const { data: sale, error } = await sb.rpc("place_sale", { p: { org_id: orgId, idempotency_key: q.id, kind: "order", channel: "storefront", customer_id: customerId, branch_id: quote.branch_id, lines: quote.lines, notes, payment } });
+  const { data: sale, error } = await sb.rpc("place_sale", {
+    p: {
+      org_id: orgId,
+      idempotency_key: q.id,
+      kind: "order",
+      channel: "storefront",
+      customer_id: customerId,
+      branch_id: quote.branch_id,
+      lines: quote.lines,
+      notes,
+      payment,
+      // Only send the key when there is a snapshot: an explicit JSON null makes
+      // place_sale raise "Invalid prescription snapshot", which broke every
+      // frame-only order. finalizeStorefrontQuote omits it the same way.
+      ...(prescriptionSnapshot ? { prescription_snapshot: prescriptionSnapshot } : {}),
+      coupon_id: typeof quote.coupon_id === "string" && /^[0-9a-f-]{36}$/i.test(quote.coupon_id) ? quote.coupon_id : null,
+      discount: Number(quote.discount ?? 0),
+    },
+  });
   if (error) { console.error("place_sale error:", error.message); return NextResponse.json({ error: dbError(error.message) }, { status: 500 }); }
   if (paymentId) {
     const { error: pErr } = await sb.from("online_payments").upsert({ org_id: orgId, sale_id: sale.id, customer_id: customerId, razorpay_order_id, razorpay_payment_id: paymentId, razorpay_signature, amount: paidAmount, status: "paid" }, { onConflict: "razorpay_payment_id" });

@@ -50,6 +50,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, already: true });
     }
 
+    // The gateway amount must equal the amount we quoted server-side for this order.
+    const { data: quoted } = await sb.from("checkout_quotes").select("amount_minor").eq("razorpay_order_id", razorpay_order_id).eq("org_id", orgId).maybeSingle();
+    if (!quoted || Number(quoted.amount_minor) !== Number(amount)) {
+      console.error(`[rzp-webhook] amount mismatch for ${razorpay_payment_id}; not recorded`);
+      return NextResponse.json({ ok: true, ignored: "amount_mismatch" });
+    }
+
     // Not yet processed — this means the client callback failed (browser closed, etc.)
     // Attempt to create the order from notes stored in the Razorpay order
     const customerPhone = notes?.phone ?? "";
@@ -69,7 +76,7 @@ export async function POST(req: Request) {
       const { data } = await sb.from("customers").insert({
         org_id: orgId, full_name: customerName,
         phone: customerPhone.replace(/\D/g,""), email: customerEmail || null,
-        city: "Chennai", state: "Tamil Nadu", pincode: "600037",
+        city: null, state: null, pincode: null,
       }).select("id").single();
       customerId = data?.id ?? null;
     }

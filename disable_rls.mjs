@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 
-const DATABASE_URL = 'postgresql://postgres.lnoagnobwrptbcdeshji:qcRKmqqz56pZ8b2F@aws-0-ap-south-1.pooler.supabase.com:6543/postgres';
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) throw new Error("DATABASE_URL is required");
 const pool = new Pool({ connectionString: DATABASE_URL });
 
 const tables = ['products', 'suppliers', 'stock', 'stock_movements', 'customers', 'prescriptions', 'brands', 'lens_packages', 'lens_options', 'product_costs'];

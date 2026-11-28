@@ -123,7 +123,7 @@ export function TaxSection({
           value={footer}
           disabled={!canEdit}
           onChange={(e) => setFooter(e.target.value)}
-          placeholder="Thank you for shopping with Power Eyes Opticals!"
+          placeholder="Thank you for shopping with us!"
         />
       </L>
       <div className="grid gap-3 sm:grid-cols-2">

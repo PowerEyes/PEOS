@@ -1,6 +1,6 @@
 {
  "appliedAt": "2026-11-24T16:02:02.251Z",
- "scratch": "postgresql://postgres:postgres@127.0.0.1:5433/postgres",
+ "scratch": "<redacted>",
  "results": [
   {
    "file": "20261121030000_purchase_orders.sql",

@@ -4,7 +4,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseBilling } from "@/lib/supabase/admin";
-import { createRazorpayOrder, isRazorpayConfigured, razorpayKeyId, verifyOrderSignature, nextPeriodEnd } from "@/lib/razorpay";
+import { fetchRazorpayPayment, paymentMatches, createRazorpayOrder, isRazorpayConfigured, razorpayKeyId, verifyOrderSignature, nextPeriodEnd } from "@/lib/razorpay";
 import { splitGst, planGate, LIVE_STATUSES } from "@/lib/subscription-core";
 
 type R = { error?: string; ok?: string };
@@ -221,11 +221,16 @@ export async function verifyCheckoutPayment(input: {
 
   // 2. Find the invoice inside this organisation — RLS scopes the read to current_org().
   const { data: invoice, error: invErr } = await a.sb.from("subscription_invoices")
-    .select("id, org_id, amount_minor")
+    .select("id, org_id, amount_minor, currency")
     .eq("provider_order_id", orderId)
     .maybeSingle();
   if (invErr) return { error: invErr.message };
   if (!invoice) return { error: "We could not find that checkout. Please start it again." };
+
+  // 2b. The gateway's own record must show this order paid for exactly the invoice amount.
+  const gateway = await fetchRazorpayPayment(paymentId);
+  if (!paymentMatches(gateway, { orderId, amountMinor: Number(invoice.amount_minor), currency: invoice.currency || "INR" }))
+    return { error: "The captured payment does not match this invoice, so the plan was not activated. Support will reconcile it." };
 
   // 3. Settle: service role + DB-side idempotency (see settle_subscription_payment).
   const { data, error } = await supabaseBilling().rpc("settle_subscription_payment", {

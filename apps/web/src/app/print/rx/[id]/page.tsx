@@ -2,6 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { PrintButton } from "./print-button";
+import { getStoreName, getSiteSettings } from "@/lib/site";
 
 export const metadata = { title: "Print Prescription" };
 
@@ -22,7 +23,7 @@ export default async function PrintRxPage({ params }: { params: { id: string } }
       "id, rx_code, rx_date, valid_till, examined_by, rx_type, purpose, " +
       "od_sph, od_cyl, od_axis, od_add, od_va_dist, od_va_near, " +
       "os_sph, os_cyl, os_axis, os_add, os_va_dist, os_va_near, " +
-      "pd_far, pd_near, remarks, status, branch_id, " +
+      "pd_far, pd_near, remarks, status, " +
       "customers(full_name, phone, customer_code, vision_id)"
     )
     .eq("id", params.id)
@@ -31,31 +32,8 @@ export default async function PrintRxPage({ params }: { params: { id: string } }
   if (!rx) notFound();
   const r = rx as any;
   const patient = (r.customers ?? null) as any;
-
-  // Fetch branch/store info from database
-  let storeName = "Power Eyes Opticals";
-  let storeAddress = "";
-  let storePhone = "";
-  let storeEmail = "";
-  if (r.branch_id) {
-    const { data: branch } = await sb.from("branches").select("name, address, phone, email").eq("id", r.branch_id).maybeSingle();
-    if (branch) {
-      storeName = branch.name || storeName;
-      storeAddress = branch.address || "";
-      storePhone = branch.phone || "";
-      storeEmail = branch.email || "";
-    }
-  }
-  // Fallback to site settings if branch not found
-  if (!storePhone) {
-    const { data: settings } = await sb.from("public_site_settings").select("key, value");
-    const siteMap: Record<string, string> = {};
-    for (const s of settings ?? []) { siteMap[s.key] = typeof s.value === "string" ? s.value : ""; }
-    if (siteMap.whatsapp_number) storePhone = siteMap.whatsapp_number;
-    if (siteMap.store_email) storeEmail = siteMap.store_email;
-    if (siteMap.store_address) storeAddress = siteMap.store_address;
-  }
   const patientName = patient?.full_name || "Customer";
+  const [storeName, site] = await Promise.all([getStoreName(), getSiteSettings()]);
   const rxNo = r.rx_code ?? `RX-${String(r.id).slice(0, 8).toUpperCase()}`;
 
   return (
@@ -81,10 +59,7 @@ export default async function PrintRxPage({ params }: { params: { id: string } }
             </div>
             <div>
               <p className="font-bold text-navy-900 text-lg leading-tight">
-                POWER EYES <span className="text-gold-500">OPTICALS</span>
-              </p>
-              <p className="text-[10px] text-slate-500 tracking-wider">
-                Since 1998 — Your Family&apos;s Vision Partner
+                {storeName}
               </p>
             </div>
           </div>
@@ -180,14 +155,12 @@ export default async function PrintRxPage({ params }: { params: { id: string } }
           </div>
           <div className="text-right">
             <p className="font-semibold text-navy-900">{storeName}</p>
-            {storeAddress && <p>{storeAddress}</p>}
-            {storePhone && <p>📞 {storePhone}</p>}
-            {storeEmail && <p>{storeEmail}</p>}
+            {site.phones.length > 0 && <p>📞 {site.phones.join(" · ")}</p>}
           </div>
         </footer>
 
         <p className="mt-4 text-center text-[10px] text-slate-400">
-          Valid for the period stated above. Carry this printout or quote your Vision ID when visiting any Power Eyes store.
+          Valid for the period stated above. Carry this printout or quote your Vision ID when visiting any {storeName} store.
         </p>
       </article>
     </div>

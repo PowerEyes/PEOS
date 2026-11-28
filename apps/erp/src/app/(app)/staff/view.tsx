@@ -120,8 +120,7 @@ export function StaffView({ staff, branches }: { staff: any[]; branches: any[] }
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">{active.length} active · {pending.length} pending · {deactivated.length} deactivated</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <Link href="/staff/attendance" className="btn btn-ghost !py-2 text-sm">Attendance</Link>
-          <Link href="/staff/leave" className="btn btn-ghost !py-2 text-sm">Leave</Link>
+          <Link href="/payroll" className="btn btn-ghost !py-2 text-sm">Payroll</Link>
           <button onClick={()=>setInviteOpen(true)} className="btn btn-primary gap-2"><UserPlus size={16}/>Invite staff</button>
         </div>
       </div>

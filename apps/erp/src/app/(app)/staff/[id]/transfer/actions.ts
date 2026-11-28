@@ -53,6 +53,5 @@ export async function transferStaff(formData: FormData) {
   if (error) fail(id, dbError(error.message));
 
   revalidatePath("/staff");
-  revalidatePath("/staff/attendance");
   redirect("/staff");
 }

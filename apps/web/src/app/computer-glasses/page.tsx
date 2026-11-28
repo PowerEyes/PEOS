@@ -11,7 +11,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title:"Computer Glasses & Blue Light Glasses — Power Eyes Opticals",
+  title:"Computer Glasses & Blue Light Glasses ",
   description:"Protect your eyes from digital strain with premium computer glasses and blue light blocking lenses. Prescription and non-prescription available at our Mogappair store.",
 };
 export const revalidate = 300;
@@ -19,7 +19,7 @@ export const revalidate = 300;
 const WHY = [
   { e:"🖥️", t:"Reduces Digital Eye Strain", d:"Computer lenses are optimised for the 50–70 cm screen distance, reducing the constant focusing effort that causes end-of-day fatigue." },
   { e:"🔵", t:"Blue Light Filter", d:"Filters high-energy visible blue light emitted by screens. Many customers report improved sleep quality and less eye fatigue." },
-  { e:"✨", t:"Anti-Reflective Coating", d:"Eliminates reflections from screens, overhead fluorescents and LED lighting — standard on all computer lenses at Power Eyes." },
+  { e:"✨", t:"Anti-Reflective Coating", d:"Eliminates reflections from screens, overhead fluorescents and LED lighting — standard on all computer lenses." },
   { e:"🔭", t:"Wide Intermediate Zone", d:"Occupational progressives give a wider zone for screen work (50–70 cm) compared to standard progressives — ideal for desk workers with presbyopia." },
 ];
 const TIPS = [

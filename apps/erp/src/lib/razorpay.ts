@@ -104,6 +104,23 @@ export async function createRazorpayOrder(opts: {
   return body as RazorpayOrder;
 }
 
+/** Pure check: a gateway payment object matches the order, amount and currency we expect. */
+export function paymentMatches(p: any, expect: { orderId: string; amountMinor: number; currency?: string }): boolean {
+  return Boolean(p) && p.order_id === expect.orderId && (p.status === "captured" || p.status === "authorized" && p.captured === true)
+    && Number(p.amount) === Number(expect.amountMinor) && (p.currency || "INR") === (expect.currency || "INR");
+}
+
+/** Fetches the payment from Razorpay so the paid amount is checked against our own invoice. */
+export async function fetchRazorpayPayment(paymentId: string): Promise<any | null> {
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  if (!keyId) return null;
+  const res = await fetch(`https://api.razorpay.com/v1/payments/${encodeURIComponent(paymentId)}`, {
+    headers: { Authorization: `Basic ${Buffer.from(`${keyId}:${keySecret()}`).toString("base64")}` },
+    signal: AbortSignal.timeout(12000), cache: "no-store",
+  }).catch(() => null);
+  return res?.ok ? await res.json().catch(() => null) : null;
+}
+
 /**
  * End of the paid period for an interval, from a start instant (UTC).
  * Clamps to the last day of the target month so a 31 Jan start does not

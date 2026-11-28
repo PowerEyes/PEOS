@@ -1,5 +1,7 @@
 
 import { getStoreName } from "@/lib/site";
+import { getOrgId } from "@/lib/tenant";
+import { supabasePublic } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
@@ -32,7 +34,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+async function getExitOffer() {
+  try {
+    const now = new Date().toISOString();
+    const { data } = await supabasePublic().from("coupons").select("code,type,value,min_order,valid_until").eq("org_id", await getOrgId()).eq("is_active", true).or(`valid_until.is.null,valid_until.gt.${now}`).order("value", { ascending: false }).limit(1);
+    const c = data?.[0]; if (!c) return null;
+    return { code: c.code as string, label: c.type === "percent" ? `${c.value}% OFF` : `₹${c.value} OFF`, sub: Number(c.min_order) > 0 ? `on orders above ₹${c.min_order}` : "on your order" };
+  } catch { return null; }
+}
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const exitOffer = await getExitOffer();
   const [site, chrome] = await Promise.all([getSiteSettings(), getSiteChrome()]);
   const analyticsId = site.analyticsId.trim();
   const isGA = /^G-[A-Z0-9]+$/i.test(analyticsId);
@@ -58,7 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 {children}
                 {/* Global floating UI — rendered on every page */}
                 <CompareBar />
-                <ExitIntentPopup />
+                <ExitIntentPopup offer={exitOffer} />
               </ToastProvider>
             </CartProvider>
           </SiteProvider>

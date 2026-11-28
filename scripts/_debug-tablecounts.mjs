@@ -2,6 +2,9 @@
 import { readFileSync } from "node:fs";
 import pg from "pg";
 
+if (!process.env.LOCAL_DATABASE_URL) throw new Error("LOCAL_DATABASE_URL is required");
+if (!process.env.SCRATCH_DATABASE_URL) throw new Error("SCRATCH_DATABASE_URL is required");
+
 for (const f of ["prod", "fresh", "fresh2", "upgrade", "upgrade2"]) {
   try {
     const s = JSON.parse(readFileSync(`docs/sql/snapshots/${f}.json`, "utf8"));
@@ -10,8 +13,8 @@ for (const f of ["prod", "fresh", "fresh2", "upgrade", "upgrade2"]) {
 }
 
 for (const [label, url] of [
-  ["local 54522", "postgresql://postgres:postgres@127.0.0.1:54522/postgres"],
-  ["scratch 5433", "postgresql://postgres:postgres@127.0.0.1:5433/postgres"],
+  ["local 54522", process.env.LOCAL_DATABASE_URL],
+  ["scratch 5433", process.env.SCRATCH_DATABASE_URL],
 ]) {
   const db = new pg.Client({ connectionString: url });
   await db.connect();

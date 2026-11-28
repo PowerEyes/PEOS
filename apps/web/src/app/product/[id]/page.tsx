@@ -34,7 +34,7 @@ function StarRow({ rating, count }: { rating: number; count: number }) {
 
 export default function ProductPage({ params }: Params) {
   const { id } = params;
-  const { whatsappNumber, storeName } = useSite();
+  const { whatsappNumber } = useSite();
   const [product,  setProduct]  = useState<any>(null);
   const [reviews,  setReviews]  = useState<any[]>([]);
   const [related,  setRelated]  = useState<any[]>([]);
@@ -183,7 +183,7 @@ export default function ProductPage({ params }: Params) {
             <div className="flex items-center gap-2">
               <span className={`h-2.5 w-2.5 rounded-full ${product.in_stock?"bg-emerald-500":"bg-rose-500"}`}/>
               <span className={`text-sm font-medium ${product.in_stock?"text-emerald-700":"text-rose-600"}`}>
-                {product.in_stock?`In Stock at ${storeName || "store"}`:"Currently Out of Stock"}
+                {product.in_stock?"In Stock":"Currently Out of Stock"}
               </span>
             </div>
             {/* Attributes */}

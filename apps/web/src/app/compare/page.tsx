@@ -6,7 +6,7 @@ import { Check, X, ChevronLeft } from "lucide-react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
-export const metadata = { title: "Compare Frames – Power Eyes Opticals" };
+export const metadata = { title: "Compare Frames " };
 
 export default async function ComparePage({ searchParams }: { searchParams: { ids?: string } }) {
   const ids = (searchParams.ids ?? "").split(",").filter(Boolean).slice(0, 3);

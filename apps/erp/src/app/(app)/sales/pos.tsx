@@ -238,6 +238,8 @@ export function Pos({
   packages,
   options,
   quoteDays,
+  maxDiscount = 10,
+  role = "staff",
   gst,
   defaultSupplyType = "intrastate",
   defaultStateOfSupply = "Tamil Nadu",
@@ -249,6 +251,9 @@ export function Pos({
   const [qc, setQc] = useState(false);
   const toast = useToast();
   const desktop = useDesktop();
+  const staffDiscountCap = ["owner", "admin"].includes(role)
+    ? 100
+    : Math.min(100, Math.max(0, Number(maxDiscount) || 10));
   const q0 = preset?.quotation;
   const scopeBranch = useScope() ?? undefined;
   const cookieBranch =
@@ -617,12 +622,12 @@ export function Pos({
                 <input
                   type="number"
                   min={0}
-                  max={100}
+                  max={staffDiscountCap}
                   value={l.discount_pct || ""}
                   onChange={(e) =>
                     upd(l.key, {
                       discount_pct: Math.min(
-                        100,
+                        staffDiscountCap,
                         Math.max(0, Number(e.target.value)),
                       ),
                     })

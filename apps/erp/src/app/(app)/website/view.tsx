@@ -1,4 +1,5 @@
 "use client";
+import { checkLink } from "@/lib/link-check";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,17 @@ import { siteImgUrl } from "@/lib/image";
 import { ImageField } from "@/components/ImageField";
 import { BulkUploadModal } from "@/components/BulkUploadModal";
 
-const TABS = ["Homepage","Sections","Products","Reviews","Analytics"] as const;
+const TABS = ["Homepage","Sections","Products","Choose Lens","Reviews","Analytics"] as const;
+// Choose-lens usage cards. Normally DB-driven (website_lens_usage); this is the
+// same built-in set the storefront falls back to before the migration is applied.
+const LENS_USAGE_FALLBACK = [
+  { code:"recommend",   label:"Not sure? We'll recommend one", description:"Enter your Rx and we'll match it.",                              icon:"✨", requires_rx:true,  requires_add:false, default_design:null,             ai:true,  display_order:1 },
+  { code:"single",      label:"Single Vision",                  description:"Corrects for one distance (near or far). No ADD power needed.",  icon:"👓", requires_rx:true,  requires_add:false, default_design:"single_vision", ai:false, display_order:2 },
+  { code:"progressive", label:"Progressives (No Line)",         description:"Seamless vision across all distances. ADD power required.",     icon:"🔭", requires_rx:true,  requires_add:true,  default_design:"progressive",   ai:false, display_order:3 },
+  { code:"reading",     label:"Readers",                        description:"Near vision for close-up tasks. ADD power required.",            icon:"📖", requires_rx:true,  requires_add:true,  default_design:"reading",       ai:false, display_order:4 },
+  { code:"bifocal",     label:"Bifocal (Visible Line)",         description:"Near and distance with a visible line. ADD power required.",   icon:"◑", requires_rx:true,  requires_add:true,  default_design:"bifocal",       ai:false, display_order:5 },
+  { code:"non_rx",      label:"Non-prescription",               description:"Style and protection. No prescription needed.",                icon:"🕶️", requires_rx:false, requires_add:false, default_design:"non_prescription", ai:false, display_order:6 },
+];
 // Fallback only — used if website_sections is empty (a fresh env that hasn't run
 // 0023). Normally the list is DB-driven so order/visibility is editable in the
 // ERP instead of requiring a redeploy.
@@ -46,8 +57,8 @@ const pillTone: any = { hero:"blue",announcement:"gold",collection_banner:"green
 
 // Empty form — image fields start null so a brand-new row never writes "".
 const blank = {
-  section:"hero", key:"", parent_key:"", title:"", subtitle:"", body:"", link:"",
-  cta_label:"", cta_link:"", badge:"", bg_color:"", icon:"",
+  section:"hero", key:"", parent_key:"", title:"", subtitle:"", body:"", link:"", video_url:"",
+  cta_label:"", cta_link:"", cta2_label:"", cta2_link:"", badge:"", bg_color:"", icon:"",
   image_path:null as string|null, image_alt:"",
   display_order:"1", is_active:true, valid_from:"", valid_until:"",
 };
@@ -81,12 +92,14 @@ function ContentRow({ item, onEdit, onToggle, onDelete }: { item: any; onEdit: (
     </div>);
 }
 
-export function WebsiteController({ content, products, reviews, sections, siteUrl, previewKey }: {
-  content: any[]; products: any[]; reviews: any[]; sections: any[];
+export function WebsiteController({ content, products, reviews, sections, lensUsage, siteUrl, previewKey, analyticsId }: {
+  content: any[]; products: any[]; reviews: any[]; sections: any[]; lensUsage: any[];
   /** public origin of the website, e.g. http://localhost:3000 */
   siteUrl: string;
   /** SITE_PREVIEW_KEY, or null when the server hasn't configured one */
   previewKey: string | null;
+  /** org_settings.analytics_id — the ID the storefront script actually uses */
+  analyticsId: string;
 }) {
   const router = useRouter(); const toast = useToast();
   const [tab, setTab] = useState<(typeof TABS)[number]>("Homepage");
@@ -117,6 +130,16 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
   useEffect(() => { if (editItem) setF({ ...blank, ...editItem, valid_from: editItem.valid_from??"", valid_until: editItem.valid_until??"", image_path: editItem.image_path??null, image_alt: editItem.image_alt??"", key: editItem.key??"", parent_key: editItem.parent_key??"", icon: editItem.icon??"" }); }, [editItem?.id]);
   useEffect(() => { if (editSec) setSf({ ...editSec, title: editSec.title??"", subtitle: editSec.subtitle??"", image_path: editSec.image_path??null, image_alt: editSec.image_alt??"", bg_color: editSec.bg_color??"", cta_label: editSec.cta_label??"", cta_link: editSec.cta_link??"" }); }, [editSec?.id]);
   const sb = supabaseBrowser;
+
+  // Choose-lens usage cards. Without DB rows we show the built-in storefront
+  // fallback read-only; once the migration is applied the table is the source
+  // of truth and every card is editable here.
+  const [usageRows, setUsageRows] = useState<any[]>(lensUsage.length ? lensUsage : LENS_USAGE_FALLBACK);
+  const usageDbBacked = lensUsage.length > 0;
+  const [editUsage, setEditUsage] = useState<any>(null);
+  const [usageOpen, setUsageOpen] = useState(false);
+  const [uf, setUf] = useState<any>({ ...LENS_USAGE_FALLBACK[0], code: "", is_active: true });
+  useEffect(() => { if (lensUsage.length) setUsageRows(lensUsage); }, [lensUsage]);
 
   const byKey = useMemo(() => new Map(sections.map((s: any) => [s.key, s])), [sections]);
   // Registry keys in display order, then any section a content row references
@@ -206,6 +229,8 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
     const row = { title: nz(sf.title), subtitle: nz(sf.subtitle), image_path: nz(sf.image_path),
       image_alt: nz(sf.image_alt), bg_color: nz(sf.bg_color), cta_label: nz(sf.cta_label),
       cta_link: nz(sf.cta_link), enabled: !!sf.enabled };
+    const bad = await badLink(row.cta_link);
+    if (bad) { setBusy(false); return toast(bad, "err"); }
     const { error } = await sb().from("website_sections").update(row).eq("id", editSec.id);
     setBusy(false); if (error) return toast(dbError(error.message), "err");
     toast("Section updated"); router.refresh(); setEditSec(null);
@@ -215,6 +240,13 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
   const openSection = (sec: any) => { setAddOpen(false); setEditItem(null); setEditSec(sec); };
   const closeDrawer = () => { setAddOpen(false); setEditItem(null); setEditSec(null); };
 
+  async function badLink(...links: (string | null | undefined)[]) {
+    if (!links.some(Boolean)) return null;
+    const { data: pg } = await sb().from("site_pages").select("slug").eq("is_active", true);
+    const slugs = (pg ?? []).map((x: any) => x.slug);
+    for (const l of links) { const m = checkLink(l, slugs); if (m) return m; }
+    return null;
+  }
   async function saveContent() {
     setBusy(true);
     // Empty string → NULL: `key` is unique per section, so two rows left with
@@ -224,6 +256,8 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
       key: nz(f.key), parent_key: nz(f.parent_key), icon: nz(f.icon),
       image_path: nz(f.image_path), image_alt: nz(f.image_alt),
       display_order: Number(f.display_order||1), valid_from: f.valid_from||null, valid_until: f.valid_until||null };
+    const bad = await badLink(row.link, row.cta_link, row.cta2_link);
+    if (bad) { setBusy(false); return toast(bad, "err"); }
     const { error } = editItem ? await sb().from("website_content").update(row).eq("id", editItem.id) : await sb().from("website_content").insert(row);
     setBusy(false); if (error) return toast(dbError(error.message),"err"); toast(editItem?"Updated":"Created"); router.refresh(); setEditItem(null); setAddOpen(false);
   }
@@ -238,6 +272,64 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
   }
   async function approveReview(id: string) { await sb().from("product_reviews").update({ status:"approved" }).eq("id",id); router.refresh(); toast("Review approved"); }
   async function rejectReview(id: string) { await sb().from("product_reviews").update({ status:"rejected" }).eq("id",id); router.refresh(); toast("Review rejected"); }
+
+  // ── Choose Lens usage CRUD ──────────────────────────────────────────────────
+  const openUsage = (item?: any) => {
+    setEditUsage(item ?? null);
+    setUf(item ? { ...item } : { code:"", label:"", description:"", icon:"👓", requires_rx:true, requires_add:false, default_design:"", ai:false, display_order:(usageRows.length?Math.max(...usageRows.map((r:any)=>Number(r.display_order)||0)):0)+1, is_active:true });
+    setUsageOpen(true);
+  };
+  const closeUsage = () => { setUsageOpen(false); setEditUsage(null); };
+  async function saveUsage() {
+    const code = uf.code?.trim().toLowerCase().replace(/[^a-z0-9_]+/g, "_");
+    if (!code || !uf.label?.trim()) return toast("Code and label are required", "err");
+    setBusy(true);
+    const row = {
+      code, label: uf.label.trim(), description: uf.description ?? "",
+      icon: uf.icon || "👓", requires_rx: !!uf.requires_rx, requires_add: !!uf.requires_add,
+      ai: !!uf.ai, is_active: !!uf.is_active,
+      default_design: uf.default_design?.trim() || null,
+      display_order: Number(uf.display_order) || 0,
+    };
+    const { error } = editUsage
+      ? await sb().from("website_lens_usage").update(row).eq("id", editUsage.id)
+      : await sb().from("website_lens_usage").insert(row);
+    setBusy(false);
+    if (error) return toast(dbError(error.message), "err");
+    toast(editUsage ? "Lens choice updated" : "Lens choice added");
+    closeUsage(); router.refresh();
+  }
+  async function toggleUsage(row: any) {
+    const { error } = await sb().from("website_lens_usage").update({ is_active: !row.is_active }).eq("id", row.id);
+    if (error) return toast(dbError(error.message), "err");
+    router.refresh();
+  }
+  async function deleteUsage(row: any) {
+    if (!confirm(`Delete the “${row.label}” lens choice?`)) return;
+    const { error } = await sb().from("website_lens_usage").delete().eq("id", row.id);
+    if (error) return toast(dbError(error.message), "err");
+    toast("Lens choice deleted"); router.refresh();
+  }
+  async function moveUsage(index: number, dir: -1 | 1) {
+    const target = index + dir;
+    if (target < 0 || target >= usageRows.length) return;
+    const a = usageRows[index], b = usageRows[target];
+    const results = await Promise.all([
+      sb().from("website_lens_usage").update({ display_order: Number(b.display_order) || target + 1 }).eq("id", a.id),
+      sb().from("website_lens_usage").update({ display_order: Number(a.display_order) || index + 1 }).eq("id", b.id),
+    ]);
+    const err = results.find((r) => r.error);
+    if (err) return toast(dbError(err.error!.message), "err");
+    router.refresh();
+  }
+  async function seedUsage() {
+    setBusy(true);
+    const rows = LENS_USAGE_FALLBACK.map((u: any) => ({ ...u, is_active: true, default_design: u.default_design || null }));
+    const { error } = await sb().from("website_lens_usage").insert(rows);
+    setBusy(false);
+    if (error) return toast(dbError(error.message), "err");
+    toast("Built-in lens choices added"); router.refresh();
+  }
 
   const ContentForm = (<div className="space-y-3">
     <div className="grid gap-3 sm:grid-cols-2">
@@ -273,6 +365,14 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
     <div className="grid gap-3 sm:grid-cols-2">
       <L t="CTA label"><input className="field" value={f.cta_label} onChange={e=>setF({...f,cta_label:e.target.value})} placeholder="Shop Now"/></L>
       <L t="CTA link"><input className="field" value={f.cta_link} onChange={e=>setF({...f,cta_link:e.target.value})} placeholder="/eyeglasses"/></L>
+    </div>
+    {f.section === "hero" && <div className="grid gap-3 sm:grid-cols-2">
+      <L t="Second CTA label"><input className="field" value={f.cta2_label} onChange={e=>setF({...f,cta2_label:e.target.value})} placeholder="Book Eye Test"/></L>
+      <L t="Second CTA link"><input className="field" value={f.cta2_link} onChange={e=>setF({...f,cta2_link:e.target.value})} placeholder="/eye-test"/></L>
+    </div>}
+    <div className="grid gap-3 sm:grid-cols-2">
+      <L t="Video URL (optional, hero / banners)"><input className="field" value={f.video_url} onChange={e=>setF({...f,video_url:e.target.value})} placeholder="https://…/clip.mp4"/></L>
+      <L t="Related link (optional)"><input className="field" value={f.link} onChange={e=>setF({...f,link:e.target.value})} placeholder="https://…"/></L>
     </div>
     <div className="grid gap-3 sm:grid-cols-2">
       <L t="Badge text"><input className="field" value={f.badge} onChange={e=>setF({...f,badge:e.target.value})} placeholder="New Arrival"/></L>
@@ -312,6 +412,34 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
     </button>
   </div>);
 
+  const UsageForm = (<div className="space-y-3">
+    <div className="grid gap-3 sm:grid-cols-2">
+      <L t="Code (stable id — keep in sync with the storefront)"><input className="field font-mono" value={uf.code} readOnly={!!editUsage} onChange={e=>setUf({...uf,code:e.target.value})} placeholder="e.g. progressive"/></L>
+      <L t="Display order"><input type="number" className="field" value={uf.display_order} onChange={e=>setUf({...uf,display_order:e.target.value})}/></L>
+    </div>
+    <L t="Card title"><input className="field" value={uf.label} onChange={e=>setUf({...uf,label:e.target.value})} placeholder="Progressives (No Line)"/></L>
+    <L t="Description"><textarea className="field" rows={2} value={uf.description} onChange={e=>setUf({...uf,description:e.target.value})}/></L>
+    <div className="grid gap-3 sm:grid-cols-2">
+      <L t="Icon / emoji"><input className="field" value={uf.icon} onChange={e=>setUf({...uf,icon:e.target.value})} placeholder="👓"/></L>
+      <L t="Default lens design (preferred package)"><input className="field font-mono" value={uf.default_design ?? ""} onChange={e=>setUf({...uf,default_design:e.target.value})} placeholder="progressive"/></L>
+    </div>
+    {[
+      { k:"requires_rx", label:"Needs a prescription", hint:"Off for non-prescription lenses only." },
+      { k:"requires_add", label:"ADD power required", hint:"Progressive, Readers and Bifocal need ADD in both eyes." },
+      { k:"ai", label:"Recommendation card", hint:"Shows the sparkle icon and asks the customer to enter an Rx." },
+      { k:"is_active", label:"Visible on the website", hint:"Hidden choices don't appear in the choose-lens step." },
+    ].map((sw:any)=>(
+      <button key={sw.k} type="button" role="switch" aria-checked={!!uf[sw.k]} onClick={()=>setUf({...uf,[sw.k]:!uf[sw.k]})}
+        className={`flex w-full items-center justify-between gap-3 rounded-xl border p-3 text-left ${uf[sw.k]?"border-emerald-200 bg-emerald-50":"border-slate-100"}`}>
+        <span><span className="block text-sm font-medium">{sw.label}</span><span className="block text-xs text-slate-500">{sw.hint}</span></span>
+        <span className={`relative h-6 w-11 shrink-0 rounded-full transition ${uf[sw.k]?"bg-emerald-500":"bg-slate-300"}`}>
+          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${uf[sw.k]?"left-[22px]":"left-0.5"}`}/>
+        </span>
+      </button>
+    ))}
+    <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-500">Single Vision must never require ADD. Keep “ADD power required” on for progressives, readers and bifocals.</p>
+  </div>);
+
   return (<div className="mx-auto max-w-5xl space-y-5">
     <div className="flex items-end justify-between">
       <div><h1 className="font-display text-3xl font-semibold">Website Controller</h1>
@@ -323,6 +451,7 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
     </div>
     <div className="flex gap-1 rounded-2xl bg-white p-1 shadow-sm overflow-x-auto">
       <Link href="/website/pages" className="whitespace-nowrap rounded-xl border border-gold-500 px-4 py-2 text-sm font-semibold text-gold-700">Pages &amp; Guides</Link>
+      <Link href="/website/clinical" className="whitespace-nowrap rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600">Clinical services</Link>
       {TABS.map(t=><button key={t} onClick={()=>setTab(t)} className={`relative whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium ${tab===t?"text-white":"text-slate-600"}`}>
         {tab===t&&<motion.span layoutId="wtab" className="absolute inset-0 rounded-xl bg-navy-800"/>}<span className="relative">{t}</span></button>)}</div>
 
@@ -401,6 +530,43 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
                   <span className={`h-5 w-5 rounded-full bg-white shadow transition-all ${val?"ml-6":"ml-0.5"}`}/></button>))}</div>))}</div>
       </div>)}
 
+      {tab==="Choose Lens"&&(<div className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm text-slate-500">Edit the cards shown in the storefront’s “choose lens” step. Order, labels and the ADD / prescription rules all come from here.</p>
+          {usageDbBacked
+            ? <button onClick={()=>openUsage()} className="btn btn-primary shrink-0"><Plus size={16}/>Add choice</button>
+            : <button onClick={seedUsage} disabled={busy} className="btn btn-primary shrink-0"><Plus size={16}/>{busy?"Saving…":"Seed defaults"}</button>}
+        </div>
+        {!usageDbBacked && <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+          Showing built-in defaults. Apply <code className="font-mono">20270102000000_storefront_checkout_compat.sql</code> to make these editable in the ERP.
+        </div>}
+        <div className="card divide-y divide-slate-100 overflow-hidden">
+          {usageRows.map((u:any,i:number)=>(
+            <div key={u.id??u.code} className={`flex items-center gap-3 px-4 py-3 ${u.is_active===false?"opacity-60":""}`}>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-slate-50 text-lg">{u.icon||"👓"}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{u.label}</span>
+                <span className="mt-0.5 flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-[10px] text-slate-400">{u.code}</span>
+                  <span className="text-xs text-slate-400">Order {u.display_order}</span>
+                  {u.ai&&<Pill tone="purple">Recommends</Pill>}
+                  {u.requires_rx===false?<Pill tone="blue">No Rx</Pill>:<Pill tone="grey">Rx required</Pill>}
+                  {u.requires_add===true&&<Pill tone="gold">ADD required</Pill>}
+                  {u.is_active===false&&<Pill tone="red">Hidden</Pill>}
+                </span>
+              </span>
+              {usageDbBacked && <span className="flex shrink-0 items-center gap-1">
+                <button title="Move up" disabled={i===0} onClick={()=>moveUsage(i,-1)} className="rounded-lg p-1.5 hover:bg-slate-100 disabled:opacity-30"><span className="text-sm leading-none">↑</span></button>
+                <button title="Move down" disabled={i===usageRows.length-1} onClick={()=>moveUsage(i,1)} className="rounded-lg p-1.5 hover:bg-slate-100 disabled:opacity-30"><span className="text-sm leading-none">↓</span></button>
+                <button title={u.is_active===false?"Show choice":"Hide choice"} onClick={()=>toggleUsage(u)} className="rounded-lg p-1.5 hover:bg-slate-100">
+                  {u.is_active===false?<EyeOff size={14} className="text-slate-400"/>:<Eye size={14} className="text-emerald-600"/>}</button>
+                <button title="Edit choice" onClick={()=>openUsage(u)} className="rounded-lg p-1.5 hover:bg-slate-100"><Pencil size={14} className="text-slate-500"/></button>
+                <button title="Delete choice" onClick={()=>deleteUsage(u)} className="rounded-lg p-1.5 hover:bg-slate-100"><Trash2 size={14} className="text-rose-500"/></button>
+              </span>}
+            </div>))}
+        </div>
+      </div>)}
+
       {tab==="Reviews"&&(<div className="space-y-3">
         <p className="text-sm text-slate-500">Review all submitted reviews before they appear on the public website.</p>
         {reviews.length===0?<div className="card p-10 text-center text-slate-500"><Star className="mx-auto mb-2"/>No reviews yet.</div>:
@@ -414,7 +580,24 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
             </div>))}</div>}
       </div>)}
 
-      {tab==="Analytics"&&<div className="card p-10 text-center text-slate-500"><BarChart3 className="mx-auto mb-2"/>Analytics integration (Google Analytics / Plausible) can be added in Settings. Traffic data will appear here.</div>}
+      {tab==="Analytics"&&(<div className="card divide-y divide-slate-100 overflow-hidden">
+        <div className="flex items-center gap-3 p-5">
+          <BarChart3 className="text-navy-700"/>
+          <div><h2 className="font-semibold">Traffic analytics</h2>
+            <p className="mt-0.5 text-sm text-slate-500">The storefront injects the tracking script on every page using the ID configured under Settings → Integrations.</p></div>
+        </div>
+        <div className="grid gap-3 p-5 sm:grid-cols-2">
+          <div className="rounded-xl bg-slate-50 p-4 text-sm"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Provider</p>
+            <p className="mt-1 font-medium">{analyticsId ? (/^G-/i.test(analyticsId) ? "Google Analytics" : "Plausible Analytics") : "Not configured"}</p></div>
+          <div className="rounded-xl bg-slate-50 p-4 text-sm"><p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Tracking ID / domain</p>
+            <p className="mt-1 break-all font-mono">{analyticsId || "—"}</p></div>
+        </div>
+        <div className="flex flex-wrap items-center gap-3 p-5 text-sm text-slate-500">
+          <Link href="/settings/integrations" className="btn btn-ghost text-sm">Configure analytics</Link>
+          {siteUrl && <a href={siteUrl} target="_blank" rel="noreferrer" className="btn btn-ghost text-sm">Open live website</a>}
+          <span>Visitor reports live in the provider's dashboard — PowerOS does not store analytics events.</span>
+        </div>
+      </div>)}
     </motion.div></AnimatePresence>
 
     <Drawer open={addOpen||!!editItem||!!editSec} onClose={closeDrawer}
@@ -424,6 +607,14 @@ export function WebsiteController({ content, products, reviews, sections, siteUr
         <button disabled={busy} onClick={editSec?saveSection:saveContent} className="btn btn-gold">
           {busy?"Saving…":editSec?"Save section":editItem?"Save changes":"Add content"}</button></>}>
       {editSec?SectionForm:ContentForm}
+    </Drawer>
+
+    <Drawer open={usageOpen} onClose={closeUsage}
+      title={editUsage?"Edit lens choice":"Add lens choice"}
+      subtitle="These cards drive the storefront’s choose-lens step and its prescription rules"
+      footer={<><button onClick={closeUsage} className="btn btn-ghost">Cancel</button>
+        <button disabled={busy} onClick={saveUsage} className="btn btn-gold">{busy?"Saving…":editUsage?"Save changes":"Add choice"}</button></>}>
+      {UsageForm}
     </Drawer>
 
     <BulkUploadModal open={!!bulkFor} section={bulkFor} startOrder={bulkStart}

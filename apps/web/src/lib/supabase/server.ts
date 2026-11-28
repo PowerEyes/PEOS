@@ -1,9 +1,22 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
 
-export const supabasePublic = () => createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { cookies: { getAll: () => [], setAll: () => {} } });
+// request_org() in Postgres reads this header to scope anon reads to the
+// storefront tenant. Without it, RLS falls back to the default org, which can
+// disagree with getOrgId() and turn /about into a 404 on mapped hosts.
+function siteHeaders(): Record<string, string> {
+  try {
+    const h = headers();
+    const host = (h.get("x-forwarded-host") ?? h.get("host") ?? "").toLowerCase().replace(/:\d+$/, "");
+    return host ? { "x-site-host": host } : {};
+  } catch {
+    return {};
+  }
+}
+
+export const supabasePublic = () => createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, { global: { headers: siteHeaders() }, cookies: { getAll: () => [], setAll: () => {} } });
 
 // Next patches global fetch and, unless a segment opts out, memoises the
 // response in its Data Cache across requests. That is fatal for a CMS read
@@ -13,6 +26,7 @@ export const supabasePublic = () => createServerClient(process.env.NEXT_PUBLIC_S
 const noStoreFetch: typeof fetch = (input, init) => fetch(input, { ...(init as RequestInit), cache: "no-store" });
 
 export const supabaseFresh = () => createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  global: { headers: siteHeaders() },
   cookies: { getAll: () => [], setAll: () => {} },
   fetch: noStoreFetch,
 });
@@ -31,7 +45,7 @@ export const supabaseFresh = () => createServerClient(process.env.NEXT_PUBLIC_SU
 export const supabasePreview = () => createServerClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { cookies: { getAll: () => [], setAll: () => {} }, fetch: noStoreFetch },
+  { global: { headers: siteHeaders() }, cookies: { getAll: () => [], setAll: () => {} }, fetch: noStoreFetch },
 );
 
 /**
@@ -48,9 +62,19 @@ export function isPreviewEnabled(sp?: { preview?: string | string[]; k?: string 
   return typeof k === "string" && k === key;
 }
 
+/**
+ * Preview state for layouts/pages, which don't receive searchParams. Middleware
+ * validates the query key and sets this trusted header; nothing in the browser
+ * can set it on a real request.
+ */
+export function isPreviewRequest(): boolean {
+  try { return headers().get("x-site-preview") === "1"; } catch { return false; }
+}
+
 export const supabaseServer = () => {
   const s = cookies();
   return createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    global: { headers: siteHeaders() },
     cookies: {
       getAll: () => s.getAll(),
       setAll: (l: CookieToSet[]) => { try { l.forEach(({ name, value, options }) => s.set(name, value, options)); } catch {} },

@@ -21,8 +21,7 @@ export default async function RxPrint({ params, searchParams }: { params: { id: 
     <div className="w-full overflow-x-auto px-2 sm:px-0 flex justify-center">
       <div className="relative mx-auto flex h-[148mm] w-[210mm] shrink-0 flex-col overflow-hidden bg-white text-[9pt] shadow-xl print:shadow-none">
       <header className="flex items-stretch justify-between bg-white">
-        <div className="px-[8mm] py-[4mm]"><h1 className="font-display text-[19pt] font-bold uppercase leading-none text-navy-900">{org?.name ?? "Power Eyes Opticals"}</h1>
-          <p className="mt-1 font-medium text-gold-600">Since 1998 | Your Family&apos;s Vision Partner</p></div>
+        <div className="px-[8mm] py-[4mm]"><h1 className="font-display text-[19pt] font-bold uppercase leading-none text-navy-900">{org?.name ?? ""}</h1></div>
         <div className="flex flex-col justify-center bg-navy-900 px-[8mm] text-white" style={{ clipPath: "polygon(8% 0,100% 0,100% 100%,0 100%)" }}>
           <p className="text-[13pt] font-bold tracking-wide">SPECTACLE PRESCRIPTION</p><p className="text-[7pt] tracking-widest text-gold-400">CLEARER VISION. BRIGHTER LIVES.</p></div></header>
       <div className="mx-[8mm] border-y border-gold-400 py-[2mm] text-[8pt]"><b className="uppercase">{b?.name}</b> | {b?.address} | {b?.phone} | {b?.email} {b?.udyam_no && `| ${b.udyam_no}`}</div>

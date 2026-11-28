@@ -1,6 +1,6 @@
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Power Eyes Opticals — Lens Recommendation Engine
+// Lens Recommendation Engine
 // Based on international prescribing guidelines:
 //   WHO Quality Standards for Spectacles (IRIS 2021)
 //   AAO Clinical Practice Guidelines (2024)

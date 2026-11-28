@@ -7,14 +7,24 @@ import { ChevronRight } from "lucide-react";
 import { LensPackageList } from "@/components/LensPackageList";
 import { GuideButton } from "@/components/SizeGuide";
 import { getPage } from "@/lib/pages";
+import { getOrgId } from "@/lib/tenant";
 export const metadata = { title: "Lens Packages" };
 export const dynamic = "force-dynamic";
 export default async function Page() {
-  const hero = await getPage("hero-lenses");
-  const [{ data: pkgs }, { data: opts }] = await Promise.all([
-    supabaseFresh().from("lens_packages").select("*").eq("status","active").order("display_order"),
-    supabaseFresh().from("lens_options").select("*").eq("status","active").order("display_order"),
+  // Start the CMS read and the two catalogue reads together. The old version
+  // awaited getPage() first, so every lens query waited behind tenant + page
+  // resolution before it even started.
+  // lens_packages/lens_options are read without RLS on the storefront, so the
+  // tenant is pinned here — otherwise this page lists every org's packages.
+  const sb = supabaseFresh();
+  const [orgId, { hero }, { data: pkgs }, { data: opts }] = await Promise.all([
+    getOrgId().catch(() => null),
+    getPage("hero-lenses").then((hero) => ({ hero })),
+    sb.from("lens_packages").select("*").eq("status", "active").order("display_order"),
+    sb.from("lens_options").select("*").eq("status", "active").order("display_order"),
   ]);
+  const own = <T extends { org_id?: string }>(rows: T[] | null) =>
+    (rows ?? []).filter((r) => !orgId || !r.org_id || r.org_id === orgId);
   return (<div className="min-h-screen bg-white overflow-x-hidden"><Header/>
     <div className="bg-gradient-to-r from-navy-900 to-navy-800 py-10 sm:py-14 px-4 text-center text-white">
       <h1 className="font-display text-2xl sm:text-4xl font-bold">{hero?.title ?? "Lens Packages"}</h1>
@@ -22,9 +32,9 @@ export default async function Page() {
     </div>
     <div className="mx-auto max-w-5xl section-pad px-4 space-y-10">
       <div className="flex justify-end"><GuideButton page="lenses" /></div>
-      <LensPackageList pkgs={pkgs ?? []} />
+      <LensPackageList pkgs={own(pkgs)} />
       <div className="card p-4 sm:p-6"><h2 className="font-display text-xl sm:text-2xl font-bold text-navy-900 mb-4">Add-Ons &amp; Coatings</h2>
-        <div className="grid gap-3 sm:grid-cols-2">{(opts??[]).filter((o:any)=>o.grp==="addon").map((o:any)=>(
+        <div className="grid gap-3 sm:grid-cols-2">{own(opts).filter((o:any)=>o.grp==="addon").map((o:any)=>(
           <div key={o.id} className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">
             <div className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-br from-slate-200 to-blue-200 flex items-center justify-center">🛡️</div>
             <div className="flex-1 min-w-0"><p className="text-sm font-semibold truncate">{o.name}{o.badge&&<span className="ml-1 text-[10px] rounded bg-amber-200 px-1.5 text-amber-900">{o.badge}</span>}</p><p className="text-xs text-slate-500 line-clamp-2">{o.description}</p></div>

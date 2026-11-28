@@ -6,7 +6,7 @@ import { dbError } from "@poweros/business-rules";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 export default function ProfilePage() {
-  const [f, setF] = useState({ name:"", phone:"", email:"", dob:"", gender:"", address:"", city:"Chennai", state:"Tamil Nadu", pincode:"" });
+  const [f, setF] = useState({ name:"", phone:"", email:"", dob:"", gender:"", address:"", city:"", state:"", pincode:"" });
   const [busy, setBusy] = useState(false); const [ok, setOk] = useState(""); const [err, setErr] = useState(""); const [loading, setLoading] = useState(true);
   const sb = supabaseBrowser();
 

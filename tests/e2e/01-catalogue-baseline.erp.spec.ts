@@ -1,11 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { rows, one, num, SEEDED, BRANCH } from "./helpers";
+import { rows, one, num, SEEDED, BRANCH, ORG_ID } from "./helpers";
 
 /**
  * Baseline snapshot of the seeded catalogue + branch stock.
  *
  * Runs first (file name is ordered ahead of the mutating specs) so it observes
- * the database before this suite books anything of its own.
+ * the database before this suite books anything of its own. Other tenants in
+ * the same database are deliberately excluded by SEEDED.
  */
 test.describe("catalogue baseline", () => {
   test("375 seeded products are stocked in both branches", async () => {
@@ -14,8 +15,9 @@ test.describe("catalogue baseline", () => {
          from stock s
          join branches b on b.id = s.branch_id
          join products p on p.id = s.product_id
-        where ${SEEDED}
+        where ${SEEDED} and b.org_id = $1
         group by b.name order by b.name`,
+      [ORG_ID],
     );
 
     expect(byBranch.map((r) => r.branch)).toEqual(["Mogappair East", "Mogappair West"]);
@@ -49,8 +51,10 @@ test.describe("catalogue baseline", () => {
        )
        select count(*) as n, min(s.qty) as mn, max(s.qty) as mx, count(distinct s.branch_id) as branches
          from stock s
+         join branches b on b.id = s.branch_id
          join products p on p.id = s.product_id
-        where ${SEEDED} and s.product_id not in (select pid from suite)`,
+        where ${SEEDED} and b.org_id = $1 and s.product_id not in (select pid from suite)`,
+      [ORG_ID],
     );
     expect(num(r!.branches)).toBe(2);
     expect(num(r!.n), "both branches stock every untouched product").toBeGreaterThanOrEqual(370 * 2);
@@ -68,7 +72,9 @@ test.describe("catalogue baseline", () => {
              from stock_movements sm
             where sm.product_id = s.product_id and sm.branch_id = s.branch_id
          ) m
+        where b.org_id = $1
         group by b.name`,
+      [ORG_ID],
     );
     for (const r of mismatches) expect(num(r.bad), `${r.branch} ledger drift`).toBe(0);
     expect(mismatches.length).toBe(2);
@@ -76,11 +82,14 @@ test.describe("catalogue baseline", () => {
 
   test("branch inventory valuation is populated", async () => {
     const val = await rows<{ branch: string; qty: string; value: string }>(
-      `select b.name as branch, sum(s.qty) as qty, round(sum(s.qty * coalesce(p.cost_price, 0)), 2) as value
+      `select b.name as branch, sum(s.qty) as qty, round(sum(s.qty * coalesce(pc.cost_price, 0)), 2) as value
          from stock s
          join branches b on b.id = s.branch_id
          join products p on p.id = s.product_id
+         left join product_costs pc on pc.product_id = p.id and pc.org_id = p.org_id
+        where ${SEEDED} and b.org_id = $1
         group by b.name order by b.name`,
+      [ORG_ID],
     );
     expect(val).toHaveLength(2);
     for (const r of val) {

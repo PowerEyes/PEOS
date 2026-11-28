@@ -1,6 +1,6 @@
 {
  "ranAt": "2026-11-24T16:02:05.475Z",
- "database": "postgresql://postgres:postgres@127.0.0.1:54522/postgres",
+ "database": "<redacted>",
  "passes": [
   {
    "pass": 1,

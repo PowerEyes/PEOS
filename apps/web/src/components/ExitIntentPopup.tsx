@@ -8,21 +8,17 @@ import { usePathname } from "next/navigation";
 const QUIET = ["/product", "/checkout", "/my", "/login", "/track-order", "/compare"];
 
 const STORAGE_KEY = "pe_exit_popup_shown";
-const OFFERS = [
-  { code:"EYES100",  label:"₹100 OFF",    sub:"on your first order above ₹999" },
-  { code:"POWER10",  label:"10% OFF",     sub:"on all eyeglasses — today only" },
-];
+export type ExitOffer = { code: string; label: string; sub: string } | null;
 
-export function ExitIntentPopup() {
+export function ExitIntentPopup({ offer }: { offer: ExitOffer }) {
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const path = usePathname() ?? "";
   const quiet = QUIET.some((q) => path === q || path.startsWith(q + "/"));
-  const offer = OFFERS[Math.floor(Math.random() * OFFERS.length)];
 
   useEffect(() => {
     // Never interrupt product detail, checkout or the customer portal; hide if already open when navigating there.
-    if (quiet) { setVisible(false); return; }
+    if (quiet || !offer) { setVisible(false); return; }
     // Don't show if already shown in this session
     try { if (sessionStorage.getItem(STORAGE_KEY)) return; } catch { return; }
 
@@ -50,7 +46,7 @@ export function ExitIntentPopup() {
   }, [quiet]);
 
   function copyCode() {
-    navigator.clipboard.writeText(offer.code).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+    navigator.clipboard.writeText(offer!.code).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
   }
 
   return (
@@ -73,8 +69,8 @@ export function ExitIntentPopup() {
                 <div className="inline-flex items-center gap-2 rounded-full bg-gold-500/20 border border-gold-500/40 px-3 py-1 text-xs font-semibold text-gold-300 mb-3">
                   <Tag size={12}/> Limited Time Offer
                 </div>
-                <p className="font-extrabold text-5xl text-gold-400">{offer.label}</p>
-                <p className="text-slate-300 mt-2 text-sm">{offer.sub}</p>
+                <p className="font-extrabold text-5xl text-gold-400">{offer?.label}</p>
+                <p className="text-slate-300 mt-2 text-sm">{offer?.sub}</p>
               </div>
             </div>
             {/* Coupon */}
@@ -83,7 +79,7 @@ export function ExitIntentPopup() {
                 <p className="text-sm text-slate-500 mb-2">Use code at checkout</p>
                 <button onClick={copyCode}
                   className="inline-flex items-center gap-3 rounded-2xl border-2 border-dashed border-gold-400 bg-gold-50 px-6 py-3 transition hover:bg-gold-100 group">
-                  <span className="font-mono text-2xl font-extrabold tracking-widest text-navy-900">{offer.code}</span>
+                  <span className="font-mono text-2xl font-extrabold tracking-widest text-navy-900">{offer?.code}</span>
                   <span className={`text-xs font-semibold transition ${copied?"text-emerald-600":"text-gold-600 group-hover:text-gold-700"}`}>
                     {copied ? "✓ Copied!" : "Copy"}
                   </span>

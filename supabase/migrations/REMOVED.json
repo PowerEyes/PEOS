@@ -1,0 +1,72 @@
+[
+ {
+  "file": "0005_lab_gst.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #114 in 0006_finance_gst.sql"
+ },
+ {
+  "file": "0005_lab_gst.sql",
+  "function": "cancel_order(p_id uuid)",
+  "reason": "superseded by statement #124 in 0007_fixes.sql"
+ },
+ {
+  "file": "0005_lab_gst.sql",
+  "function": "deliver_order(p_id uuid)",
+  "reason": "superseded by statement #125 in 0007_fixes.sql"
+ },
+ {
+  "file": "0006_finance_gst.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #123 in 0007_fixes.sql"
+ },
+ {
+  "file": "0007_fixes.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #429 in 0030_sale_idempotency.sql"
+ },
+ {
+  "file": "0017_staff_signup_profiles.sql",
+  "function": "sync_auth_to_customer()",
+  "reason": "superseded by statement #599 in 20261122010000_org_driven_permissions.sql"
+ },
+ {
+  "file": "0030_sale_idempotency.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #430 in 0031_sale_idempotency.sql"
+ },
+ {
+  "file": "0031_sale_idempotency.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #431 in 0032_sale_idem2.sql"
+ },
+ {
+  "file": "0032_sale_idem2.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #432 in 0037_place_sale_check.sql"
+ },
+ {
+  "file": "0037_place_sale_check.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #433 in 0039_place_sale_real.sql"
+ },
+ {
+  "file": "0039_place_sale_real.sql",
+  "function": "place_sale(p jsonb)",
+  "reason": "superseded by statement #440 in 0041_place_sale_restore.sql"
+ },
+ {
+  "file": "20261122010000_org_driven_permissions.sql",
+  "function": "sync_auth_to_customer()",
+  "reason": "superseded by statement #647 in 20261123000000_tenant_perms_ratelimit.sql"
+ },
+ {
+  "file": "20261123000000_tenant_perms_ratelimit.sql",
+  "function": "my_permissions()",
+  "reason": "superseded by statement #751 in 20261127010000_ops_permissions.sql"
+ },
+ {
+  "file": "20261127010000_ops_permissions.sql",
+  "function": "my_permissions()",
+  "reason": "superseded by statement #831 in 20261128000000_data_driven_workflows.sql"
+ }
+]

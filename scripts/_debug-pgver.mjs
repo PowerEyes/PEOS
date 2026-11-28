@@ -2,10 +2,13 @@
 import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
+if (!process.env.LOCAL_DATABASE_URL) throw new Error("LOCAL_DATABASE_URL is required");
+if (!process.env.SCRATCH_DATABASE_URL) throw new Error("SCRATCH_DATABASE_URL is required");
+
 const tryExec = (c) => { try { return execSync(c, { encoding: "utf8", timeout: 15000 }).trim(); } catch (e) { return "ERR: " + String(e.message).split("\n")[0]; } };
 
-console.log("local 54522:", tryExec('psql "postgresql://postgres:postgres@127.0.0.1:54522/postgres" -tAc "select version()"'));
-console.log("qa_restore 5433:", tryExec('psql "postgresql://postgres:postgres@127.0.0.1:5433/postgres" -tAc "select version()"'));
+console.log("local 54522:", tryExec(`psql "${process.env.LOCAL_DATABASE_URL}" -tAc "select version()"`));
+console.log("qa_restore 5433:", tryExec(`psql "${process.env.SCRATCH_DATABASE_URL}" -tAc "select version()"`));
 
 const fresh = JSON.parse(readFileSync("docs/sql/snapshots/fresh.json", "utf8"));
 const upg = JSON.parse(readFileSync("docs/sql/snapshots/upgrade.json", "utf8"));

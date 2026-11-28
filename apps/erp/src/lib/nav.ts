@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Users, MessageCircle, Bell, Calendar, FileText, FileSearch, Eye, ShoppingCart, Globe, Package, ArrowRightLeft,
   ClipboardCheck, ClipboardList, ReceiptText, Truck, Wrench, PackageCheck, Hammer, DollarSign, TrendingUp, FileBarChart, Receipt, Banknote,
   UserCheck, Activity, Wallet, Megaphone, Heart, Store, BarChart3, Building2, Tag, Settings, Shield, Lock, Zap, HardDrive, History,
-  CreditCard, LifeBuoy, Gauge, type LucideIcon,
+  CreditCard, LifeBuoy, Gauge, SlidersHorizontal, PackagePlus, type LucideIcon,
 } from "lucide-react";
 import { routeAllowed, specialistAllowed } from "./rbac";
 
@@ -22,7 +22,9 @@ export const NAV: NavGroup[] = [
     { label: "Sales & POS", href: "/sales", icon: ShoppingCart }, { label: "Website orders", href: "/web-orders", icon: Globe, badge: "web-orders" }] },
   { key: "inventory", label: "Inventory", icon: Package, items: [
     { label: "Inventory", href: "/inventory", icon: Package, badge: "inventory" }, { label: "Stock transfers", href: "/transfers", icon: ArrowRightLeft },
-    { label: "Transfer approvals", href: "/transfers/approvals", icon: ClipboardCheck, badge: "transfer-approvals" }, { label: "Stock audits", href: "/stock-audits", icon: ClipboardList, badge: "stock-audits" }] },
+    { label: "Transfer approvals", href: "/transfers/approvals", icon: ClipboardCheck, badge: "transfer-approvals" }, { label: "Stock audits", href: "/stock-audits", icon: ClipboardList, badge: "stock-audits" },
+    { label: "Stock adjustments", href: "/stock-adjustments", icon: SlidersHorizontal },
+    { label: "Opening stock", href: "/opening-stock", icon: PackagePlus }] },
   { key: "procurement", label: "Procurement", icon: Truck, items: [
     { label: "Purchase orders", href: "/purchases", icon: ClipboardCheck }, { label: "Purchase invoices", href: "/purchase-invoices", icon: ReceiptText }, { label: "Suppliers", href: "/suppliers", icon: Truck }] },
   { key: "workshop", label: "Workshop & Lab", icon: Wrench, items: [
@@ -32,17 +34,20 @@ export const NAV: NavGroup[] = [
     { label: "Overview & cashbook", href: "/finance", icon: DollarSign }, { label: "Sales report", href: "/finance/reports", icon: TrendingUp }, { label: "GSTR-1", href: "/finance/gstr1", icon: FileBarChart },
     { label: "Accountant export", href: "/accountant-export", icon: FileBarChart }, { label: "Bank reconciliation", href: "/bank-reconciliation", icon: Banknote }] },
   { key: "staff", label: "Staff & Payroll", icon: UserCheck, items: [
-    { label: "Staff", href: "/staff", icon: UserCheck }, { label: "Attendance", href: "/staff/attendance", icon: Activity }, { label: "Leave", href: "/staff/leave", icon: Calendar }] },
+    { label: "Staff", href: "/staff", icon: UserCheck }, { label: "Attendance", href: "/staff/attendance", icon: Calendar },
+    { label: "Leave", href: "/staff/leave", icon: FileText }, { label: "Payroll", href: "/payroll", icon: DollarSign },
+    { label: "My payslips", href: "/payroll/mine", icon: ReceiptText }] },
   { key: "engagement", label: "Customer Engagement", icon: Megaphone, items: [
-    { label: "Communications", href: "/communications", icon: Megaphone }, { label: "Loyalty & referrals", href: "/loyalty", icon: Heart }] },
+    { label: "Loyalty & referrals", href: "/loyalty", icon: Heart }] },
   { key: "branches", label: "Branches", icon: Store, items: [{ label: "Branches", href: "/branches", icon: Store }] },
   { key: "reports", label: "Reports & Analytics", icon: BarChart3, items: [
     { label: "Company overview", href: "/reports/company-overview", icon: Building2 }, { label: "Branch comparison", href: "/reports/branch-comparison", icon: BarChart3 }] },
   { key: "website", label: "Website", icon: Globe, items: [
-    { label: "Website studio", href: "/website", icon: Globe }, { label: "Pages", href: "/website/pages", icon: FileText }, { label: "Coupons", href: "/website/coupons", icon: Tag }] },
+    { label: "Website studio", href: "/website", icon: Globe }, { label: "Pages", href: "/website/pages", icon: FileText },
+    { label: "Clinical services", href: "/website/clinical", icon: Eye }, { label: "Coupons", href: "/website/coupons", icon: Tag }] },
   { key: "settings", label: "Settings & Security", icon: Settings, items: [
     { label: "Settings", href: "/settings", icon: Settings }, { label: "Roles & permissions", href: "/settings/roles", icon: Shield }, { label: "Store domains", href: "/settings/domains", icon: Globe },
-    { label: "Security", href: "/settings/security", icon: Lock }, { label: "Integrations", href: "/settings/integrations", icon: Zap }, { label: "Backup", href: "/settings/backup", icon: HardDrive },
+    { label: "Integrations", href: "/settings/integrations", icon: Zap }, { label: "Backup", href: "/settings/backup", icon: HardDrive },
     { label: "Company profile", href: "/company", icon: Building2 }, { label: "Audit log", href: "/audit", icon: History }, { label: "Go-live checklist", href: "/setup", icon: ClipboardCheck }] },
   { key: "subscription", label: "Subscription & Billing", icon: CreditCard, items: [
     { label: "Subscription", href: "/subscription", icon: CreditCard }, { label: "Usage", href: "/subscription/usage", icon: Gauge }, { label: "Invoices", href: "/subscription/invoices", icon: ReceiptText }] },

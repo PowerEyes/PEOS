@@ -1,3 +1,4 @@
+import { getOrgId } from "@/lib/tenant";
 
 import { supabasePublic } from "@/lib/supabase/server";
 import Link from "next/link";
@@ -9,7 +10,7 @@ import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title:"Current Offers & Deals",
-  description:"Latest discounts, coupon codes and promotions at Power Eyes Opticals, Mogappair Chennai. Eyeglasses, sunglasses, contact lenses and lens upgrades.",
+  description:"Latest discounts, coupon codes and promotions at our stores and online. Eyeglasses, sunglasses, contact lenses and lens upgrades.",
 };
 export const revalidate = 60;
 
@@ -25,9 +26,10 @@ function daysLeft(until: string | null): string | null {
 export default async function OffersPage() {
   const site = await getSiteSettings();
   const sb = supabasePublic();
+  const orgId = await getOrgId();
   const [offersRes, couponsRes] = await Promise.all([
-    sb.from("offers").select("*").order("display_order").order("created_at",{ascending:false}),
-    sb.from("coupons").select("code,description,type,value,min_order,valid_until")
+    sb.from("offers").select("*").eq("org_id", orgId).order("display_order").order("created_at",{ascending:false}),
+    sb.from("coupons").select("code,description,type,value,min_order,valid_until").eq("org_id", orgId)
       .eq("is_active",true).order("value",{ascending:false}).limit(8),
   ]);
   const offers  = offersRes.data  ?? [];
@@ -125,10 +127,10 @@ export default async function OffersPage() {
           <h2 className="font-bold text-2xl text-navy-900 mb-5">Always Available</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              { e:"👁️", t:"Free Eye Test",        d:"Comprehensive eye test free at both Mogappair stores. No appointment needed.", href:"/eye-test", cta:"Book Now" },
+              { e:"👁️", t:"Free Eye Test",        d:"Comprehensive eye test free at our stores. No appointment needed.", href:"/eye-test", cta:"Book Now" },
               { e:"🔧", t:"Free Adjustments",     d:"Free frame adjustments and nose pad replacements for life on all frames purchased from us.", href:"/store-locator", cta:"Visit Store" },
               { e:"🛡️", t:"1-Year Warranty",      d:"Manufacturing warranty on all frames. Free replacement for defective products within 12 months.", href:"/returns", cta:"Learn More" },
-              { e:"🚚", t:"Free Shipping",        d:"Free home delivery on all orders above ₹999 across Chennai and major Indian cities.", href:"/eyeglasses", cta:"Shop Now" },
+              { e:"🚚", t:"Free Shipping",        d:"Free home delivery on all orders above ₹999 across India.", href:"/eyeglasses", cta:"Shop Now" },
               { e:"🔄", t:"Easy 7-Day Returns",   d:"Return unworn frames within 7 days with original bill. Full refund, no questions asked.", href:"/returns", cta:"Learn More" },
               { e:"👶", t:"Free Kids Eye Test",   d:"Specialised eye tests for children below 16 — completely free, with or without a purchase.", href:"/eye-test", cta:"Book Now" },
             ].map(item=>(

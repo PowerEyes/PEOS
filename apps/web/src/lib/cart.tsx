@@ -23,7 +23,12 @@ export type CartItem = {
   total: number;
   qty: number;
   power_eligible?: boolean;
+  /** Choose-lens metadata — carried into the checkout quote for lab orders. */
+  usage?: string;
+  requires_rx?: boolean;
+  requires_add?: boolean;
   rx?: any;
+  rx_snapshot?: any;
 };
 
 type CartState = {
@@ -138,7 +143,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         product_name: item.productName ?? item.name ?? "",
         qty:          item.qty,
         frame_price:  item.framePrice,
-        lens_package: item.lensPackage ?? null,
+        lens_package: item.lensPackageName ?? item.lensPackage ?? null,
         lens_total:   item.lensTotal,
         total:        item.total,
         rx_data:      item.rx ?? null,

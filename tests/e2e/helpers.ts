@@ -9,7 +9,9 @@ export const BRANCH_NAME = { east: "Mogappair East", west: "Mogappair West" } as
 
 /** The five pre-existing rows that are deliberately *not* part of the 375 seed. */
 export const LEGACY_SKUS = ["FRM-0002", "FRM-0003", "FRM-0004", "SUN-0001", "CL-0001"];
-export const SEEDED = `p.sku not in (${LEGACY_SKUS.map((s) => `'${s}'`).join(", ")})`;
+// Scope every baseline assertion to the seeded tenant. Other tenants in the
+// same database legitimately carry their own catalogue and branches.
+export const SEEDED = `p.org_id = '${ORG_ID}' and p.sku not in (${LEGACY_SKUS.map((s) => `'${s}'`).join(", ")})`;
 
 const DSN = process.env.E2E_DATABASE_URL ?? process.env.DATABASE_URL;
 
@@ -68,10 +70,12 @@ export function amountAfter(text: string, label: string): number {
 /** Deterministic product picker shared by the specs so they never fight over rows. */
 export async function pickProducts(kind: string, n: number, offset = 0) {
   return rows<{ id: string; sku: string; cost_price: string; tax_pct: string; model: string }>(
-    `select id, sku, cost_price, tax_pct, model from products
-      where kind = $1 and visible_on_website
-      order by sku limit $2 offset $3`,
-    [kind, n, offset],
+    `select p.id, p.sku, pc.cost_price, p.tax_pct, p.model
+       from products p
+       left join product_costs pc on pc.product_id = p.id and pc.org_id = p.org_id
+      where p.kind = $1 and p.visible_on_website and p.org_id = $4
+      order by p.sku limit $2 offset $3`,
+    [kind, n, offset, ORG_ID],
   );
 }
 

@@ -1,6 +1,7 @@
-import { supabaseFresh } from "@/lib/supabase/server";
+import { isPreviewRequest, supabaseFresh, supabasePreview } from "@/lib/supabase/server";
 import { getOrgId } from "@/lib/tenant";
 import { getStoreName } from "@/lib/site";
+import { safeHref } from "@/lib/href";
 import {
   DEFAULT_ANNOUNCEMENT, DEFAULT_LOGO, DEFAULT_NAV, DEFAULT_FOOTER,
   type SiteChrome, type Announcement, type Logo, type FooterChrome, type NavItem, type FooterContact,
@@ -12,6 +13,18 @@ const KEYS = ["announcement", "site_logo", "nav", "footer"] as const;
 
 type Row = Record<string, any>;
 const byOrder = (a: Row, b: Row) => (a.display_order ?? 0) - (b.display_order ?? 0);
+
+/** Studio stores the nav mega-menu as JSON in website_content.body. */
+function parseMega(v: unknown): string[][] | undefined {
+  try {
+    const parsed = typeof v === "string" ? JSON.parse(v) : v;
+    if (Array.isArray(parsed) && parsed.every((col) =>
+      Array.isArray(col) && col.every((item) => typeof item === "string"))) {
+      return parsed as string[][];
+    }
+  } catch { /* not JSON — fall back to the label-matched defaults */ }
+  return undefined;
+}
 
 /**
  * Reads announcement / logo / nav / footer for the anon caller in ONE round
@@ -33,13 +46,20 @@ const byOrder = (a: Row, b: Row) => (a.display_order ?? 0) - (b.display_order ??
  * caller, so there is nothing to deduplicate, and a cache that outlives a
  * single render would serve the same staleness problem as Next's fetch cache.
  */
-export async function getSiteChrome(): Promise<SiteChrome> {
-  const sb = supabaseFresh();
+export async function getSiteChrome(preview = isPreviewRequest()): Promise<SiteChrome> {
+  const sb = preview ? supabasePreview() : supabaseFresh();
+  // Service role ignores RLS — scope it to the current store when previewing.
+  const orgId = preview ? await getOrgId() : null;
+  const scope = (q: any) => (preview && orgId ? q.eq("org_id", orgId) : q);
+  const today = new Date().toISOString().slice(0, 10);
+  const contentQuery = preview
+    ? sb.from("website_content").select("*")
+    : sb.from("website_content").select("*").eq("is_active", true)
+        .or(`valid_from.is.null,valid_from.lte.${today}`);
 
   const [{ data: sections, error: secErr }, { data: content, error: conErr }] = await Promise.all([
-    sb.from("website_sections").select("key,image_path,image_alt").in("key", [...KEYS]),
-    sb.from("website_content").select("*").eq("is_active", true).in("section", [...KEYS])
-      .order("section").order("display_order"),
+    scope(sb.from("website_sections").select("key,image_path,image_alt").in("key", [...KEYS])),
+    scope(contentQuery.in("section", [...KEYS]).order("section").order("display_order")),
   ]);
 
   // Fail-closed to the fallbacks: a broken query or a wiped registry must not
@@ -88,7 +108,11 @@ export async function getSiteChrome(): Promise<SiteChrome> {
   if (!hidden("nav")) {
     const rows = rowsFor("nav").filter((r) => r.title); // drop label-less rows
     nav = rows.length
-      ? rows.map((r) => ({ label: r.title as string, href: (r.cta_link as string) || "#" }))
+      ? rows.map((r) => ({
+          label: r.title as string,
+          href: safeHref(r.cta_link),
+          mega: parseMega(r.body),
+        }))
       : DEFAULT_NAV;
   }
 
@@ -102,10 +126,10 @@ export async function getSiteChrome(): Promise<SiteChrome> {
       const brand = rows.find((r) => r.key === "brand");
       const contacts: FooterContact[] = rows.filter((r) => r.parent_key === "brand").sort(byOrder)
         .filter((r) => r.title)
-        .map((r) => ({ icon: r.icon || "map", label: r.title, href: r.cta_link || "#" }));
+        .map((r) => ({ icon: r.icon || "map", label: r.title, href: safeHref(r.cta_link) }));
       const socials: FooterContact[] = rows.filter((r) => r.parent_key === "social").sort(byOrder)
         .filter((r) => r.title)
-        .map((r) => ({ icon: r.icon || "instagram", label: r.title, href: r.cta_link || "#" }));
+        .map((r) => ({ icon: r.icon || "instagram", label: r.title, href: safeHref(r.cta_link) }));
       const trust = rows.filter((r) => r.parent_key === "trust").sort(byOrder)
         .map((r) => r.title as string).filter(Boolean);
 
@@ -116,7 +140,7 @@ export async function getSiteChrome(): Promise<SiteChrome> {
         title: c.title as string,
         items: rows.filter((r) => r.parent_key === c.key).sort(byOrder)
           .filter((r) => r.title)
-          .map((r) => ({ label: r.title as string, href: (r.cta_link as string) || "#" })),
+          .map((r) => ({ label: r.title as string, href: safeHref(r.cta_link) })),
       })).filter((c) => c.title);
 
       footer = {
@@ -136,9 +160,19 @@ export async function getSiteChrome(): Promise<SiteChrome> {
   // Pages created in ERP > Website > Pages with "Show in website menu" are listed in the footer under "More" (database-driven).
   if (footer) {
     try {
-      const { data: extra } = await sb.from("site_pages").select("slug,title").eq("org_id", await getOrgId()).eq("kind", "page").eq("is_active", true).eq("show_in_nav", true).order("display_order");
+      let pagesQuery = sb.from("site_pages").select("slug,title").eq("org_id", await getOrgId()).eq("kind", "page");
+      // Preview reveals staged/hidden pages as well as live ones.
+      if (!preview) pagesQuery = pagesQuery.eq("is_active", true).eq("show_in_nav", true);
+      const { data: extra } = await pagesQuery.order("display_order");
       if (extra?.length) footer = { ...footer, columns: [...footer.columns, { title: "More", items: extra.map((x: any) => ({ label: x.title, href: `/${x.slug}` })) }] };
     } catch { /* keep the footer as is */ }
   }
-  return { announcement, logo, nav, footer, storeName: await getStoreName() };
+  const storeName = await getStoreName();
+  return {
+    announcement,
+    logo: logo ? { ...logo, title: logo.title || storeName } : null,
+    nav,
+    footer: footer ? { ...footer, brand: { ...footer.brand, title: footer.brand.title || storeName } } : null,
+    storeName,
+  };
 }

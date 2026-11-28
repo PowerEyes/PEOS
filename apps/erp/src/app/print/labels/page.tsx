@@ -4,7 +4,7 @@ import { PrintButton } from "@/components/PrintButton";
 import { getScopeCtx } from "@/lib/branch-scope";
 import { inr } from "@poweros/business-rules";
 
-// Power Eyes label stock (mm) — thermal transfer printer, 300 DPI preferred.
+// Label stock (mm) — thermal transfer printer, 300 DPI preferred.
 const SIZES = {
   frame: { w: 100, h: 12 },        // frames / sunglasses: 100 × 12
   sunglass: { w: 100, h: 12 },
@@ -31,7 +31,7 @@ function Label({ p }: { p: any }) {
     const tight = kindKey === "contact_lens";
     return (
       <div className={`${cls} ${tight ? "h-[20mm] w-[40mm] gap-px px-1" : "h-[25mm] w-[50mm] gap-[2px] px-1.5"} flex flex-col items-center justify-center text-center leading-none ${border}`}>
-        <p className="font-black tracking-[0.16em] text-navy-900" style={{ fontSize: tight ? "5.5pt" : "6pt" }}>POWER EYES</p>
+        <p className="font-black tracking-[0.16em] text-navy-900" style={{ fontSize: tight ? "5.5pt" : "6pt" }}>{String(p.store ?? "").toUpperCase()}</p>
         <p className="font-black text-navy-900" style={{ fontSize: tight ? "10pt" : "12pt" }}>{inr(p.selling_price)}</p>
         <p className="w-full truncate font-semibold text-slate-700" style={{ fontSize: tight ? "6pt" : "6.5pt" }}>{line}</p>
         <p className="font-bold text-navy-900" style={{ fontSize: tight ? "5pt" : "5.5pt" }}>{sku}</p>
@@ -42,7 +42,7 @@ function Label({ p }: { p: any }) {
   return (
     <div className={`${cls} h-[12mm] w-[100mm] flex items-center gap-2 px-2 py-1 leading-none ${border}`}>
       <div className="min-w-0 flex-1">
-        <p className="text-[5.5pt] font-black tracking-[0.18em] text-navy-900">POWER EYES</p>
+        <p className="text-[5.5pt] font-black tracking-[0.18em] text-navy-900">{String(p.store ?? "").toUpperCase()}</p>
         <p className="mt-[1.5px] text-[10pt] font-black text-navy-900">{inr(p.selling_price)}</p>
         <p className="mt-[1.5px] truncate text-[5.5pt] font-semibold text-slate-700">{line}</p>
       </div>
@@ -58,9 +58,9 @@ export default async function Labels({ searchParams }: { searchParams: { ids?: s
   const copies = Math.min(50, Math.max(1, Number(searchParams.copies) || 1));
   const { scope } = await getScopeCtx(); let q=supabaseServer().from("products").select("id, kind, model, sku, barcode, selling_price, attrs, brands(name), stock!inner(branch_id)").in("id", ids);
   if(scope)q=q.eq("stock.branch_id",scope);
-  const { data } = await q;
+  const { data } = await q; const { data: org } = await supabaseServer().from("organizations").select("name").limit(1).maybeSingle();
   const uniqueProducts = [...new Map((data ?? []).map((p: any) => [p.id, p])).values()];
-  const labels = uniqueProducts.flatMap((p: any) => Array.from({ length: copies }, (_, i) => ({ ...p, k: `${p.id}${i}` })));
+  const labels = uniqueProducts.flatMap((p: any) => Array.from({ length: copies }, (_, i) => ({ ...p, store: org?.name ?? "", k: `${p.id}${i}` })));
   const kinds = [...new Set(labels.map((p: any) => sizeOf(p)))] as KindKey[];
   const one = kinds.length === 1 ? SIZES[kinds[0]] : null;
   const first = one ?? SIZES.frame;

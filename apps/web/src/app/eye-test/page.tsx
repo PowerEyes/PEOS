@@ -5,7 +5,7 @@ import { EyeTestBooking } from "./booking";
 import { getPage } from "@/lib/pages";
 import { supabasePublic } from "@/lib/supabase/server";
 export const revalidate = 60;
-export const metadata = { title: "Book an Eye Test – Power Eyes Opticals" };
+export const metadata = { title: "Book an Eye Test " };
 export default async function Page() {
   const [cfg, { data: br }] = await Promise.all([getPage("eye-consultation"), supabasePublic().from("branches").select("name").eq("is_active", true).order("name")]);
   if (!cfg) notFound(); // switched off in Website Studio

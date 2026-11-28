@@ -52,7 +52,7 @@ function trackIndex(status?: string) {
 
 export default function CheckoutPage() {
   const { state, total, subtotal, clear, count, loaded } = useCart();
-  const { whatsappNumber, storeName } = useSite();
+  const { whatsappNumber } = useSite();
   const router = useRouter();
   const [step, setStep] = useState<"details" | "payment" | "success">(
     "details",
@@ -67,8 +67,8 @@ export default function CheckoutPage() {
     phone: "",
     email: "",
     line1: "",
-    city: "Chennai",
-    state: "Tamil Nadu",
+    city: "",
+    state: "",
     pincode: "",
   });
   const [payMethod, setPayMethod] = useState<"razorpay" | "cod">("razorpay");
@@ -211,7 +211,7 @@ export default function CheckoutPage() {
         order_id: data.orderId,
         amount: data.amount,
         currency: data.currency,
-        name: storeName || "Power Eyes Opticals",
+        name: (document.querySelector('meta[property="og:site_name"]') as HTMLMetaElement | null)?.content || "Online store",
         description: "Eyewear Purchase",
         prefill: { name: addr.name, email: addr.email, contact: addr.phone },
         theme: { color: "#C48A3F" },
@@ -226,8 +226,10 @@ export default function CheckoutPage() {
             setOrderId(cd.code);
             clear();
             setStep("success");
-          } else
-            alert("Order confirmation failed. Please contact us via WhatsApp.");
+          } else {
+            alert(cd.error || "Order confirmation failed. Please contact us via WhatsApp.");
+            setBusy(false);
+          }
         },
         modal: { ondismiss: () => setBusy(false) },
       }).open();
@@ -267,7 +269,10 @@ export default function CheckoutPage() {
         setOrderId(cd.code);
         clear();
         setStep("success");
-      } else alert("Failed to place order. Contact us on WhatsApp.");
+      } else {
+        alert(cd.error || "Failed to place order. Contact us on WhatsApp.");
+        setBusy(false);
+      }
     }
     setBusy(false);
   }
@@ -287,7 +292,7 @@ export default function CheckoutPage() {
             Order Placed!
           </h1>
           <p className="mt-3 text-lg text-slate-600">
-            Thank you for shopping with Power Eyes Opticals.
+            Thank you for shopping with us.
           </p>
 
           {/* Live status tracker — Order Placed → Preparing → Ready → Delivered */}
@@ -336,7 +341,7 @@ export default function CheckoutPage() {
                 {track?.status === "ready"
                   ? "Your order is ready — collect it from the store."
                   : track?.status === "delivered"
-                    ? "Delivered. Thank you for shopping with Power Eyes!"
+                    ? "Delivered. Thank you for shopping with us!"
                     : "We'll notify you on WhatsApp at every step."}
               </p>
             )}

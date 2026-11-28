@@ -32,7 +32,10 @@ export async function upsertCoupon(prev: any, fd: FormData) {
     per_customer: fd.get("per_customer") || "1",
     valid_from:   fd.get("valid_from") || null,
     valid_until:  fd.get("valid_until") || null,
-    is_active:    fd.get("is_active") === "true",
+    // The form posts a hidden false before the checkbox true. FormData.get()
+    // returns the FIRST value, so every coupon was saved inactive. Read all
+    // values and let the checked box win.
+    is_active:    fd.getAll("is_active").includes("true"),
     applicable_to:[],
   };
   const parsed = Schema.safeParse(raw);

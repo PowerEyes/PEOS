@@ -32,7 +32,7 @@ export default function Locations({ searchParams }: { searchParams: { codes?: st
         <div className="flex flex-wrap gap-2 print:block">{labels.map((l) => { const { shelf, label } = parse(l.code); const big = shelf || label;
           return (
             <div key={l.k} className="lbl flex h-[40mm] w-[60mm] flex-col items-center justify-center gap-1 overflow-hidden border border-slate-300 bg-white px-2 text-center leading-none print:border-0">
-              <p className="text-[6pt] font-black tracking-[0.2em] text-navy-900">POWER EYES · LOCATION</p>
+              <p className="text-[6pt] font-black tracking-[0.2em] text-navy-900">LOCATION</p>
               <p className="max-w-full truncate px-2 text-[16pt] font-black text-navy-900">{big}</p>
               {shelf && <p className="text-[8pt] font-bold uppercase tracking-[0.2em] text-gold-600">{label}</p>}
               <BarcodeSvg value={l.code} height={34} width={fit(l.code, 196)} fontSize={7} displayValue />

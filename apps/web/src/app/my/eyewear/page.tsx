@@ -1,3 +1,4 @@
+import { getStoreName } from "@/lib/site";
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -17,6 +18,7 @@ function warrantyInfo(purchaseDate: string) {
 }
 
 export default async function EyewearPage() {
+  const storeName = await getStoreName();
   const site = await getSiteSettings();
   const sb = supabaseServer();
   const { data: { user } } = await sb.auth.getUser();
@@ -46,7 +48,7 @@ export default async function EyewearPage() {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="font-extrabold text-3xl">MY EYEWEAR</h1>
-            <p className="text-slate-300 mt-1">All frames and eyewear purchased from Power Eyes Opticals.</p>
+            <p className="text-slate-300 mt-1">All frames and eyewear purchased from {storeName}.</p>
           </div>
           <ShoppingBag size={36} className="text-white/20 shrink-0"/>
         </div>

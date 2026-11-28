@@ -5,7 +5,13 @@ import { getSettings } from "@/lib/settings";
 export default async function Page() {
   const sb = supabaseServer();
   const { only, scope } = await getScopeCtx();
-  const [s, p, c, b, lp, lo, st] = await Promise.all([
+  const { data: { user } } = await sb.auth.getUser();
+  const { data: profile } = await sb
+    .from("profiles")
+    .select("role_key")
+    .eq("id", user?.id ?? "")
+    .maybeSingle();
+  const [s, p, c, b, lp, lo] = await Promise.all([
     only(
       sb
         .from("sales")
@@ -38,10 +44,6 @@ export default async function Page() {
       .select("*")
       .eq("status", "active")
       .order("display_order"),
-    sb
-      .from("org_settings")
-      .select("key, value")
-      .eq("key", "quotation_valid_days"),
   ]);
   const set = await getSettings();
   const days = set.quoteDays;
@@ -54,6 +56,8 @@ export default async function Page() {
       packages={(lp.data ?? []) as any}
       options={(lo.data ?? []) as any}
       quoteDays={days}
+      maxDiscount={set.maxDiscount}
+      role={profile?.role_key ?? "staff"}
       gst={set.gst}
       defaultSupplyType={set.defaultSupplyType}
       defaultStateOfSupply={set.defaultStateOfSupply}

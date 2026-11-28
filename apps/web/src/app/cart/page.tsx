@@ -53,6 +53,45 @@ export default function CartPage() {
 
   const earn = earnRate !== null && total > 0 ? Math.floor((total / 100) * earnRate) : null;
 
+  // A bag built before the lens catalogue was scoped to this storefront can
+  // still hold a package/option id the checkout API refuses (409 "no longer
+  // available"). Drop those lines here so the bag is always checkout-able
+  // instead of failing at the payment step.
+  const lensKey = state.items
+    .filter(i => i.lensPackageId)
+    .map(i => `${i.id}:${i.lensPackageId}:${(i.optionIds ?? []).join(",")}`)
+    .join("|");
+  useEffect(() => {
+    if (!loaded || !lensKey) return;
+    let alive = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/tenant", { cache: "no-store" });
+        if (!res.ok) return;
+        const { orgId } = await res.json();
+        if (!orgId || !alive) return;
+        const sb = supabaseBrowser();
+        const [pkgs, opts] = await Promise.all([
+          sb.from("lens_packages").select("id").eq("org_id", orgId).eq("status", "active"),
+          sb.from("lens_options").select("id").eq("org_id", orgId).eq("status", "active"),
+        ]);
+        if (!alive || pkgs.error || opts.error) return;
+        const validPkg = new Set((pkgs.data ?? []).map(r => r.id));
+        const validOpt = new Set((opts.data ?? []).map(r => r.id));
+        const gone = state.items.filter(i =>
+          i.lensPackageId &&
+          (!validPkg.has(i.lensPackageId) || (i.optionIds ?? []).some(o => !validOpt.has(o))));
+        if (!gone.length || !alive) return;
+        gone.forEach(i => remove(i.id));
+        toast(`Removed ${gone.length === 1 ? "an item" : `${gone.length} items`} that are no longer available. Re-add your lenses to continue.`, "err");
+      } catch { /* tenant lookup failed — leave the bag alone */ }
+    })();
+    return () => { alive = false; };
+    // `remove`/`toast` are re-created on every render; `lensKey` already tracks
+    // the only state this effect cares about.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, lensKey]);
+
   async function applyCouponCode(override?: string) {
     const c = (override ?? couponInput).trim().toUpperCase();
     setCouponErr(""); setCouponOk("");
@@ -112,7 +151,10 @@ export default function CartPage() {
                     <p className="text-xs text-slate-500 truncate">{item.brand}</p>
                     <p className="font-bold text-sm sm:text-base text-navy-900 truncate">{item.productName}</p>
                     {item.lensPackageName && <p className="text-xs text-blue-600 mt-0.5 truncate">+ {item.lensPackageName}{item.addons?.length ? ` | ${item.addons.join(", ")}` : ""}</p>}
-                    {item.rx && <p className="text-xs text-slate-400 mt-0.5 truncate">Rx: OD {item.rx.od?.sph ?? "—"} | OS {item.rx.os?.sph ?? "—"}</p>}
+                    {item.rx && <p className="text-xs text-slate-400 mt-0.5 truncate">
+                      Rx: OD {item.rx.od?.sph ?? "—"} | OS {item.rx.os?.sph ?? "—"}
+                      {(item.rx.od?.add != null || item.rx.os?.add != null) && <> | ADD {item.rx.od?.add ?? "—"}/{item.rx.os?.add ?? "—"}</>}
+                    </p>}
                     <div className="mt-3 flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white">
                         <button onClick={() => setQty(item.id, item.qty - 1)} className="p-1.5 sm:p-2 hover:bg-slate-50 rounded-l-xl transition" aria-label="Decrease quantity"><Minus size={14}/></button>

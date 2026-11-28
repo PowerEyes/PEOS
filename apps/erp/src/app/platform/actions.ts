@@ -196,3 +196,24 @@ export async function revokeBreakGlass(grantId: string, orgId: string): Promise<
   revalidatePath(`/platform/companies/${orgId}/records`);
   return { ok: "Access revoked." };
 }
+
+const LEAD_STATUSES = ["new", "contacted", "converted", "rejected"] as const;
+
+export async function setLeadStatus(id: string, status: string, note: string): Promise<R> {
+  const a = await platformCtx(["super_admin", "support"]);
+  if (a.error || !a.admin) return { error: a.error };
+  if (!LEAD_STATUSES.includes(status as (typeof LEAD_STATUSES)[number])) {
+    return { error: "Unknown lead status." };
+  }
+  if (note.length > 500) return { error: "Internal note must be 500 characters or fewer." };
+
+  const { error } = await a.admin
+    .from("saas_leads")
+    .update({ status, note: note.trim() || null, handled_by: a.pu!.user_id, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { error: error.message };
+
+  await audit(a.admin, a.pu!, "lead.status_changed", "saas_lead", id, { status, note: note.trim() || null });
+  revalidatePath("/platform/leads");
+  return { ok: `Lead marked ${status}.` };
+}

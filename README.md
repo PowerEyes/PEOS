@@ -32,7 +32,7 @@ Rules enforced in the database (`place_sale`): prices are read from the DB, lens
 
 ## Build 5 - Lab orders + Workshop, GST switch, inline customer
 1. Run `supabase/migrations/0005_lab_gst.sql`, then `supabase/seed/seed_lab.sql`. (No new npm packages.)
-2. Owners/admins can manage the database-backed business profile, branch lifecycle and pickup defaults, GST/invoice defaults, staff discount/quotation rules, integrations, templates and settings audit history at `/settings`.
+2. Owners/admins can manage the database-backed business profile, branch lifecycle and pickup defaults, GST/invoice defaults, staff discount/quotation rules, integrations, templates and settings audit history at `/settings`. Write authority is per key: `admin` is the company-manager tier, while tax identity, numbering prefixes and module toggles remain owner-only.
 3. Placing an order with lenses auto-creates one lab order per lens line, carrying the customer's power. /workshop = board + buying list.
 Flow: To buy > Ordered > Received > Edging > Fitting > QC > Ready, then Delivered from POS & Orders. The order status follows its lab orders.
 

@@ -12,6 +12,7 @@ import {
   Shield,
   Users,
   History,
+  ExternalLink,
 } from "lucide-react";
 import type { AppSettings } from "@/lib/settings";
 import { BusinessSection } from "./section-business";
@@ -115,6 +116,14 @@ export function SettingsPage({
       <div>
         <h1 className="font-display text-3xl font-semibold">Settings</h1>
         <p className="text-slate-500">Business configuration and preferences</p>
+        {canEdit && (
+          <a
+            href="/settings/modules"
+            className="mt-2 inline-flex items-center gap-1 text-sm text-navy-700 underline"
+          >
+            Settings catalog &amp; effective values <ExternalLink size={14} />
+          </a>
+        )}
       </div>
       {!canEdit && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
