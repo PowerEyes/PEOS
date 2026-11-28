@@ -29,10 +29,7 @@ export async function getShellCounts(): Promise<ShellCounts> {
       if (!scope) return n; const { count } = await sb.from("branch_transfers").select("id", { count: "exact", head: true }).eq("status", "requested").eq("from_branch", scope); return count ?? 0; }) : 0,
     can("/stock-audits") ? head("stock_audit_sessions", (q) => only(q.eq("status", "submitted"))) : 0,
     can("/repairs") ? head("repairs", (q) => only(q.in("status", ["pending", "in_progress"]).lt("due_date", today))) : 0,
-    can("/web-orders") ? (async () => {
-      const { data: pays } = await sb.from("online_payments").select("sale_id").not("sale_id", "is", null).order("created_at", { ascending: false }).limit(200);
-      const ids = [...new Set((pays ?? []).map((x: any) => x.sale_id))]; if (!ids.length) return 0;
-      return head("sales", (q) => only(q.in("id", ids).eq("status", "ready"))); })() : 0,
+    can("/web-orders") ? head("sales", (q) => only(q.eq("channel", "storefront").eq("status", "ready"))) : 0,
     can("/web-orders") ? head("sales", (q) => only(q.ilike("notes", "%PAYMENT MISMATCH%"))) : 0,
     can("/inventory") ? sb.from("stock").select("branch_id,qty,reorder_level").gt("reorder_level", 0).limit(3000).then((r: any) => r.data ?? []) : [],
   ]);

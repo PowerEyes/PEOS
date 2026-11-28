@@ -372,7 +372,7 @@ begin
   end if;
 
   return jsonb_build_object('id', v_id, 'code', v_code);
-end $function$
+end $function$;
 
 
 -- Staff in the same org must be able to read payment receipts. The old
@@ -399,4 +399,4 @@ begin
   if not public.can_access_branch(s.branch_id) then raise exception 'Not authorised for this branch' using errcode = '42501'; end if;
   if array_position(rank, s.status) is null or array_position(rank, p_status) <= array_position(rank, s.status) then raise exception 'Order cannot move to that status' ; end if;
   update sales set status = p_status, updated_at = now() where id = s.id;
-end $function$
+end $function$;

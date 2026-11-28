@@ -13,7 +13,7 @@ export default async function Inbox() {
   const [tr, rep, ord, mism, unpaid, stk] = await Promise.all([
     sb.from("branch_transfers").select("id,qty,created_at,from_branch,to_branch,status").in("status", ["requested", "in_transit"]).order("created_at").limit(20),
     only(sb.from("repairs").select("id,code,item_model,due_date,status").in("status", ["pending", "in_progress"]).lt("due_date", today).order("due_date").limit(20)),
-    only(sb.from("sales").select("id,code,grand_total,payment_status,status,created_at,customers(full_name)").in("id", (await sb.from("online_payments").select("sale_id").not("sale_id", "is", null).order("created_at", { ascending: false }).limit(30)).data?.map((x: any) => x.sale_id) ?? []).order("created_at", { ascending: false }).limit(15)),
+    only(sb.from("sales").select("id,code,grand_total,payment_status,status,created_at,customers(full_name)").eq("channel", "storefront").order("created_at", { ascending: false }).limit(15)),
     only(sb.from("sales").select("id,code,notes").ilike("notes", "%PAYMENT MISMATCH%").order("created_at", { ascending: false }).limit(10)),
     only(sb.from("sales").select("id,code,grand_total,paid_total,created_at").eq("kind", "order").neq("payment_status", "paid").lt("created_at", dayAgo).order("created_at").limit(10)),
     sb.from("stock").select("product_id,branch_id,qty,reorder_level,products(model,sku,brands(name))").gt("reorder_level", 0).limit(2000),
