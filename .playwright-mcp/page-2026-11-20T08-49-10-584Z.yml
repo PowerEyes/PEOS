@@ -1,8 +1,0 @@
-- main [ref=f25e2]:
-  - generic [ref=f25e3]:
-    - generic [ref=f25e4]: PowerOS
-    - paragraph [ref=f25e9]: Sign in to Power Eyes Opticals
-    - textbox "Email" [ref=f25e10]
-    - textbox "Password" [ref=f25e11]
-    - button "Sign in" [ref=f25e12] [cursor=pointer]
-    - button "New staff? Request access" [ref=f25e13] [cursor=pointer]
